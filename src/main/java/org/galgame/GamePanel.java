@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -470,6 +470,11 @@ public class GamePanel extends JPanel {
 
     public void updateDisplay() {
         if (storyManager.isEnd()) {
+            if (autoTimer != null && autoTimer.isRunning()) {
+                autoTimer.stop();
+                isAutoPlaying = false;
+                autoPlayBtn.setText("Auto");
+            }
             JOptionPane.showMessageDialog(this, "故事已结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
             mainMenuPanel.showMainMenu();
             return;
@@ -479,6 +484,11 @@ public class GamePanel extends JPanel {
 
         StoryData.CommandData cmd = storyManager.nextCommand();
         if (cmd == null) {
+            if (autoTimer != null && autoTimer.isRunning()) {
+                autoTimer.stop();
+                isAutoPlaying = false;
+                autoPlayBtn.setText("Auto");
+            }
             JOptionPane.showMessageDialog(this, "故事已结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
             mainMenuPanel.showMainMenu();
             return;
@@ -537,6 +547,11 @@ public class GamePanel extends JPanel {
                 return;
 
             case "end":
+                if (autoTimer != null && autoTimer.isRunning()) {
+                    autoTimer.stop();
+                    isAutoPlaying = false;
+                    autoPlayBtn.setText("Auto");
+                }
                 JOptionPane.showMessageDialog(this, "故事结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
                 mainMenuPanel.showMainMenu();
                 break;
