@@ -89,28 +89,15 @@ public class LogPanel extends JPanel {
      * @param showName 是否显示角色名
      */
     private JPanel createDialogueCard(String who, String text, boolean showName) {
-        JPanel card = new JPanel(new BorderLayout(20, 0)) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // 毛玻璃效果：半透明白色填充 + 白色边框
-                g2.setColor(new Color(255, 255, 255, 60));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                g2.setColor(new Color(255, 255, 255, 140));
-                g2.setStroke(new BasicStroke(1.5f));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
-                g2.dispose();
-            }
-        };
+        // 外层容器：无毛玻璃，只负责排列角色名和台词框
+        JPanel card = new JPanel(new BorderLayout(20, 0));
         card.setOpaque(false);
-        card.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
-        // 固定高度（让所有卡片等大）
+        card.setBorder(BorderFactory.createEmptyBorder(6, 20, 6, 20));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
         card.setMinimumSize(new Dimension(200, 60));
         card.setPreferredSize(new Dimension(800, 60));
 
-        // 左侧角色名
+        // 左侧角色名（在毛玻璃框外）
         JLabel nameLabel = new JLabel(showName ? who : "");
         nameLabel.setFont(nameFont);
         nameLabel.setForeground(new Color(255, 220, 150));
@@ -120,13 +107,30 @@ public class LogPanel extends JPanel {
         nameLabel.setHorizontalAlignment(JLabel.CENTER);
         card.add(nameLabel, BorderLayout.WEST);
 
-        // 右侧台词（JLabel，不可选中）
-        JLabel textLabel = new JLabel("<html><body style='width:500px'>" + escapeHtml(text) + "</body></html>");
+        // 右侧台词框（毛玻璃只框台词）
+        JPanel dialogueBox = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(255, 255, 255, 60));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.setColor(new Color(255, 255, 255, 140));
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                g2.dispose();
+            }
+        };
+        dialogueBox.setOpaque(false);
+        dialogueBox.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        JLabel textLabel = new JLabel("<html><body style='width:480px'>" + escapeHtml(text) + "</body></html>");
         textLabel.setFont(dialogFont);
         textLabel.setForeground(Color.WHITE);
         textLabel.setVerticalAlignment(JLabel.CENTER);
-        card.add(textLabel, BorderLayout.CENTER);
+        dialogueBox.add(textLabel, BorderLayout.CENTER);
 
+        card.add(dialogueBox, BorderLayout.CENTER);
         return card;
     }
 
