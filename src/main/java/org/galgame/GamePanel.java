@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -30,6 +30,7 @@ public class GamePanel extends JPanel {
 
     private Color currentTextColor = Color.WHITE;
     private Font dialogFont;
+    private Font buttonFont;
     private MusicPlayer musicPlayer;
 
     // ---- 背景转场相关字段 ----
@@ -64,6 +65,20 @@ public class GamePanel extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
             dialogFont = new Font("微软雅黑", Font.PLAIN, 24);
+        }
+
+        // 加载按钮字体（用于选项按钮）
+        try {
+            InputStream btnFontStream = getClass().getResourceAsStream("/fonts/MyButtonFont.ttf");
+            if (btnFontStream != null) {
+                buttonFont = Font.createFont(Font.TRUETYPE_FONT, btnFontStream).deriveFont(24f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(buttonFont);
+            } else {
+                buttonFont = new Font("微软雅黑", Font.BOLD, 24);
+            }
+        } catch (Exception e) {
+            buttonFont = new Font("微软雅黑", Font.BOLD, 24);
         }
 
         storyManager = new StoryManager();
@@ -534,21 +549,142 @@ public class GamePanel extends JPanel {
     }
 
     private void showChoices(List<StoryData.ChoiceData> choiceDataList) {
+        // 隐藏中央图片，为选项面板腾出位置
+        if (imageLabel != null && imageLabel.getParent() != null) {
+            remove(imageLabel);
+        }
+
+        // 全屏半透明暗幕 + 居中选项卡片（带淡入动画）
+        JPanel overlay = new JPanel(new GridBagLayout()) {
+            private float alpha = 0f;
+            private Timer fadeInTimer;
+            {
+                setOpaque(false);
+                fadeInTimer = new Timer(30, e -> {
+                    alpha += 0.06f;
+                    if (alpha >= 1f) {
+                        alpha = 1f;
+                        fadeInTimer.stop();
+                    }
+                    repaint();
+                });
+                fadeInTimer.start();
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(0, 0, 0, (int)(180 * alpha)));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+
+        // 卡片背景：毛玻璃暗色底板
+        JPanel cardBg = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(20, 20, 40, 220));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+                g2.setColor(new Color(255, 255, 255, 60));
+                g2.setStroke(new BasicStroke(2f));
+                g2.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 30, 30);
+                g2.dispose();
+            }
+        };
+        cardBg.setOpaque(false);
+
+        // 卡片内部面板（竖直排列）
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setOpaque(false);
+        card.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+
+        // 标题
+        JLabel title = new JLabel("—— 请做出选择 ——");
+        title.setFont(buttonFont.deriveFont(22f));
+        title.setForeground(new Color(255, 255, 255, 200));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(title);
+        card.add(Box.createRigidArea(new Dimension(0, 25)));
+
+        // 选项按钮（毛玻璃风格，与主菜单按钮一致）
+        for (ChoiceOption opt : getChoiceOptions(choiceDataList)) {
+            JButton btn = createChoiceButton(opt.getText());
+            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+            btn.addActionListener(e -> {
+                remove(overlay);
+                add(imageLabel, BorderLayout.CENTER);
+                revalidate();
+                repaint();
+                storyManager.jumpToScene(opt.getTarget());
+                waitingForChoice = false;
+                updateDisplay();
+            });
+            card.add(btn);
+            card.add(Box.createRigidArea(new Dimension(0, 20)));
+        }
+
+        cardBg.add(card, BorderLayout.CENTER);
+        overlay.add(cardBg);
+        add(overlay, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    // 辅助方法：将 ChoiceData 转换为 ChoiceOption 列表
+    private List<ChoiceOption> getChoiceOptions(List<StoryData.ChoiceData> choiceDataList) {
         List<ChoiceOption> options = new ArrayList<>();
         for (StoryData.ChoiceData cd : choiceDataList) {
             options.add(new ChoiceOption(cd.text, cd.target));
         }
-        ChoiceDialog dialog = new ChoiceDialog(parentFrame, options);
-        dialog.setVisible(true);
-        String target = dialog.getSelectedTarget();
-        if (target != null) {
-            storyManager.jumpToScene(target);
-            waitingForChoice = false;
-            updateDisplay();
-        } else {
-            waitingForChoice = false;
-            mainMenuPanel.showMainMenu();
-        }
+        return options;
+    }
+
+    // 创建毛玻璃风格选项按钮（与主菜单 createGlassButton 风格一致）
+    private JButton createChoiceButton(String text) {
+        JButton btn = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(255, 255, 255, 60));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+                g2.setColor(new Color(255, 255, 255, 120));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30);
+                g2.setColor(Color.WHITE);
+                g2.setFont(getFont());
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+                g2.drawString(getText(), x, y);
+                g2.dispose();
+            }
+            @Override
+            public void setOpaque(boolean opaque) { super.setOpaque(false); }
+        };
+        btn.setFont(buttonFont);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(15, 30, 15, 30));
+        btn.setContentAreaFilled(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btn.setForeground(new Color(255, 255, 200));
+                btn.repaint();
+            }
+            public void mouseExited(MouseEvent e) {
+                btn.setForeground(Color.WHITE);
+                btn.repaint();
+            }
+        });
+        return btn;
     }
 
     private void nextCommand() {
@@ -658,3 +794,5 @@ public class GamePanel extends JPanel {
 
     public List<?> getDialogues() { return null; }
 }
+
+
