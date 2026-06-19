@@ -66,13 +66,12 @@ public class GamePanel extends JPanel {
             dialogFont = new Font("微软雅黑", Font.PLAIN, 24);
         }
 
-        try {
-            bgImage = ImageIO.read(getClass().getResourceAsStream("/game_bg.jpg"));
-        } catch (Exception e) {
-            bgImage = null;
-        }
-
         storyManager = new StoryManager();
+
+        // 初始状态：全黑背景，对话框不可见
+        bgImage = null;
+        transitionAlpha = 1f;
+        dialogFadeAlpha = 0f;
 
         createImagePanel();
         createDialogPanel();
@@ -90,7 +89,6 @@ public class GamePanel extends JPanel {
         autoTimer = new Timer(2000, e -> {
             if (!isBgTransitioning) nextCommand();
         });
-        updateDisplay();
     }
 
     // ---------- UI创建 ----------
@@ -312,6 +310,16 @@ public class GamePanel extends JPanel {
     // ---------- 核心游戏逻辑 ----------
     public void startGame() {
         history.clear();
+        // 重置转场状态：从全黑开始淡入
+        if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) {
+            bgTransitionTimer.stop();
+        }
+        bgImage = null;
+        transitionAlpha = 1f;
+        dialogFadeAlpha = 0f;
+        isBgTransitioning = false;
+        characterLabel.setText("");
+        lineArea.setText("");
         storyManager = new StoryManager();
         waitingForChoice = false;
         currentTextColor = Color.WHITE;
@@ -319,11 +327,21 @@ public class GamePanel extends JPanel {
     }
 
     public void resetGame() {
+        // 重置转场状态
+        if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) {
+            bgTransitionTimer.stop();
+        }
         if (autoTimer != null && autoTimer.isRunning()) {
             autoTimer.stop();
             isAutoPlaying = false;
             autoPlayBtn.setText("Auto");
         }
+        bgImage = null;
+        transitionAlpha = 1f;
+        dialogFadeAlpha = 0f;
+        isBgTransitioning = false;
+        characterLabel.setText("");
+        lineArea.setText("");
         history.clear();
         storyManager = new StoryManager();
         waitingForChoice = false;
@@ -367,14 +385,26 @@ public class GamePanel extends JPanel {
     private void startBgTransition(String newBgPath) {
         if (isBgTransitioning) return;
         pendingBgPath = newBgPath;
-        transitionAlpha = 0f;
-        dialogFadeAlpha = 1f;
-        fadePhase = 0;
         fadeStep = 0;
         isBgTransitioning = true;
 
         if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) {
             bgTransitionTimer.stop();
+        }
+
+        // 如果没有当前背景（首次加载），跳过淡出阶段，直接从黑色淡入
+        if (bgImage == null) {
+            // 直接加载新背景
+            loadBgImage(pendingBgPath);
+            transitionAlpha = 1f;   // 全黑覆盖
+            dialogFadeAlpha = 0f;   // 对话框不可见
+            fadePhase = 1;          // 跳过阶段0，直接进入淡入
+            characterLabel.setText("");
+            lineArea.setText("");
+        } else {
+            transitionAlpha = 0f;
+            dialogFadeAlpha = 1f;
+            fadePhase = 0;
         }
 
         final int STEPS_PER_PHASE = 50; // ~800ms @ 16ms/tick
