@@ -275,7 +275,7 @@ public class GamePanel extends JPanel {
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 g2.setColor(new Color(255, 255, 255, 150));
                 g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
-                g2.setColor(Color.WHITE);
+                g2.setColor(getForeground());
                 g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth(getText())) / 2;
@@ -549,17 +549,16 @@ public class GamePanel extends JPanel {
     }
 
     private void showChoices(List<StoryData.ChoiceData> choiceDataList) {
-        // 隐藏中央图片，为选项面板腾出位置
-        if (imageLabel != null && imageLabel.getParent() != null) {
-            remove(imageLabel);
-        }
+        // 使用 frame 的 JLayeredPane 实现全屏覆盖（包括顶部按钮栏和底部对话框）
+        JLayeredPane layeredPane = parentFrame.getLayeredPane();
 
-        // 全屏半透明暗幕 + 居中选项卡片（带淡入动画）
+        // 全屏半透明暗幕 + 居中选项按钮（带淡入动画）
         JPanel overlay = new JPanel(new GridBagLayout()) {
             private float alpha = 0f;
             private Timer fadeInTimer;
             {
                 setOpaque(false);
+                setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
                 fadeInTimer = new Timer(30, e -> {
                     alpha += 0.06f;
                     if (alpha >= 1f) {
@@ -575,34 +574,16 @@ public class GamePanel extends JPanel {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(0, 0, 0, (int)(180 * alpha)));
+                g2.setColor(new Color(0, 0, 0, (int)(200 * alpha)));
                 g2.fillRect(0, 0, getWidth(), getHeight());
                 g2.dispose();
             }
         };
 
-        // 卡片背景：毛玻璃暗色底板
-        JPanel cardBg = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(20, 20, 40, 220));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-                g2.setColor(new Color(255, 255, 255, 60));
-                g2.setStroke(new BasicStroke(2f));
-                g2.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 30, 30);
-                g2.dispose();
-            }
-        };
-        cardBg.setOpaque(false);
-
-        // 卡片内部面板（竖直排列）
+        // 居中竖直排列的选项按钮（统一大小，无外框）
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setOpaque(false);
-        card.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
         // 标题
         JLabel title = new JLabel("—— 请做出选择 ——");
@@ -610,30 +591,33 @@ public class GamePanel extends JPanel {
         title.setForeground(new Color(255, 255, 255, 200));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(title);
-        card.add(Box.createRigidArea(new Dimension(0, 25)));
+        card.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // 选项按钮（毛玻璃风格，与主菜单按钮一致）
+        // 固定大小的选项按钮
         for (ChoiceOption opt : getChoiceOptions(choiceDataList)) {
             JButton btn = createChoiceButton(opt.getText());
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+            // 固定按钮大小：宽 420，高 60
+            Dimension btnSize = new Dimension(420, 60);
+            btn.setPreferredSize(btnSize);
+            btn.setMaximumSize(btnSize);
+            btn.setMinimumSize(btnSize);
             btn.addActionListener(e -> {
-                remove(overlay);
-                add(imageLabel, BorderLayout.CENTER);
-                revalidate();
-                repaint();
+                layeredPane.remove(overlay);
+                layeredPane.revalidate();
+                layeredPane.repaint();
                 storyManager.jumpToScene(opt.getTarget());
                 waitingForChoice = false;
                 updateDisplay();
             });
             card.add(btn);
-            card.add(Box.createRigidArea(new Dimension(0, 20)));
+            card.add(Box.createRigidArea(new Dimension(0, 18)));
         }
 
-        cardBg.add(card, BorderLayout.CENTER);
-        overlay.add(cardBg);
-        add(overlay, BorderLayout.CENTER);
-        revalidate();
-        repaint();
+        overlay.add(card);
+        layeredPane.add(overlay, JLayeredPane.MODAL_LAYER);
+        layeredPane.revalidate();
+        layeredPane.repaint();
     }
 
     // 辅助方法：将 ChoiceData 转换为 ChoiceOption 列表
@@ -657,7 +641,7 @@ public class GamePanel extends JPanel {
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
                 g2.setColor(new Color(255, 255, 255, 120));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30);
-                g2.setColor(Color.WHITE);
+                g2.setColor(getForeground());
                 g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth(getText())) / 2;
@@ -794,5 +778,8 @@ public class GamePanel extends JPanel {
 
     public List<?> getDialogues() { return null; }
 }
+
+
+
 
 
