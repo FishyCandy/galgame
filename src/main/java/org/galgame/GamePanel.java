@@ -297,7 +297,7 @@ public class GamePanel extends JPanel {
         // 绘制人物差分图（底部到2/3高度）
         if (spriteImage != null) {
             Graphics2D g2s = (Graphics2D) g.create();
-            int spriteHeight = getHeight() * 4 / 5;
+            int spriteHeight = getHeight();
             double ratio = (double) spriteImage.getWidth(null) / spriteImage.getHeight(null);
             int spriteWidth = (int) (spriteHeight * ratio);
             int x = (getWidth() - spriteWidth) / 2;
