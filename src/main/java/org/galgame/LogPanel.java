@@ -64,7 +64,10 @@ public class LogPanel extends JPanel {
             lastWho = who;
 
             JPanel card = createDialogueCard(who, text, showName);
-            listPanel.add(card);
+            JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            row.setOpaque(false);
+            row.add(card);
+            listPanel.add(row);
             listPanel.add(Box.createVerticalStrut(8)); // 卡片间距
         }
 
@@ -93,8 +96,8 @@ public class LogPanel extends JPanel {
         JPanel card = new JPanel(new BorderLayout(20, 0));
         card.setOpaque(false);
         card.setBorder(BorderFactory.createEmptyBorder(6, 20, 6, 20));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-        card.setMinimumSize(new Dimension(200, 60));
+        card.setMaximumSize(new Dimension(600, 60));
+        card.setMinimumSize(new Dimension(600, 60));
         card.setPreferredSize(new Dimension(600, 60));
 
         // 左侧角色名（在毛玻璃框外）
