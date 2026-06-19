@@ -42,6 +42,14 @@ public class GamePanel extends JPanel {
     private String pendingBgPath = null;         // 待切换的背景图路径
     private Timer bgTransitionTimer;             // 转场动画定时器
 
+    // ---- 差分图转场相关字段 ----
+    private float spriteAlpha = 1f;              // 差分图透明度 (0~1)
+    private boolean isSpriteTransitioning = false;
+    private String pendingSpritePath = null;
+    private Timer spriteTransitionTimer;
+    private int spriteFadeStep = 0;
+    private int spriteFadePhase = 0;             // 0=淡出, 1=淡入
+
     public GamePanel(JFrame frame, MainMenuPanel mainMenu) {
         this.parentFrame = frame;
         this.mainMenuPanel = mainMenu;
@@ -111,24 +119,103 @@ public class GamePanel extends JPanel {
 
     // ---------- 人物差分图 ----------
     private void loadSpriteImage(String path) {
-        if (path != null && !path.isEmpty()) {
-            try {
-                java.net.URL imgUrl = getClass().getResource("/" + path);
-                if (imgUrl != null) {
-                    spriteImage = ImageIO.read(imgUrl);
-                    repaint();
-                    return;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (path == null || path.isEmpty()) return;
+        pendingSpritePath = path;
+
+        // 停止之前的转场定时器
+        if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
+            spriteTransitionTimer.stop();
         }
-        System.err.println("差分图未找到: " + path);
+
+        if (spriteImage == null) {
+            // 没有当前差分图，直接加载并淡入
+            loadSpriteFromPending();
+            spriteAlpha = 0f;
+            isSpriteTransitioning = true;
+            spriteFadeStep = 0;
+            spriteFadePhase = 1; // 直接进入淡入阶段
+            startSpriteFadeTimer();
+        } else {
+            // 有当前差分图，先淡出
+            isSpriteTransitioning = true;
+            spriteFadeStep = 0;
+            spriteFadePhase = 0; // 先淡出
+            spriteAlpha = 1f;
+            startSpriteFadeTimer();
+        }
+    }
+
+    private void loadSpriteFromPending() {
+        try {
+            java.net.URL imgUrl = getClass().getResource("/" + pendingSpritePath);
+            if (imgUrl != null) {
+                spriteImage = ImageIO.read(imgUrl);
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.err.println("差分图未找到: " + pendingSpritePath);
+    }
+
+    private void startSpriteFadeTimer() {
+        final int STEPS = 30; // ~480ms @ 16ms/tick
+        spriteTransitionTimer = new Timer(16, null);
+        spriteTransitionTimer.addActionListener(e -> {
+            spriteFadeStep++;
+            float progress = Math.min(1f, (float) spriteFadeStep / STEPS);
+
+            if (spriteFadePhase == 0) {
+                // 淡出
+                spriteAlpha = 1f - progress;
+                if (progress >= 1f) {
+                    // 切换到新图，开始淡入
+                    loadSpriteFromPending();
+                    spriteAlpha = 0f;
+                    spriteFadePhase = 1;
+                    spriteFadeStep = 0;
+                }
+            } else if (spriteFadePhase == 1) {
+                // 淡入
+                spriteAlpha = progress;
+                if (progress >= 1f) {
+                    spriteAlpha = 1f;
+                    isSpriteTransitioning = false;
+                    spriteTransitionTimer.stop();
+                }
+            }
+            repaint();
+        });
+        spriteTransitionTimer.start();
     }
 
     private void hideSprite() {
-        spriteImage = null;
-        repaint();
+        if (spriteImage == null) return;
+
+        if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
+            spriteTransitionTimer.stop();
+        }
+
+        isSpriteTransitioning = true;
+        spriteFadeStep = 0;
+        spriteFadePhase = 0; // 淡出
+        spriteAlpha = 1f;
+
+        final int STEPS = 30;
+        spriteTransitionTimer = new Timer(16, null);
+        spriteTransitionTimer.addActionListener(e -> {
+            spriteFadeStep++;
+            float progress = Math.min(1f, (float) spriteFadeStep / STEPS);
+            spriteAlpha = 1f - progress;
+            if (progress >= 1f) {
+                spriteImage = null;
+                spriteAlpha = 1f;
+                isSpriteTransitioning = false;
+                spriteTransitionTimer.stop();
+            }
+            repaint();
+        });
+        spriteTransitionTimer.start();
     }
 
     private void createDialogPanel() {
@@ -294,9 +381,10 @@ public class GamePanel extends JPanel {
             g2.dispose();
         }
 
-        // 绘制人物差分图（底部到2/3高度）
+        // 绘制人物差分图（全屏高度，支持淡入淡出）
         if (spriteImage != null) {
             Graphics2D g2s = (Graphics2D) g.create();
+            g2s.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, spriteAlpha));
             int spriteHeight = getHeight();
             double ratio = (double) spriteImage.getWidth(null) / spriteImage.getHeight(null);
             int spriteWidth = (int) (spriteHeight * ratio);
@@ -328,6 +416,12 @@ public class GamePanel extends JPanel {
         transitionAlpha = 1f;
         dialogFadeAlpha = 0f;
         isBgTransitioning = false;
+        spriteImage = null;
+        spriteAlpha = 1f;
+        isSpriteTransitioning = false;
+        if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
+            spriteTransitionTimer.stop();
+        }
         characterLabel.setText("");
         lineArea.setText("");
         storyManager = new StoryManager();
@@ -350,6 +444,12 @@ public class GamePanel extends JPanel {
         transitionAlpha = 1f;
         dialogFadeAlpha = 0f;
         isBgTransitioning = false;
+        spriteImage = null;
+        spriteAlpha = 1f;
+        isSpriteTransitioning = false;
+        if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
+            spriteTransitionTimer.stop();
+        }
         characterLabel.setText("");
         lineArea.setText("");
         history.clear();
@@ -682,6 +782,7 @@ public class GamePanel extends JPanel {
     private void nextCommand() {
         if (waitingForChoice) return;
         if (isBgTransitioning) return;
+        if (isSpriteTransitioning) return;
         updateDisplay();
     }
 
