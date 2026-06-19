@@ -139,7 +139,7 @@ public class GamePanel extends JPanel {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                 // 对话框背景和边框随 dialogFadeAlpha 淡出/淡入
-                int bgAlpha = Math.round(40 * dialogFadeAlpha);
+                int bgAlpha = Math.round(160 * dialogFadeAlpha);
                 int borderAlpha = Math.round(180 * dialogFadeAlpha);
                 int innerAlpha = Math.round(30 * dialogFadeAlpha);
 
