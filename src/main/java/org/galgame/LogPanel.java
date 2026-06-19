@@ -17,7 +17,6 @@ public class LogPanel extends JPanel {
     private List<String> history;
     private Font dialogFont;
     private Font nameFont;
-    private String fontFamily;
     private Timer bgAnimTimer;
 
     public LogPanel(JFrame frame, JPanel gamePanel, List<String> history, Font dialogFont) {
@@ -25,7 +24,6 @@ public class LogPanel extends JPanel {
         this.gamePanel = gamePanel;
         this.history = new ArrayList<>(history); // 防御性拷贝
         this.dialogFont = dialogFont;
-        this.fontFamily = dialogFont.getFamily();
         this.nameFont = dialogFont.deriveFont(30f);
 
         setLayout(new BorderLayout());
@@ -128,11 +126,19 @@ public class LogPanel extends JPanel {
         dialogueBox.setOpaque(false);
         dialogueBox.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
-        JLabel textLabel = new JLabel("<html><body style=\"width:550px;font-family:\" + fontFamily + \"\">" + escapeHtml(text) + "</body></html>");
-        textLabel.setFont(dialogFont.deriveFont(26f));
-        textLabel.setForeground(Color.WHITE);
-        textLabel.setVerticalAlignment(JLabel.TOP);
-        dialogueBox.add(textLabel, BorderLayout.CENTER);
+        JTextArea textArea = new JTextArea(text);
+        textArea.setFont(dialogFont.deriveFont(26f));
+        textArea.setForeground(Color.WHITE);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setEditable(false);
+        textArea.setOpaque(false);
+        textArea.getCaret().setVisible(false);
+        textArea.setCaretColor(new Color(0, 0, 0, 0));
+        textArea.setSelectionColor(new Color(0, 0, 0, 0));
+        textArea.setSelectedTextColor(Color.WHITE);
+        textArea.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+        dialogueBox.add(textArea, BorderLayout.CENTER);
 
         card.add(dialogueBox, BorderLayout.CENTER);
         return card;
