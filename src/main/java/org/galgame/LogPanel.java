@@ -17,6 +17,7 @@ public class LogPanel extends JPanel {
     private List<String> history;
     private Font dialogFont;
     private Font nameFont;
+    private String fontFamily;
     private Timer bgAnimTimer;
 
     public LogPanel(JFrame frame, JPanel gamePanel, List<String> history, Font dialogFont) {
@@ -24,6 +25,7 @@ public class LogPanel extends JPanel {
         this.gamePanel = gamePanel;
         this.history = new ArrayList<>(history); // 防御性拷贝
         this.dialogFont = dialogFont;
+        this.fontFamily = dialogFont.getFamily();
         this.nameFont = dialogFont.deriveFont(30f);
 
         setLayout(new BorderLayout());
@@ -126,7 +128,7 @@ public class LogPanel extends JPanel {
         dialogueBox.setOpaque(false);
         dialogueBox.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
-        JLabel textLabel = new JLabel("<html><body style='width:550px'>" + escapeHtml(text) + "</body></html>");
+        JLabel textLabel = new JLabel("<html><body style=\"width:550px;font-family:\" + fontFamily + \"\">" + escapeHtml(text) + "</body></html>");
         textLabel.setFont(dialogFont.deriveFont(26f));
         textLabel.setForeground(Color.WHITE);
         textLabel.setVerticalAlignment(JLabel.TOP);
