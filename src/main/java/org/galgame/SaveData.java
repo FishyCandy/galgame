@@ -12,15 +12,20 @@ public class SaveData implements Serializable {
     private Date saveTime;
     private String currentSceneId;
     private int currentCommandIndex;
+    private String currentBgPath;
+    private String currentSpritePath;
 
     public SaveData(int currentIndex, List<Dialogue> dialogues, byte[] thumbnailBytes,
-                    String currentSceneId, int currentCommandIndex) {
+                    String currentSceneId, int currentCommandIndex,
+                    String currentBgPath, String currentSpritePath) {
         this.currentIndex = currentIndex;
         this.dialogues = dialogues;
         this.thumbnailBytes = thumbnailBytes;
         this.saveTime = new Date();
         this.currentSceneId = currentSceneId;
         this.currentCommandIndex = currentCommandIndex;
+        this.currentBgPath = currentBgPath;
+        this.currentSpritePath = currentSpritePath;
     }
 
     public int getCurrentIndex() { return currentIndex; }
@@ -29,4 +34,6 @@ public class SaveData implements Serializable {
     public Date getSaveTime() { return saveTime; }
     public String getCurrentSceneId() { return currentSceneId; }
     public int getCurrentCommandIndex() { return currentCommandIndex; }
+    public String getCurrentBgPath() { return currentBgPath; }
+    public String getCurrentSpritePath() { return currentSpritePath; }
 }

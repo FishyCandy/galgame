@@ -1,238 +1,144 @@
-﻿import re
+﻿# ====== First, modify SaveData.java ======
+filepath = r"D:\ideaDocuments\galgame\src\main\java\org\galgame\SaveData.java"
+with open(filepath, "r", encoding="utf-8") as f:
+    c = f.read()
 
+# Add fields
+c = c.replace(
+    "    private String currentSceneId;\n    private int currentCommandIndex;",
+    "    private String currentSceneId;\n    private int currentCommandIndex;\n    private String currentBgPath;\n    private String currentSpritePath;"
+)
+
+# Update constructor signature
+c = c.replace(
+    "    public SaveData(int currentIndex, List<Dialogue> dialogues, byte[] thumbnailBytes,\n                    String currentSceneId, int currentCommandIndex) {\n        this.currentIndex = currentIndex;\n        this.dialogues = dialogues;\n        this.thumbnailBytes = thumbnailBytes;\n        this.saveTime = new Date();\n        this.currentSceneId = currentSceneId;\n        this.currentCommandIndex = currentCommandIndex;\n    }",
+    "    public SaveData(int currentIndex, List<Dialogue> dialogues, byte[] thumbnailBytes,\n                    String currentSceneId, int currentCommandIndex,\n                    String currentBgPath, String currentSpritePath) {\n        this.currentIndex = currentIndex;\n        this.dialogues = dialogues;\n        this.thumbnailBytes = thumbnailBytes;\n        this.saveTime = new Date();\n        this.currentSceneId = currentSceneId;\n        this.currentCommandIndex = currentCommandIndex;\n        this.currentBgPath = currentBgPath;\n        this.currentSpritePath = currentSpritePath;\n    }"
+)
+
+# Add getters
+c = c.replace(
+    "    public int getCurrentCommandIndex() { return currentCommandIndex; }\n}",
+    "    public int getCurrentCommandIndex() { return currentCommandIndex; }\n    public String getCurrentBgPath() { return currentBgPath; }\n    public String getCurrentSpritePath() { return currentSpritePath; }\n}"
+)
+
+with open(filepath, "w", encoding="utf-8") as f:
+    f.write(c)
+
+print("SaveData.java updated")
+
+# ====== Now modify GamePanel.java ======
 filepath = r"D:\ideaDocuments\galgame\src\main\java\org\galgame\GamePanel.java"
 with open(filepath, "r", encoding="utf-8") as f:
     c = f.read()
 
-# === Change 1: Add sprite transition fields after bg transition fields ===
-old_fields = '''    private Timer bgTransitionTimer;             // \u8f6c\u573a\u52a8\u753b\u5b9a\u65f6\u5668'''
+# 1. Add currentBgPath and currentSpritePath fields after bgImage/spriteImage
+c = c.replace(
+    "    private BufferedImage spriteImage; // \u4eba\u7269\u5dee\u5206\u56fe\n\n    private StoryManager storyManager;",
+    "    private BufferedImage spriteImage; // \u4eba\u7269\u5dee\u5206\u56fe\n    private String currentBgPath = null;     // \u5f53\u524d\u80cc\u666f\u8def\u5f84\n    private String currentSpritePath = null; // \u5f53\u524d\u5dee\u5206\u56fe\u8def\u5f84\n\n    private StoryManager storyManager;"
+)
 
-new_fields = '''    private Timer bgTransitionTimer;             // \u8f6c\u573a\u52a8\u753b\u5b9a\u65f6\u5668
+# 2. Track currentBgPath in "bg" case handler
+old_bg_case = '''            case "bg":
+                // \u80cc\u666f\u5207\u6362\u6307\u4ee4\uff1a\u542f\u52a8\u6de1\u5165\u6de1\u51fa\u8f6c\u573a
+                if (cmd.bg != null && !cmd.bg.isEmpty()) {
+                    startBgTransition(cmd.bg);
+                }'''
 
-    // ---- \u5dee\u5206\u56fe\u8f6c\u573a\u76f8\u5173\u5b57\u6bb5 ----
-    private float spriteAlpha = 1f;              // \u5dee\u5206\u56fe\u900f\u660e\u5ea6 (0~1)
-    private boolean isSpriteTransitioning = false;
-    private String pendingSpritePath = null;
-    private Timer spriteTransitionTimer;
-    private int spriteFadeStep = 0;
-    private int spriteFadePhase = 0;             // 0=\u6de1\u51fa, 1=\u6de1\u5165'''
+new_bg_case = '''            case "bg":
+                // \u80cc\u666f\u5207\u6362\u6307\u4ee4\uff1a\u542f\u52a8\u6de1\u5165\u6de1\u51fa\u8f6c\u573a
+                if (cmd.bg != null && !cmd.bg.isEmpty()) {
+                    currentBgPath = cmd.bg;
+                    startBgTransition(cmd.bg);
+                }'''
 
-c = c.replace(old_fields, new_fields)
+c = c.replace(old_bg_case, new_bg_case)
 
-# === Change 2: Rewrite loadSpriteImage with fade transition ===
-old_load = '''    // ---------- \u4eba\u7269\u5dee\u5206\u56fe ----------
-    private void loadSpriteImage(String path) {
-        if (path != null && !path.isEmpty()) {
-            try {
-                java.net.URL imgUrl = getClass().getResource("/" + path);
-                if (imgUrl != null) {
-                    spriteImage = ImageIO.read(imgUrl);
-                    repaint();
-                    return;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+# 3. Track currentSpritePath in "sprite" case handler
+old_sprite_case = '''            case "sprite":
+                // \u663e\u793a\u4eba\u7269\u5dee\u5206\u56fe\uff08\u5177\u6709\u5ef6\u7eed\u6027\uff09
+                if (cmd.sprite != null && !cmd.sprite.isEmpty()) {
+                    loadSpriteImage(cmd.sprite);
+                }'''
+
+new_sprite_case = '''            case "sprite":
+                // \u663e\u793a\u4eba\u7269\u5dee\u5206\u56fe\uff08\u5177\u6709\u5ef6\u7eed\u6027\uff09
+                if (cmd.sprite != null && !cmd.sprite.isEmpty()) {
+                    currentSpritePath = cmd.sprite;
+                    loadSpriteImage(cmd.sprite);
+                }'''
+
+c = c.replace(old_sprite_case, new_sprite_case)
+
+# 4. Track currentSpritePath = null in "sprite_hide" case handler
+old_sprite_hide_case = '''            case "sprite_hide":
+                // \u9690\u85cf\u4eba\u7269\u5dee\u5206\u56fe
+                hideSprite();'''
+
+new_sprite_hide_case = '''            case "sprite_hide":
+                // \u9690\u85cf\u4eba\u7269\u5dee\u5206\u56fe
+                currentSpritePath = null;
+                hideSprite();'''
+
+c = c.replace(old_sprite_hide_case, new_sprite_hide_case)
+
+# 5. Update saveGameToFile to include bg/sprite paths
+old_save = '''            String sceneId = storyManager.getCurrentSceneId();
+            int cmdIndex = storyManager.getCurrentCommandIndex();
+            SaveData data = new SaveData(0, null, thumbBytes, sceneId, cmdIndex);'''
+
+new_save = '''            String sceneId = storyManager.getCurrentSceneId();
+            int cmdIndex = storyManager.getCurrentCommandIndex();
+            SaveData data = new SaveData(0, null, thumbBytes, sceneId, cmdIndex,
+                    currentBgPath, currentSpritePath);'''
+
+c = c.replace(old_save, new_save)
+
+# 6. Update loadGameFromFile to restore bg/sprite
+old_load_restore = '''            history.clear();
+            waitingForChoice = false;
+            // \u56de\u9000\u4e00\u6b65\uff1a\u5b58\u6863\u65f6\u7684\u7d22\u5f15\u6307\u5411\u4e0b\u4e00\u6761\u6307\u4ee4\uff0c\u56de\u9000\u5230\u5df2\u663e\u793a\u7684\u6307\u4ee4
+            int restoredIndex = storyManager.getCurrentCommandIndex();
+            if (restoredIndex > 0) {
+                storyManager.setCurrentCommandIndex(restoredIndex - 1);
             }
-        }
-        System.err.println("\u5dee\u5206\u56fe\u672a\u627e\u5230: " + path);
-    }'''
+            updateDisplay();'''
 
-new_load = '''    // ---------- \u4eba\u7269\u5dee\u5206\u56fe ----------
-    private void loadSpriteImage(String path) {
-        if (path == null || path.isEmpty()) return;
-        pendingSpritePath = path;
+new_load_restore = '''            history.clear();
+            waitingForChoice = false;
 
-        // \u505c\u6b62\u4e4b\u524d\u7684\u8f6c\u573a\u5b9a\u65f6\u5668
-        if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
-            spriteTransitionTimer.stop();
-        }
-
-        if (spriteImage == null) {
-            // \u6ca1\u6709\u5f53\u524d\u5dee\u5206\u56fe\uff0c\u76f4\u63a5\u52a0\u8f7d\u5e76\u6de1\u5165
-            loadSpriteFromPending();
-            spriteAlpha = 0f;
-            isSpriteTransitioning = true;
-            spriteFadeStep = 0;
-            spriteFadePhase = 1; // \u76f4\u63a5\u8fdb\u5165\u6de1\u5165\u9636\u6bb5
-            startSpriteFadeTimer();
-        } else {
-            // \u6709\u5f53\u524d\u5dee\u5206\u56fe\uff0c\u5148\u6de1\u51fa
-            isSpriteTransitioning = true;
-            spriteFadeStep = 0;
-            spriteFadePhase = 0; // \u5148\u6de1\u51fa
-            spriteAlpha = 1f;
-            startSpriteFadeTimer();
-        }
-    }
-
-    private void loadSpriteFromPending() {
-        try {
-            java.net.URL imgUrl = getClass().getResource("/" + pendingSpritePath);
-            if (imgUrl != null) {
-                spriteImage = ImageIO.read(imgUrl);
-                return;
+            // \u6062\u590d\u80cc\u666f\u56fe\u548c\u5dee\u5206\u56fe
+            if (data.getCurrentBgPath() != null && !data.getCurrentBgPath().isEmpty()) {
+                loadBgImage(data.getCurrentBgPath());
+                currentBgPath = data.getCurrentBgPath();
+            } else {
+                bgImage = null;
+                currentBgPath = null;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.err.println("\u5dee\u5206\u56fe\u672a\u627e\u5230: " + pendingSpritePath);
-    }
-
-    private void startSpriteFadeTimer() {
-        final int STEPS = 30; // ~480ms @ 16ms/tick
-        spriteTransitionTimer = new Timer(16, null);
-        spriteTransitionTimer.addActionListener(e -> {
-            spriteFadeStep++;
-            float progress = Math.min(1f, (float) spriteFadeStep / STEPS);
-
-            if (spriteFadePhase == 0) {
-                // \u6de1\u51fa
-                spriteAlpha = 1f - progress;
-                if (progress >= 1f) {
-                    // \u5207\u6362\u5230\u65b0\u56fe\uff0c\u5f00\u59cb\u6de1\u5165
-                    loadSpriteFromPending();
-                    spriteAlpha = 0f;
-                    spriteFadePhase = 1;
-                    spriteFadeStep = 0;
-                }
-            } else if (spriteFadePhase == 1) {
-                // \u6de1\u5165
-                spriteAlpha = progress;
-                if (progress >= 1f) {
-                    spriteAlpha = 1f;
-                    isSpriteTransitioning = false;
-                    spriteTransitionTimer.stop();
-                }
-            }
-            repaint();
-        });
-        spriteTransitionTimer.start();
-    }'''
-
-c = c.replace(old_load, new_load)
-
-# === Change 3: Rewrite hideSprite with fade-out ===
-old_hide = '''    private void hideSprite() {
-        spriteImage = null;
-        repaint();
-    }'''
-
-new_hide = '''    private void hideSprite() {
-        if (spriteImage == null) return;
-
-        if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
-            spriteTransitionTimer.stop();
-        }
-
-        isSpriteTransitioning = true;
-        spriteFadeStep = 0;
-        spriteFadePhase = 0; // \u6de1\u51fa
-        spriteAlpha = 1f;
-
-        final int STEPS = 30;
-        spriteTransitionTimer = new Timer(16, null);
-        spriteTransitionTimer.addActionListener(e -> {
-            spriteFadeStep++;
-            float progress = Math.min(1f, (float) spriteFadeStep / STEPS);
-            spriteAlpha = 1f - progress;
-            if (progress >= 1f) {
+            if (data.getCurrentSpritePath() != null && !data.getCurrentSpritePath().isEmpty()) {
+                try {
+                    java.net.URL imgUrl = getClass().getResource("/" + data.getCurrentSpritePath());
+                    if (imgUrl != null) {
+                        spriteImage = ImageIO.read(imgUrl);
+                        currentSpritePath = data.getCurrentSpritePath();
+                    }
+                } catch (Exception e) { e.printStackTrace(); }
+            } else {
                 spriteImage = null;
-                spriteAlpha = 1f;
-                isSpriteTransitioning = false;
-                spriteTransitionTimer.stop();
+                currentSpritePath = null;
             }
-            repaint();
-        });
-        spriteTransitionTimer.start();
-    }'''
+            spriteAlpha = 1f;
+            isSpriteTransitioning = false;
 
-c = c.replace(old_hide, new_hide)
+            // \u56de\u9000\u4e00\u6b65\uff1a\u5b58\u6863\u65f6\u7684\u7d22\u5f15\u6307\u5411\u4e0b\u4e00\u6761\u6307\u4ee4\uff0c\u56de\u9000\u5230\u5df2\u663e\u793a\u7684\u6307\u4ee4
+            int restoredIndex = storyManager.getCurrentCommandIndex();
+            if (restoredIndex > 0) {
+                storyManager.setCurrentCommandIndex(restoredIndex - 1);
+            }
+            updateDisplay();'''
 
-# === Change 4: Use spriteAlpha in paintComponent ===
-old_paint_sprite = '''        // \u7ed8\u5236\u4eba\u7269\u5dee\u5206\u56fe\uff08\u5e95\u90e8\u52302/3\u9ad8\u5ea6\uff09
-        if (spriteImage != null) {
-            Graphics2D g2s = (Graphics2D) g.create();
-            int spriteHeight = getHeight();
-            double ratio = (double) spriteImage.getWidth(null) / spriteImage.getHeight(null);
-            int spriteWidth = (int) (spriteHeight * ratio);
-            int x = (getWidth() - spriteWidth) / 2;
-            int y = getHeight() - spriteHeight;
-            g2s.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2s.drawImage(spriteImage, x, y, spriteWidth, spriteHeight, this);
-            g2s.dispose();
-        }'''
+c = c.replace(old_load_restore, new_load_restore)
 
-new_paint_sprite = '''        // \u7ed8\u5236\u4eba\u7269\u5dee\u5206\u56fe\uff08\u5168\u5c4f\u9ad8\u5ea6\uff0c\u652f\u6301\u6de1\u5165\u6de1\u51fa\uff09
-        if (spriteImage != null) {
-            Graphics2D g2s = (Graphics2D) g.create();
-            g2s.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, spriteAlpha));
-            int spriteHeight = getHeight();
-            double ratio = (double) spriteImage.getWidth(null) / spriteImage.getHeight(null);
-            int spriteWidth = (int) (spriteHeight * ratio);
-            int x = (getWidth() - spriteWidth) / 2;
-            int y = getHeight() - spriteHeight;
-            g2s.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2s.drawImage(spriteImage, x, y, spriteWidth, spriteHeight, this);
-            g2s.dispose();
-        }'''
-
-c = c.replace(old_paint_sprite, new_paint_sprite)
-
-# === Change 5: Block nextCommand on sprite transitioning ===
-old_next = '''    private void nextCommand() {
-        if (waitingForChoice) return;
-        if (isBgTransitioning) return;
-        updateDisplay();'''
-
-new_next = '''    private void nextCommand() {
-        if (waitingForChoice) return;
-        if (isBgTransitioning) return;
-        if (isSpriteTransitioning) return;
-        updateDisplay();'''
-
-c = c.replace(old_next, new_next)
-
-# === Change 6: Reset sprite state in startGame ===
-# Add sprite reset after isBgTransitioning = false in startGame
-old_start_reset = '''        isBgTransitioning = false;
-        characterLabel.setText("");'''
-
-new_start_reset = '''        isBgTransitioning = false;
-        spriteImage = null;
-        spriteAlpha = 1f;
-        isSpriteTransitioning = false;
-        if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
-            spriteTransitionTimer.stop();
-        }
-        characterLabel.setText("");'''
-
-c = c.replace(old_start_reset, new_start_reset)
-
-# === Change 6b: Reset sprite state in resetGame ===
-old_reset_reset = '''        isBgTransitioning = false;
-        characterLabel.setText("");
-        lineArea.setText("");
-        history.clear();'''
-
-new_reset_reset = '''        isBgTransitioning = false;
-        spriteImage = null;
-        spriteAlpha = 1f;
-        isSpriteTransitioning = false;
-        if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
-            spriteTransitionTimer.stop();
-        }
-        characterLabel.setText("");
-        lineArea.setText("");
-        history.clear();'''
-
-c = c.replace(old_reset_reset, new_reset_reset)
-
-# === Change 7: Update "sprite" case to return (wait for transition like "bg" does) ===
-# Actually, the sprite case should NOT return - the fade happens in background.
-# But the sprite case currently breaks and then revalidate/repaint. That's fine.
-
-# Write the file
 with open(filepath, "w", encoding="utf-8") as f:
     f.write(c)
 
-print("Done - all sprite fade transition changes applied")
+print("GamePanel.java updated")

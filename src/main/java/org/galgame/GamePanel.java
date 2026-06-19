@@ -16,6 +16,8 @@ public class GamePanel extends JPanel {
     private MainMenuPanel mainMenuPanel;
     private BufferedImage bgImage;
     private BufferedImage spriteImage; // 人物差分图
+    private String currentBgPath = null;     // 当前背景路径
+    private String currentSpritePath = null; // 当前差分图路径
 
     private StoryManager storyManager;
     private boolean waitingForChoice = false;
@@ -622,18 +624,21 @@ public class GamePanel extends JPanel {
             case "sprite":
                 // 显示人物差分图（具有延续性）
                 if (cmd.sprite != null && !cmd.sprite.isEmpty()) {
+                    currentSpritePath = cmd.sprite;
                     loadSpriteImage(cmd.sprite);
                 }
                 break;
 
             case "sprite_hide":
                 // 隐藏人物差分图
+                currentSpritePath = null;
                 hideSprite();
                 break;
 
             case "bg":
                 // 背景切换指令：启动淡入淡出转场
                 if (cmd.bg != null && !cmd.bg.isEmpty()) {
+                    currentBgPath = cmd.bg;
                     startBgTransition(cmd.bg);
                 }
                 // 不立即推进到下一条指令，等待转场完成后的用户点击
@@ -823,7 +828,8 @@ public class GamePanel extends JPanel {
             byte[] thumbBytes = baos.toByteArray();
             String sceneId = storyManager.getCurrentSceneId();
             int cmdIndex = storyManager.getCurrentCommandIndex();
-            SaveData data = new SaveData(0, null, thumbBytes, sceneId, cmdIndex);
+            SaveData data = new SaveData(0, null, thumbBytes, sceneId, cmdIndex,
+                    currentBgPath, currentSpritePath);
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(saveFile))) {
                 oos.writeObject(data);
             }
@@ -843,6 +849,30 @@ public class GamePanel extends JPanel {
             storyManager.setCurrentCommandIndex(data.getCurrentCommandIndex());
             history.clear();
             waitingForChoice = false;
+
+            // 恢复背景图和差分图
+            if (data.getCurrentBgPath() != null && !data.getCurrentBgPath().isEmpty()) {
+                loadBgImage(data.getCurrentBgPath());
+                currentBgPath = data.getCurrentBgPath();
+            } else {
+                bgImage = null;
+                currentBgPath = null;
+            }
+            if (data.getCurrentSpritePath() != null && !data.getCurrentSpritePath().isEmpty()) {
+                try {
+                    java.net.URL imgUrl = getClass().getResource("/" + data.getCurrentSpritePath());
+                    if (imgUrl != null) {
+                        spriteImage = ImageIO.read(imgUrl);
+                        currentSpritePath = data.getCurrentSpritePath();
+                    }
+                } catch (Exception e) { e.printStackTrace(); }
+            } else {
+                spriteImage = null;
+                currentSpritePath = null;
+            }
+            spriteAlpha = 1f;
+            isSpriteTransitioning = false;
+
             // 回退一步：存档时的索引指向下一条指令，回退到已显示的指令
             int restoredIndex = storyManager.getCurrentCommandIndex();
             if (restoredIndex > 0) {
