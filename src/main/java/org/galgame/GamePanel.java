@@ -635,13 +635,15 @@ public class GamePanel extends JPanel {
                     currentSpritePath = cmd.sprite;
                     loadSpriteImage(cmd.sprite);
                 }
-                break;
+                updateDisplay();
+                return;
 
             case "sprite_hide":
                 // 隐藏人物差分图
                 currentSpritePath = null;
                 hideSprite();
-                break;
+                updateDisplay();
+                return;
 
             case "bg":
                 // 背景切换指令：启动淡入淡出转场

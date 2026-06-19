@@ -16,10 +16,6 @@
           "sprite": "images/hero_normal.png"
         },
         {
-          "type": "show",
-          "image": "images/hero_normal.png"
-        },
-        {
           "type": "say",
           "who": "主角",
           "text": "你好，世界！"
