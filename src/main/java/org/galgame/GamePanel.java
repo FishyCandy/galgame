@@ -32,6 +32,15 @@ public class GamePanel extends JPanel {
     private Font dialogFont;
     private MusicPlayer musicPlayer;
 
+    // ---- 背景转场相关字段 ----
+    private float transitionAlpha = 0f;          // 黑幕透明度 (0~1)
+    private float dialogFadeAlpha = 1f;          // 对话框透明度 (0~1)
+    private boolean isBgTransitioning = false;   // 是否正在转场
+    private int fadeStep = 0;
+    private int fadePhase = 0;                   // 0=淡出至黑, 1=从黑淡入
+    private String pendingBgPath = null;         // 待切换的背景图路径
+    private Timer bgTransitionTimer;             // 转场动画定时器
+
     public GamePanel(JFrame frame, MainMenuPanel mainMenu) {
         this.parentFrame = frame;
         this.mainMenuPanel = mainMenu;
@@ -72,17 +81,19 @@ public class GamePanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getSource() == GamePanel.this && !waitingForChoice) {
+                if (e.getSource() == GamePanel.this && !waitingForChoice && !isBgTransitioning) {
                     nextCommand();
                 }
             }
         });
 
-        autoTimer = new Timer(2000, e -> nextCommand());
+        autoTimer = new Timer(2000, e -> {
+            if (!isBgTransitioning) nextCommand();
+        });
         updateDisplay();
     }
 
-    // ---------- UI创建（与之前相同） ----------
+    // ---------- UI创建 ----------
     private void createImagePanel() {
         imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -138,16 +149,31 @@ public class GamePanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 40));
+
+                // 对话框背景和边框随 dialogFadeAlpha 淡出/淡入
+                int bgAlpha = Math.round(40 * dialogFadeAlpha);
+                int borderAlpha = Math.round(180 * dialogFadeAlpha);
+                int innerAlpha = Math.round(30 * dialogFadeAlpha);
+
+                g2.setColor(new Color(255, 255, 255, bgAlpha));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-                g2.setColor(new Color(255, 255, 255, 180));
+                g2.setColor(new Color(255, 255, 255, borderAlpha));
                 g2.setStroke(new BasicStroke(1.5f));
                 g2.drawRoundRect(1, 1, getWidth()-3, getHeight()-3, 30, 30);
-                g2.setColor(new Color(255, 255, 255, 30));
+                g2.setColor(new Color(255, 255, 255, innerAlpha));
                 g2.setStroke(new BasicStroke(3f));
                 g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 30, 30);
                 g2.dispose();
                 super.paintComponent(g);
+            }
+
+            @Override
+            protected void paintChildren(Graphics g) {
+                // 让对话框内的所有子组件（角色名、台词）也随 dialogFadeAlpha 淡出/淡入
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, dialogFadeAlpha));
+                super.paintChildren(g2);
+                g2.dispose();
             }
         };
         dialogPanel.setOpaque(false);
@@ -168,7 +194,7 @@ public class GamePanel extends JPanel {
         lineArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!waitingForChoice) nextCommand();
+                if (!waitingForChoice && !isBgTransitioning) nextCommand();
             }
         });
 
@@ -272,6 +298,15 @@ public class GamePanel extends JPanel {
             g2.fillRect(0, 0, getWidth(), getHeight());
             g2.dispose();
         }
+
+        // 背景转场黑幕（覆盖在背景之上）
+        if (transitionAlpha > 0.01f) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transitionAlpha));
+            g2.setColor(Color.BLACK);
+            g2.fillRect(0, 0, getWidth(), getHeight());
+            g2.dispose();
+        }
     }
 
     // ---------- 核心游戏逻辑 ----------
@@ -302,6 +337,83 @@ public class GamePanel extends JPanel {
             musicPlayer.stopImmediately();
             try { Thread.sleep(100); } catch (InterruptedException ignored) {}
         }
+    }
+
+    // ---------- 背景转场 ----------
+
+    /**
+     * 加载背景图片
+     */
+    private void loadBgImage(String path) {
+        if (path != null && !path.isEmpty()) {
+            try {
+                InputStream is = getClass().getResourceAsStream("/" + path);
+                if (is != null) {
+                    bgImage = ImageIO.read(is);
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.err.println("背景图未找到: " + path);
+    }
+
+    /**
+     * 启动背景转场动画：
+     * 阶段0：原背景 + 对话框渐入黑幕（逐渐消失）
+     * 阶段1：黑幕中切换背景，再渐入新背景 + 空对话框
+     */
+    private void startBgTransition(String newBgPath) {
+        if (isBgTransitioning) return;
+        pendingBgPath = newBgPath;
+        transitionAlpha = 0f;
+        dialogFadeAlpha = 1f;
+        fadePhase = 0;
+        fadeStep = 0;
+        isBgTransitioning = true;
+
+        if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) {
+            bgTransitionTimer.stop();
+        }
+
+        final int STEPS_PER_PHASE = 50; // ~800ms @ 16ms/tick
+
+        bgTransitionTimer = new Timer(16, null);
+        bgTransitionTimer.addActionListener(e -> {
+            if (fadePhase == 0) {
+                // 第一阶段：淡出到黑幕（背景 + 对话框 + 台词一同消失）
+                fadeStep++;
+                float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
+                transitionAlpha = progress;
+                dialogFadeAlpha = 1f - progress;
+
+                if (progress >= 1f) {
+                    // 切换到新背景，清空台词
+                    loadBgImage(pendingBgPath);
+                    characterLabel.setText("");
+                    lineArea.setText("");
+                    fadePhase = 1;
+                    fadeStep = 0;
+                }
+            } else if (fadePhase == 1) {
+                // 第二阶段：从黑幕淡入（新背景 + 空对话框出现）
+                fadeStep++;
+                float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
+                transitionAlpha = 1f - progress;
+                dialogFadeAlpha = progress;
+
+                if (progress >= 1f) {
+                    transitionAlpha = 0f;
+                    dialogFadeAlpha = 1f;
+                    isBgTransitioning = false;
+                    bgTransitionTimer.stop();
+                }
+            }
+            repaint();
+        });
+
+        bgTransitionTimer.start();
     }
 
     public void updateDisplay() {
@@ -364,6 +476,14 @@ public class GamePanel extends JPanel {
                 updateDisplay();
                 return;
 
+            case "bg":
+                // 背景切换指令：启动淡入淡出转场
+                if (cmd.bg != null && !cmd.bg.isEmpty()) {
+                    startBgTransition(cmd.bg);
+                }
+                // 不立即推进到下一条指令，等待转场完成后的用户点击
+                return;
+
             case "end":
                 JOptionPane.showMessageDialog(this, "故事结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
                 mainMenuPanel.showMainMenu();
@@ -396,6 +516,7 @@ public class GamePanel extends JPanel {
 
     private void nextCommand() {
         if (waitingForChoice) return;
+        if (isBgTransitioning) return;
         updateDisplay();
     }
 

@@ -39,3 +39,8 @@ build/
 .DS_Store
 # Game save data
 save_*.dat
+
+# Game resource files
+src/main/resources/music/
+src/main/resources/player_music/
+src/main/resources/fonts/

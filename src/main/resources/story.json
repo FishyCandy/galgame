@@ -1,9 +1,10 @@
-{
+﻿{
   "start": "scene_01",
   "scenes": {
     "scene_01": {
       "commands": [
         {"type": "bgm", "bgm": "bgm_01.wav"},
+        {"type": "bg", "bg": "game_bg.jpg"},
         {"type": "show", "image": "images/hero_normal.png"},
         {"type": "say", "who": "主角", "text": "你好，世界！"},
         {"type": "say", "who": "少女", "text": "欢迎来到 GalGame 世界。", "color": "#FFB6C1"},
@@ -16,6 +17,7 @@
     "scene_park": {
       "commands": [
         {"type": "bgm", "bgm": "bgm_park.wav"},
+        {"type": "bg", "bg": "images/scene_park_bg.jpg"},
         {"type": "say", "who": "主角", "text": "公园里真热闹！", "color": "#FFD700"},
         {"type": "jump", "target": "scene_end"}
       ]
@@ -23,6 +25,7 @@
     "scene_library": {
       "commands": [
         {"type": "bgm", "bgm": "bgm_library.wav"},
+        {"type": "bg", "bg": "images/scene_library_bg.jpg"},
         {"type": "say", "who": "主角", "text": "图书馆很安静。", "color": "#87CEEB"},
         {"type": "jump", "target": "scene_end"}
       ]
