@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -748,6 +748,12 @@ public class GamePanel extends JPanel {
             storyManager.setCurrentSceneId(data.getCurrentSceneId());
             storyManager.setCurrentCommandIndex(data.getCurrentCommandIndex());
             history.clear();
+            waitingForChoice = false;
+            // 回退一步：存档时的索引指向下一条指令，回退到已显示的指令
+            int restoredIndex = storyManager.getCurrentCommandIndex();
+            if (restoredIndex > 0) {
+                storyManager.setCurrentCommandIndex(restoredIndex - 1);
+            }
             updateDisplay();
             JOptionPane.showMessageDialog(this, "读档成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
             return true;
