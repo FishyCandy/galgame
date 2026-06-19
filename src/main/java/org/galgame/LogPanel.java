@@ -94,9 +94,9 @@ public class LogPanel extends JPanel {
         JPanel card = new JPanel(new BorderLayout(20, 0));
         card.setOpaque(false);
         card.setBorder(BorderFactory.createEmptyBorder(6, 20, 6, 20));
-        card.setMaximumSize(new Dimension(600, 70));
-        card.setMinimumSize(new Dimension(600, 70));
-        card.setPreferredSize(new Dimension(600, 70));
+        card.setMaximumSize(new Dimension(700, 90));
+        card.setMinimumSize(new Dimension(700, 90));
+        card.setPreferredSize(new Dimension(700, 90));
 
         // 左侧角色名（在毛玻璃框外）
         JLabel nameLabel = new JLabel(showName ? who : "");
@@ -125,7 +125,7 @@ public class LogPanel extends JPanel {
         dialogueBox.setOpaque(false);
         dialogueBox.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
-        JLabel textLabel = new JLabel("<html><body style='width:380px'>" + escapeHtml(text) + "</body></html>");
+        JLabel textLabel = new JLabel("<html><body style='width:450px'>" + escapeHtml(text) + "</body></html>");
         textLabel.setFont(dialogFont);
         textLabel.setForeground(Color.WHITE);
         textLabel.setVerticalAlignment(JLabel.CENTER);
