@@ -709,12 +709,10 @@ public class GamePanel extends JPanel {
     }
 
     private void showLog() {
-        JTextArea area = new JTextArea();
-        for (String s : history) {
-            area.append(s + "\n");
-        }
-        area.setEditable(false);
-        JOptionPane.showMessageDialog(this, new JScrollPane(area), "台词回顾", JOptionPane.PLAIN_MESSAGE);
+        LogPanel logPanel = new LogPanel(parentFrame, this, new java.util.ArrayList<>(history), dialogFont);
+        parentFrame.setContentPane(logPanel);
+        parentFrame.revalidate();
+        parentFrame.repaint();
     }
 
     // ---------- 存档/读档核心方法 ----------
