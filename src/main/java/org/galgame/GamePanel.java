@@ -419,6 +419,8 @@ public class GamePanel extends JPanel {
         dialogFadeAlpha = 0f;
         isBgTransitioning = false;
         spriteImage = null;
+        currentBgPath = null;
+        currentSpritePath = null;
         spriteAlpha = 1f;
         isSpriteTransitioning = false;
         if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
@@ -447,6 +449,8 @@ public class GamePanel extends JPanel {
         dialogFadeAlpha = 0f;
         isBgTransitioning = false;
         spriteImage = null;
+        currentBgPath = null;
+        currentSpritePath = null;
         spriteAlpha = 1f;
         isSpriteTransitioning = false;
         if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
@@ -846,37 +850,67 @@ public class GamePanel extends JPanel {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(saveFile))) {
             SaveData data = (SaveData) ois.readObject();
             storyManager.setCurrentSceneId(data.getCurrentSceneId());
-            storyManager.setCurrentCommandIndex(data.getCurrentCommandIndex());
+            int savedCmdIndex = data.getCurrentCommandIndex();
+
+            // 重置所有转场状态
+            if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) bgTransitionTimer.stop();
+            if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) spriteTransitionTimer.stop();
+            transitionAlpha = 0f;
+            dialogFadeAlpha = 1f;
+            isBgTransitioning = false;
+            spriteAlpha = 1f;
+            isSpriteTransitioning = false;
             history.clear();
             waitingForChoice = false;
 
-            // 恢复背景图和差分图
-            if (data.getCurrentBgPath() != null && !data.getCurrentBgPath().isEmpty()) {
-                loadBgImage(data.getCurrentBgPath());
-                currentBgPath = data.getCurrentBgPath();
-            } else {
-                bgImage = null;
-                currentBgPath = null;
+            // 重放场景中所有bg/sprite/bgm指令来重建状态（从索引0到存档位置）
+            bgImage = null;
+            currentBgPath = null;
+            spriteImage = null;
+            currentSpritePath = null;
+            storyManager.setCurrentCommandIndex(0);
+            for (int i = 0; i < savedCmdIndex; i++) {
+                StoryData.CommandData cmd = storyManager.nextCommand();
+                if (cmd == null) break;
+                switch (cmd.type) {
+                    case "bg":
+                        if (cmd.bg != null && !cmd.bg.isEmpty()) {
+                            loadBgImage(cmd.bg);
+                            currentBgPath = cmd.bg;
+                        }
+                        break;
+                    case "sprite":
+                        if (cmd.sprite != null && !cmd.sprite.isEmpty()) {
+                            try {
+                                java.net.URL imgUrl = getClass().getResource("/" + cmd.sprite);
+                                if (imgUrl != null) {
+                                    spriteImage = ImageIO.read(imgUrl);
+                                    currentSpritePath = cmd.sprite;
+                                }
+                            } catch (Exception e) { e.printStackTrace(); }
+                        }
+                        break;
+                    case "sprite_hide":
+                        spriteImage = null;
+                        currentSpritePath = null;
+                        break;
+                    case "bgm":
+                        if (cmd.bgm != null && !cmd.bgm.isEmpty()) {
+                            URL musicUrl = getClass().getResource("/music/" + cmd.bgm);
+                            if (musicUrl != null) {
+                                musicPlayer.fadeTo(musicUrl);
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
-            if (data.getCurrentSpritePath() != null && !data.getCurrentSpritePath().isEmpty()) {
-                try {
-                    java.net.URL imgUrl = getClass().getResource("/" + data.getCurrentSpritePath());
-                    if (imgUrl != null) {
-                        spriteImage = ImageIO.read(imgUrl);
-                        currentSpritePath = data.getCurrentSpritePath();
-                    }
-                } catch (Exception e) { e.printStackTrace(); }
-            } else {
-                spriteImage = null;
-                currentSpritePath = null;
-            }
-            spriteAlpha = 1f;
-            isSpriteTransitioning = false;
 
             // 回退一步：存档时的索引指向下一条指令，回退到已显示的指令
-            int restoredIndex = storyManager.getCurrentCommandIndex();
-            if (restoredIndex > 0) {
-                storyManager.setCurrentCommandIndex(restoredIndex - 1);
+            storyManager.setCurrentCommandIndex(savedCmdIndex);
+            if (savedCmdIndex > 0) {
+                storyManager.setCurrentCommandIndex(savedCmdIndex - 1);
             }
             updateDisplay();
             JOptionPane.showMessageDialog(this, "读档成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
