@@ -189,7 +189,6 @@ public class GamePanel extends JPanel {
         lineArea.setOpaque(false);
         lineArea.setForeground(currentTextColor);
         lineArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        lineArea.setCaret(null);  // 隐藏光标
         lineArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -202,8 +201,6 @@ public class GamePanel extends JPanel {
         textPanel.add(characterLabel, BorderLayout.NORTH);
         textPanel.add(lineArea, BorderLayout.CENTER);
         dialogPanel.add(textPanel, BorderLayout.CENTER);
-        // 固定对话框大小，防止尺寸变化
-        dialogPanel.setPreferredSize(new java.awt.Dimension(400, 200));
 
         add(dialogPanel, BorderLayout.SOUTH);
     }
