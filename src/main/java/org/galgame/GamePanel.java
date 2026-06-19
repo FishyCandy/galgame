@@ -15,6 +15,7 @@ public class GamePanel extends JPanel {
     private JFrame parentFrame;
     private MainMenuPanel mainMenuPanel;
     private BufferedImage bgImage;
+    private BufferedImage spriteImage; // 人物差分图
 
     private StoryManager storyManager;
     private boolean waitingForChoice = false;
@@ -162,9 +163,8 @@ public class GamePanel extends JPanel {
             try {
                 java.net.URL imgUrl = getClass().getResource("/" + path);
                 if (imgUrl != null) {
-                    ImageIcon icon = new ImageIcon(imgUrl);
-                    Image img = icon.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
-                    imageLabel.setIcon(new ImageIcon(img));
+                    spriteImage = ImageIO.read(imgUrl);
+                    repaint();
                     return;
                 }
             } catch (Exception e) {
@@ -175,7 +175,8 @@ public class GamePanel extends JPanel {
     }
 
     private void hideSprite() {
-        imageLabel.setIcon(createPlaceholderIcon(" ", 400, 300));
+        spriteImage = null;
+        repaint();
     }
 
     private void createDialogPanel() {
@@ -339,6 +340,19 @@ public class GamePanel extends JPanel {
             g2.setPaint(gp);
             g2.fillRect(0, 0, getWidth(), getHeight());
             g2.dispose();
+        }
+
+        // 绘制人物差分图（底部到2/3高度）
+        if (spriteImage != null) {
+            Graphics2D g2s = (Graphics2D) g.create();
+            int spriteHeight = getHeight() * 2 / 3;
+            double ratio = (double) spriteImage.getWidth(null) / spriteImage.getHeight(null);
+            int spriteWidth = (int) (spriteHeight * ratio);
+            int x = (getWidth() - spriteWidth) / 2;
+            int y = getHeight() - spriteHeight;
+            g2s.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2s.drawImage(spriteImage, x, y, spriteWidth, spriteHeight, this);
+            g2s.dispose();
         }
 
         // 背景转场黑幕（覆盖在背景之上）
