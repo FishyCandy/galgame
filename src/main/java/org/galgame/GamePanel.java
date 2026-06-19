@@ -20,7 +20,6 @@ public class GamePanel extends JPanel {
     private StoryManager storyManager;
     private boolean waitingForChoice = false;
 
-    private JLabel imageLabel;
     private JLabel characterLabel;
     private JTextArea lineArea;
     private JButton autoPlayBtn, logBtn;
@@ -89,7 +88,6 @@ public class GamePanel extends JPanel {
         transitionAlpha = 1f;
         dialogFadeAlpha = 0f;
 
-        createImagePanel();
         createDialogPanel();
         createControlPanel();
 
@@ -107,55 +105,9 @@ public class GamePanel extends JPanel {
         });
     }
 
-    // ---------- UI创建 ----------
-    private void createImagePanel() {
-        imageLabel = new JLabel();
-        imageLabel.setHorizontalAlignment(JLabel.CENTER);
-        imageLabel.setVerticalAlignment(JLabel.CENTER);
-        imageLabel.setPreferredSize(new Dimension(400, 300));
-        imageLabel.setOpaque(false);
-        setImagePlaceholder();
-        add(imageLabel, BorderLayout.CENTER);
-    }
 
-    private void setImagePlaceholder() {
-        imageLabel.setIcon(createPlaceholderIcon("差分图", 400, 300));
-    }
 
-    private ImageIcon createPlaceholderIcon(String text, int w, int h) {
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(new Color(0, 0, 0, 100));
-        g2.fillRoundRect(0, 0, w, h, 20, 20);
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("楷体", Font.BOLD, 30));
-        FontMetrics fm = g2.getFontMetrics();
-        int x = (w - fm.stringWidth(text)) / 2;
-        int y = (h - fm.getHeight()) / 2 + fm.getAscent();
-        g2.drawString(text, x, y);
-        g2.dispose();
-        return new ImageIcon(img);
-    }
 
-    private void loadImage(String path) {
-        if (path != null && !path.isEmpty()) {
-            try {
-                java.net.URL imgUrl = getClass().getResource("/" + path);
-                if (imgUrl != null) {
-                    ImageIcon icon = new ImageIcon(imgUrl);
-                    Image img = icon.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
-                    imageLabel.setIcon(new ImageIcon(img));
-                    return;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        String charName = characterLabel.getText();
-        if (charName == null || charName.isEmpty()) charName = "未知";
-        imageLabel.setIcon(createPlaceholderIcon(charName, 400, 300));
-    }
 
     // ---------- 人物差分图 ----------
     private void loadSpriteImage(String path) {
@@ -531,13 +483,7 @@ public class GamePanel extends JPanel {
         }
 
         switch (cmd.type) {
-            case "show":
-                characterLabel.setText("");
-                lineArea.setText("");
-                loadImage(cmd.image);
-                revalidate();
-                repaint();
-                break;
+
 
             case "say":
                 history.add(cmd.who + "：" + cmd.text);
@@ -552,7 +498,6 @@ public class GamePanel extends JPanel {
                 characterLabel.setForeground(currentTextColor);
                 lineArea.setForeground(currentTextColor);
 
-                if (cmd.image != null) loadImage(cmd.image);
                 revalidate();
                 repaint();
                 break;

@@ -4,14 +4,58 @@ filepath = r"D:\ideaDocuments\galgame\src\main\java\org\galgame\GamePanel.java"
 with open(filepath, "r", encoding="utf-8") as f:
     content = f.read()
 
-# Change 1: Add spriteImage field after bgImage
-content = content.replace(
-    "private BufferedImage bgImage;\n\n    private StoryManager storyManager;",
-    "private BufferedImage bgImage;\n    private BufferedImage spriteImage; // \u4eba\u7269\u5dee\u5206\u56fe\n\n    private StoryManager storyManager;"
-)
+# 1. Remove imageLabel field declaration
+content = content.replace("\n    private JLabel imageLabel;\n", "\n")
 
-# Change 2: Replace loadSpriteImage method
-old_load = '''    private void loadSpriteImage(String path) {
+# 2. Remove createImagePanel() call from constructor
+content = content.replace("\n        createImagePanel();\n", "\n")
+
+# 3. Remove createImagePanel method
+old_createImage = '''
+    // ---------- UI创建 ----------
+    private void createImagePanel() {
+        imageLabel = new JLabel();
+        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+        imageLabel.setVerticalAlignment(JLabel.CENTER);
+        imageLabel.setPreferredSize(new Dimension(400, 300));
+        imageLabel.setOpaque(false);
+        setImagePlaceholder();
+        add(imageLabel, BorderLayout.CENTER);
+    }
+'''
+content = content.replace(old_createImage, "\n")
+
+# 4. Remove setImagePlaceholder method
+old_setPlaceholder = '''
+    private void setImagePlaceholder() {
+        imageLabel.setIcon(createPlaceholderIcon("\u5dee\u5206\u56fe", 400, 300));
+    }
+'''
+content = content.replace(old_setPlaceholder, "\n")
+
+# 5. Remove createPlaceholderIcon method
+old_placeholder = '''
+    private ImageIcon createPlaceholderIcon(String text, int w, int h) {
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(new Color(0, 0, 0, 100));
+        g2.fillRoundRect(0, 0, w, h, 20, 20);
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("\u6977\u4f53", Font.BOLD, 30));
+        FontMetrics fm = g2.getFontMetrics();
+        int x = (w - fm.stringWidth(text)) / 2;
+        int y = (h - fm.getHeight()) / 2 + fm.getAscent();
+        g2.drawString(text, x, y);
+        g2.dispose();
+        return new ImageIcon(img);
+    }
+'''
+content = content.replace(old_placeholder, "\n")
+
+# 6. Remove loadImage method
+old_loadImage = '''
+    private void loadImage(String path) {
         if (path != null && !path.isEmpty()) {
             try {
                 java.net.URL imgUrl = getClass().getResource("/" + path);
@@ -25,62 +69,29 @@ old_load = '''    private void loadSpriteImage(String path) {
                 e.printStackTrace();
             }
         }
-        System.err.println("\u5dee\u5206\u56fe\u672a\u627e\u5230: " + path);
-    }'''
+        String charName = characterLabel.getText();
+        if (charName == null || charName.isEmpty()) charName = "\u672a\u77e5";
+        imageLabel.setIcon(createPlaceholderIcon(charName, 400, 300));
+    }
+'''
+content = content.replace(old_loadImage, "\n")
 
-new_load = '''    private void loadSpriteImage(String path) {
-        if (path != null && !path.isEmpty()) {
-            try {
-                java.net.URL imgUrl = getClass().getResource("/" + path);
-                if (imgUrl != null) {
-                    spriteImage = ImageIO.read(imgUrl);
-                    repaint();
-                    return;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        System.err.println("\u5dee\u5206\u56fe\u672a\u627e\u5230: " + path);
-    }'''
+# 7. Remove "show" case from updateDisplay
+old_show = '''            case "show":
+                characterLabel.setText("");
+                lineArea.setText("");
+                loadImage(cmd.image);
+                revalidate();
+                repaint();
+                break;
+'''
+content = content.replace(old_show, "\n")
 
-content = content.replace(old_load, new_load)
-
-# Change 3: Replace hideSprite method
-old_hide = '''    private void hideSprite() {
-        imageLabel.setIcon(createPlaceholderIcon(" ", 400, 300));
-    }'''
-
-new_hide = '''    private void hideSprite() {
-        spriteImage = null;
-        repaint();
-    }'''
-
-content = content.replace(old_hide, new_hide)
-
-# Change 4: Add sprite drawing in paintComponent before transitionAlpha block
-old_paint = '''        // \u80cc\u666f\u8f6c\u573a\u9ed1\u5e55\uff08\u8986\u76d6\u5728\u80cc\u666f\u4e4b\u4e0a\uff09
-        if (transitionAlpha > 0.01f) {'''
-
-new_paint = '''        // \u7ed8\u5236\u4eba\u7269\u5dee\u5206\u56fe\uff08\u5e95\u90e8\u52302/3\u9ad8\u5ea6\uff09
-        if (spriteImage != null) {
-            Graphics2D g2s = (Graphics2D) g.create();
-            int spriteHeight = getHeight() * 2 / 3;
-            double ratio = (double) spriteImage.getWidth(null) / spriteImage.getHeight(null);
-            int spriteWidth = (int) (spriteHeight * ratio);
-            int x = (getWidth() - spriteWidth) / 2;
-            int y = getHeight() - spriteHeight;
-            g2s.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2s.drawImage(spriteImage, x, y, spriteWidth, spriteHeight, this);
-            g2s.dispose();
-        }
-
-        // \u80cc\u666f\u8f6c\u573a\u9ed1\u5e55\uff08\u8986\u76d6\u5728\u80cc\u666f\u4e4b\u4e0a\uff09
-        if (transitionAlpha > 0.01f) {'''
-
-content = content.replace(old_paint, new_paint)
+# 8. Remove loadImage call from "say" case
+old_say_load = '                if (cmd.image != null) loadImage(cmd.image);\n'
+content = content.replace(old_say_load, "")
 
 with open(filepath, "w", encoding="utf-8") as f:
     f.write(content)
 
-print("Done - all 4 changes applied")
+print("Done - all old sprite/imageLabel code removed")
