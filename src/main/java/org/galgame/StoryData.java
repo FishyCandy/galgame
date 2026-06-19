@@ -21,6 +21,7 @@ public class StoryData {
         public String color;   // 新增：颜色值，如 "#FFFFFF"
         public String bgm;   // 新增：背景音乐文件名（例如 "bgm_01.wav"）
         public String bg;     // 新增：背景图片路径（例如 "game_bg.jpg"）
+        public String sprite; // sprite field for character images
     }
 
     public static class ChoiceData {

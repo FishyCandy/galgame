@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -154,6 +154,28 @@ public class GamePanel extends JPanel {
         String charName = characterLabel.getText();
         if (charName == null || charName.isEmpty()) charName = "未知";
         imageLabel.setIcon(createPlaceholderIcon(charName, 400, 300));
+    }
+
+    // ---------- 人物差分图 ----------
+    private void loadSpriteImage(String path) {
+        if (path != null && !path.isEmpty()) {
+            try {
+                java.net.URL imgUrl = getClass().getResource("/" + path);
+                if (imgUrl != null) {
+                    ImageIcon icon = new ImageIcon(imgUrl);
+                    Image img = icon.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+                    imageLabel.setIcon(new ImageIcon(img));
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.err.println("差分图未找到: " + path);
+    }
+
+    private void hideSprite() {
+        imageLabel.setIcon(createPlaceholderIcon(" ", 400, 300));
     }
 
     private void createDialogPanel() {
@@ -537,6 +559,18 @@ public class GamePanel extends JPanel {
                 }
                 updateDisplay();
                 return;
+
+            case "sprite":
+                // 显示人物差分图（具有延续性）
+                if (cmd.sprite != null && !cmd.sprite.isEmpty()) {
+                    loadSpriteImage(cmd.sprite);
+                }
+                break;
+
+            case "sprite_hide":
+                // 隐藏人物差分图
+                hideSprite();
+                break;
 
             case "bg":
                 // 背景切换指令：启动淡入淡出转场
