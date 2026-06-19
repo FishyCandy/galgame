@@ -1,0 +1,37 @@
+{
+  "start": "scene_01",
+  "scenes": {
+    "scene_01": {
+      "commands": [
+        {"type": "bgm", "bgm": "bgm_01.wav"},
+        {"type": "show", "image": "images/hero_normal.png"},
+        {"type": "say", "who": "主角", "text": "你好，世界！"},
+        {"type": "say", "who": "少女", "text": "欢迎来到 GalGame 世界。", "color": "#FFB6C1"},
+        {"type": "choice", "choices": [
+          {"text": "去公园", "target": "scene_park"},
+          {"text": "去图书馆", "target": "scene_library"}
+        ]}
+      ]
+    },
+    "scene_park": {
+      "commands": [
+        {"type": "bgm", "bgm": "bgm_park.wav"},
+        {"type": "say", "who": "主角", "text": "公园里真热闹！", "color": "#FFD700"},
+        {"type": "jump", "target": "scene_end"}
+      ]
+    },
+    "scene_library": {
+      "commands": [
+        {"type": "bgm", "bgm": "bgm_library.wav"},
+        {"type": "say", "who": "主角", "text": "图书馆很安静。", "color": "#87CEEB"},
+        {"type": "jump", "target": "scene_end"}
+      ]
+    },
+    "scene_end": {
+      "commands": [
+        {"type": "say", "who": "旁白", "text": "—— 故事结束 ——", "color": "#AAAAAA"},
+        {"type": "end"}
+      ]
+    }
+  }
+}
