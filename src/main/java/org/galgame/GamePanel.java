@@ -189,7 +189,11 @@ public class GamePanel extends JPanel {
         lineArea.setOpaque(false);
         lineArea.setForeground(currentTextColor);
         lineArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        lineArea.getCaret().setVisible(false);  // 隐藏光标
+        // 彻底隐藏光标和选中效果（galgame对话框不应有光标）
+        lineArea.getCaret().setVisible(false);           // 隐藏光标闪烁
+        lineArea.setCaretColor(new java.awt.Color(0, 0, 0, 0));     // 光标颜色透明
+        lineArea.setSelectionColor(new java.awt.Color(0, 0, 0, 0)); // 选中背景透明
+        lineArea.setSelectedTextColor(lineArea.getForeground());     // 选中文字颜色不变
         lineArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
