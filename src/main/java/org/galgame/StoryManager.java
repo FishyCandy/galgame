@@ -2,17 +2,24 @@ package org.galgame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 故事管理器，负责加载 JSON 剧本，管理当前场景和命令索引。
+ * 故事管理器，负责加载 JSON 剧本，管理当前场景、命令索引和隐藏分。
  */
 public class StoryManager {
-    private StoryData storyData;
+    private Map<String, String> sceneIndex;       // 场景ID → 场景文件路径
+    private Map<String, StoryData.SceneData> loadedScenes = new HashMap<>();  // 已加载的场景缓存
+    private Map<String, Integer> scores = new HashMap<>();  // 隐藏分存储
+
     private String currentSceneId;
     private int currentCommandIndex;
     private List<StoryData.CommandData> currentCommands;
     private boolean isEnd = false;
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public StoryManager() {
         loadStory("/story.json");
@@ -20,15 +27,22 @@ public class StoryManager {
 
     private void loadStory(String path) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
             InputStream is = getClass().getResourceAsStream(path);
             if (is == null) {
                 System.err.println("剧本文件未找到: " + path);
                 return;
             }
-            storyData = mapper.readValue(is, StoryData.class);
+            StoryData storyData = mapper.readValue(is, StoryData.class);
             currentSceneId = storyData.start;
-            currentCommands = storyData.scenes.get(currentSceneId).commands;
+
+            // 构建场景索引：场景ID → 文件路径
+            sceneIndex = new HashMap<>();
+            for (Map.Entry<String, Object> entry : storyData.scenes.entrySet()) {
+                sceneIndex.put(entry.getKey(), entry.getValue().toString());
+            }
+
+            // 加载起始场景
+            loadScene(currentSceneId);
             currentCommandIndex = 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,15 +50,77 @@ public class StoryManager {
     }
 
     /**
+     * 按需加载场景文件（带缓存）
+     */
+    private void loadScene(String sceneId) {
+        if (loadedScenes.containsKey(sceneId)) {
+            currentCommands = loadedScenes.get(sceneId).commands;
+            return;
+        }
+        String filePath = sceneIndex.get(sceneId);
+        if (filePath == null) {
+            System.err.println("场景未在索引中找到: " + sceneId);
+            currentCommands = null;
+            return;
+        }
+        try {
+            InputStream is = getClass().getResourceAsStream("/" + filePath);
+            if (is == null) {
+                System.err.println("场景文件未找到: " + filePath);
+                currentCommands = null;
+                return;
+            }
+            StoryData.SceneData scene = mapper.readValue(is, StoryData.SceneData.class);
+            loadedScenes.put(sceneId, scene);
+            currentCommands = scene.commands;
+        } catch (Exception e) {
+            e.printStackTrace();
+            currentCommands = null;
+        }
+    }
+
+    // ---------- 隐藏分操作 ----------
+    public int getScore(String var) {
+        return scores.getOrDefault(var, 0);
+    }
+
+    public void setScore(String var, int value) {
+        scores.put(var, value);
+    }
+
+    public void addScore(String var, int delta) {
+        scores.put(var, scores.getOrDefault(var, 0) + delta);
+    }
+
+    public Map<String, Integer> getScores() {
+        return new HashMap<>(scores);
+    }
+
+    public void setScores(Map<String, Integer> newScores) {
+        scores.clear();
+        if (newScores != null) {
+            scores.putAll(newScores);
+        }
+    }
+
+    /**
+     * 检查分数条件。返回应跳转的场景ID，若无需跳转则返回 null。
+     */
+    public String checkCondition(String var, int min, String target, String fallback) {
+        int current = scores.getOrDefault(var, 0);
+        if (current >= min) {
+            return target;
+        }
+        return fallback;
+    }
+
+    /**
      * 获取下一条指令，并自动推进索引。
-     * 处理 jump 和 end 指令。
-     * @return 下一条指令，若故事结束或出错返回 null
      */
     public StoryData.CommandData nextCommand() {
         if (isEnd) return null;
         if (currentCommands == null) return null;
 
-        // 如果当前索引超出，则结束
         while (currentCommandIndex >= currentCommands.size()) {
             return null;
         }
@@ -54,14 +130,13 @@ public class StoryManager {
         // 处理 jump 指令
         if ("jump".equals(cmd.type)) {
             String target = cmd.target;
-            if (target != null && storyData.scenes.containsKey(target)) {
+            if (target != null && sceneIndex.containsKey(target)) {
                 currentSceneId = target;
-                currentCommands = storyData.scenes.get(target).commands;
+                loadScene(target);
                 currentCommandIndex = 0;
-                return nextCommand(); // 递归获取下一条
-            } else {
-                return null;
+                return nextCommand();
             }
+            return null;
         }
 
         // 处理 end
@@ -77,9 +152,9 @@ public class StoryManager {
      * 外部跳转（用于选项选择后）
      */
     public void jumpToScene(String sceneId) {
-        if (storyData.scenes.containsKey(sceneId)) {
+        if (sceneIndex.containsKey(sceneId)) {
             currentSceneId = sceneId;
-            currentCommands = storyData.scenes.get(sceneId).commands;
+            loadScene(sceneId);
             currentCommandIndex = 0;
         }
     }
@@ -88,7 +163,7 @@ public class StoryManager {
         return isEnd;
     }
 
-    // ---------- 新增 getter/setter，用于存档/读档 ----------
+    // ---------- getter/setter，用于存档/读档 ----------
     public String getCurrentSceneId() {
         return currentSceneId;
     }
@@ -98,9 +173,9 @@ public class StoryManager {
     }
 
     public void setCurrentSceneId(String sceneId) {
-        if (storyData.scenes.containsKey(sceneId)) {
+        if (sceneIndex.containsKey(sceneId)) {
             this.currentSceneId = sceneId;
-            this.currentCommands = storyData.scenes.get(sceneId).commands;
+            loadScene(sceneId);
             this.currentCommandIndex = 0;
         } else {
             System.err.println("场景不存在: " + sceneId);

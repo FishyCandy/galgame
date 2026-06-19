@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List;`r`nimport java.util.Map;
 
 public class GamePanel extends JPanel {
     private JFrame parentFrame;
@@ -20,7 +20,7 @@ public class GamePanel extends JPanel {
     private String currentSpritePath = null; // 当前差分图路径
 
     private StoryManager storyManager;
-    private boolean waitingForChoice = false;
+    private boolean waitingForChoice = false;`r`n            // 恢复隐藏分`r`n            if (data.getScores() != null) {`r`n                storyManager.setScores(data.getScores());`r`n            }
 
     private JLabel characterLabel;
     private JTextArea lineArea;
@@ -429,7 +429,7 @@ public class GamePanel extends JPanel {
         characterLabel.setText("");
         lineArea.setText("");
         storyManager = new StoryManager();
-        waitingForChoice = false;
+        waitingForChoice = false;`r`n            // 恢复隐藏分`r`n            if (data.getScores() != null) {`r`n                storyManager.setScores(data.getScores());`r`n            }
         currentTextColor = Color.WHITE;
         updateDisplay();
     }
@@ -460,7 +460,7 @@ public class GamePanel extends JPanel {
         lineArea.setText("");
         history.clear();
         storyManager = new StoryManager();
-        waitingForChoice = false;
+        waitingForChoice = false;`r`n            // 恢复隐藏分`r`n            if (data.getScores() != null) {`r`n                storyManager.setScores(data.getScores());`r`n            }
         currentTextColor = Color.WHITE;
         stopMusic();
         updateDisplay();
@@ -645,7 +645,7 @@ public class GamePanel extends JPanel {
                 updateDisplay();
                 return;
 
-            case "bg":
+            case "set":`r`n                // 设置隐藏分变量`r`n                if (cmd.var != null && cmd.value != null) {`r`n                    storyManager.setScore(cmd.var, cmd.value);`r`n                }`r`n                updateDisplay();`r`n                return;`r`n`r`n            case "check":`r`n                // 检查分数条件，跳转到对应场景`r`n                if (cmd.var != null && cmd.min != null && cmd.target != null) {`r`n                    String resultScene = storyManager.checkCondition(cmd.var, cmd.min, cmd.target, cmd.fallback);`r`n                    if (resultScene != null) {`r`n                        storyManager.jumpToScene(resultScene);`r`n                        updateDisplay();`r`n                        return;`r`n                    }`r`n                }`r`n                updateDisplay();`r`n                return;`r`n`r`n            case "bg":
                 // 背景切换指令：启动淡入淡出转场
                 if (cmd.bg != null && !cmd.bg.isEmpty()) {
                     currentBgPath = cmd.bg;
@@ -729,8 +729,8 @@ public class GamePanel extends JPanel {
                 layeredPane.remove(overlay);
                 layeredPane.revalidate();
                 layeredPane.repaint();
-                storyManager.jumpToScene(opt.getTarget());
-                waitingForChoice = false;
+                storyManager.jumpToScene(opt.getTarget());`r`n                // 应用隐藏分`r`n                if (opt.getScore() != null) {`r`n                    for (Map.Entry<String, Integer> e : opt.getScore().entrySet()) {`r`n                        storyManager.addScore(e.getKey(), e.getValue());`r`n                    }`r`n                }
+                waitingForChoice = false;`r`n            // 恢复隐藏分`r`n            if (data.getScores() != null) {`r`n                storyManager.setScores(data.getScores());`r`n            }
                 updateDisplay();
             });
             card.add(btn);
@@ -747,7 +747,7 @@ public class GamePanel extends JPanel {
     private List<ChoiceOption> getChoiceOptions(List<StoryData.ChoiceData> choiceDataList) {
         List<ChoiceOption> options = new ArrayList<>();
         for (StoryData.ChoiceData cd : choiceDataList) {
-            options.add(new ChoiceOption(cd.text, cd.target));
+            options.add(new ChoiceOption(cd.text, cd.target, cd.score));
         }
         return options;
     }
@@ -867,7 +867,7 @@ public class GamePanel extends JPanel {
             spriteAlpha = 1f;
             isSpriteTransitioning = false;
             history.clear();
-            waitingForChoice = false;
+            waitingForChoice = false;`r`n            // 恢复隐藏分`r`n            if (data.getScores() != null) {`r`n                storyManager.setScores(data.getScores());`r`n            }
 
             // 重放场景中所有bg/sprite/bgm指令来重建状态（从索引0到存档位置）
             bgImage = null;
@@ -879,7 +879,7 @@ public class GamePanel extends JPanel {
                 StoryData.CommandData cmd = storyManager.nextCommand();
                 if (cmd == null) break;
                 switch (cmd.type) {
-                    case "bg":
+                    case "set":`r`n                // 设置隐藏分变量`r`n                if (cmd.var != null && cmd.value != null) {`r`n                    storyManager.setScore(cmd.var, cmd.value);`r`n                }`r`n                updateDisplay();`r`n                return;`r`n`r`n            case "check":`r`n                // 检查分数条件，跳转到对应场景`r`n                if (cmd.var != null && cmd.min != null && cmd.target != null) {`r`n                    String resultScene = storyManager.checkCondition(cmd.var, cmd.min, cmd.target, cmd.fallback);`r`n                    if (resultScene != null) {`r`n                        storyManager.jumpToScene(resultScene);`r`n                        updateDisplay();`r`n                        return;`r`n                    }`r`n                }`r`n                updateDisplay();`r`n                return;`r`n`r`n            case "bg":
                         if (cmd.bg != null && !cmd.bg.isEmpty()) {
                             loadBgImage(cmd.bg);
                             currentBgPath = cmd.bg;

@@ -1,0 +1,7 @@
+{
+  "commands": [
+    { "type": "sprite_hide" },
+    { "type": "say", "who": "旁白", "text": "……", "color": "#AAAAAA" },
+    { "type": "check", "var": "affection", "min": 3, "target": "scene_good", "fallback": "scene_normal" }
+  ]
+}

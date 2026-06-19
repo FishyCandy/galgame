@@ -1,0 +1,10 @@
+{
+  "commands": [
+    { "type": "bg", "bg": "images/scene_library_bg.jpg" },
+    { "type": "sprite_hide" },
+    { "type": "say", "who": "主角", "text": "就这样，日子一天天过去……", "color": "#AAAAAA" },
+    { "type": "say", "who": "旁白", "text": "—— 虽然平凡，但也不坏 ——", "color": "#AAAAAA" },
+    { "type": "say", "who": "旁白", "text": "【普通结局：平凡日常】", "color": "#AAAAAA" },
+    { "type": "jump", "target": "scene_end" }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "commands": [
+    { "type": "bgm", "bgm": "bgm_01.wav" },
+    { "type": "bg", "bg": "game_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_smile.png" },
+    { "type": "say", "who": "少女", "text": "和你在一起的时光，真的很开心呢～", "color": "#FFB6C1" },
+    { "type": "say", "who": "主角", "text": "我也是，以后也请多指教。", "color": "#FFFFFF" },
+    { "type": "say", "who": "旁白", "text": "—— 两人相视而笑，故事迎来了美好的结局 ——", "color": "#FFD700" },
+    { "type": "say", "who": "旁白", "text": "【好结局：心意相通】", "color": "#FFD700" },
+    { "type": "jump", "target": "scene_end" }
+  ]
+}

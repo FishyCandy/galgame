@@ -1,0 +1,18 @@
+{
+  "commands": [
+    { "type": "bgm", "bgm": "bgm_01.wav" },
+    { "type": "bg", "bg": "game_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_normal.png" },
+    { "type": "say", "who": "主角", "text": "你好，世界！" },
+    { "type": "say", "who": "少女", "text": "欢迎来到 GalGame 世界。", "color": "#FFB6C1" },
+    { "type": "say", "who": "主角", "text": "好久不见了", "color": "#FFFFFF" },
+    { "type": "sprite", "sprite": "images/hero_smile.png" },
+    { "type": "say", "who": "主角", "text": "我们走吧" },
+    { "type": "say", "who": "少女", "text": "好啊", "color": "#FFB6C1" },
+    { "type": "say", "who": "少女", "text": "但是，我们去哪里" },
+    { "type": "choice", "choices": [
+      { "text": "去公园", "target": "scene_park", "score": { "affection": 5 } },
+      { "text": "去图书馆", "target": "scene_library", "score": { "affection": -2 } }
+    ]}
+  ]
+}

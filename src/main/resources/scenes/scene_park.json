@@ -1,0 +1,10 @@
+{
+  "commands": [
+    { "type": "bgm", "bgm": "bgm_park.wav" },
+    { "type": "bg", "bg": "images/scene_park_bg.jpg" },
+    { "type": "say", "who": "主角", "text": "公园里真热闹！", "color": "#FFD700" },
+    { "type": "sprite_hide" },
+    { "type": "say", "who": "少女", "text": "是啊，天气真好～", "color": "#FFB6C1" },
+    { "type": "jump", "target": "scene_checkpoint" }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "commands": [
+    { "type": "sprite_hide" },
+    { "type": "say", "who": "旁白", "text": "—— 故事结束 ——", "color": "#AAAAAA" },
+    { "type": "end" }
+  ]
+}

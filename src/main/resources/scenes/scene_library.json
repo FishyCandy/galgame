@@ -1,0 +1,9 @@
+{
+  "commands": [
+    { "type": "bgm", "bgm": "bgm_library.wav" },
+    { "type": "bg", "bg": "images/scene_library_bg.jpg" },
+    { "type": "say", "who": "主角", "text": "图书馆很安静。", "color": "#87CEEB" },
+    { "type": "say", "who": "少女", "text": "嘿，看看这本书！", "color": "#FFB6C1" },
+    { "type": "jump", "target": "scene_checkpoint" }
+  ]
+}
