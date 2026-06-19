@@ -590,6 +590,10 @@ public class GamePanel extends JPanel {
 
         switch (cmd.type) {
 
+            case "show":
+                // 旧版show指令已废弃，自动跳过
+                updateDisplay();
+                return;
 
             case "say":
                 history.add(cmd.who + "：" + cmd.text);
