@@ -1,0 +1,14 @@
+{
+  "commands": [
+    { "type": "bgm", "bgm": "bgm_01.wav" },
+    { "type": "bg", "bg": "game_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_smile.png" },
+    { "type": "say", "who": "少女", "text": "从第一次遇见你，我就知道……", "color": "#FFB6C1" },
+    { "type": "say", "who": "少女", "text": "你就是我一直在等的那个人。", "color": "#FFB6C1" },
+    { "type": "say", "who": "主角", "text": "我也是。能遇见你，是我最大的幸运。", "color": "#FFFFFF" },
+    { "type": "say", "who": "旁白", "text": "——两人紧紧相拥，夕阳将影子拉得很长很长——", "color": "#FFD700" },
+    { "type": "say", "who": "旁白", "text": "从今以后，他们会一直在一起。", "color": "#FFD700" },
+    { "type": "say", "who": "旁白", "text": "【完美结局：命中注定】", "color": "#FFD700" },
+    { "type": "jump", "target": "scene_end" }
+  ]
+}

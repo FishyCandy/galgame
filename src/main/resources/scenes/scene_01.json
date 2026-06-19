@@ -12,7 +12,8 @@
     { "type": "say", "who": "少女", "text": "但是，我们去哪里" },
     { "type": "choice", "choices": [
       { "text": "去公园", "target": "scene_park", "score": { "affection": 5 } },
-      { "text": "去图书馆", "target": "scene_library", "score": { "affection": -2 } }
+      { "text": "去图书馆", "target": "scene_library", "score": { "affection": -2, "knowledge": 3 } },
+      { "text": "送你回家", "target": "scene_home", "score": { "affection": 3, "courage": 2 } }
     ]}
   ]
 }

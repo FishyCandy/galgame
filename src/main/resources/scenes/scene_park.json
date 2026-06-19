@@ -5,6 +5,11 @@
     { "type": "say", "who": "主角", "text": "公园里真热闹！", "color": "#FFD700" },
     { "type": "sprite_hide" },
     { "type": "say", "who": "少女", "text": "是啊，天气真好～", "color": "#FFB6C1" },
-    { "type": "jump", "target": "scene_checkpoint" }
+    { "type": "say", "who": "少女", "text": "风吹得好舒服……", "color": "#FFB6C1" },
+    { "type": "say", "who": "主角", "text": "（她看起来很开心）", "color": "#CCCCCC" },
+    { "type": "choice", "choices": [
+      { "text": "握住她的手", "target": "scene_checkpoint", "score": { "affection": 5, "courage": 3 } },
+      { "text": "默默看着她", "target": "scene_checkpoint", "score": { "affection": -1 } }
+    ]}
   ]
 }

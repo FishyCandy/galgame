@@ -4,6 +4,11 @@
     { "type": "bg", "bg": "images/scene_library_bg.jpg" },
     { "type": "say", "who": "主角", "text": "图书馆很安静。", "color": "#87CEEB" },
     { "type": "say", "who": "少女", "text": "嘿，看看这本书！", "color": "#FFB6C1" },
-    { "type": "jump", "target": "scene_checkpoint" }
+    { "type": "say", "who": "少女", "text": "里面好多有趣的故事呢", "color": "#FFB6C1" },
+    { "type": "say", "who": "主角", "text": "（她也喜欢读书啊）", "color": "#CCCCCC" },
+    { "type": "choice", "choices": [
+      { "text": "坐在一起看", "target": "scene_checkpoint", "score": { "affection": 4, "knowledge": 2 } },
+      { "text": "各自安静看书", "target": "scene_checkpoint", "score": { "affection": -1, "knowledge": 4 } }
+    ]}
   ]
 }

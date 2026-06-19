@@ -4,9 +4,14 @@
     "scene_01": "scenes/scene_01.json",
     "scene_park": "scenes/scene_park.json",
     "scene_library": "scenes/scene_library.json",
-    "scene_end": "scenes/scene_end.json",
+    "scene_home": "scenes/scene_home.json",
+    "scene_checkpoint": "scenes/scene_checkpoint.json",
+    "scene_checkpoint_b": "scenes/scene_checkpoint_b.json",
+    "scene_checkpoint_c": "scenes/scene_checkpoint_c.json",
+    "scene_perfect": "scenes/scene_perfect.json",
     "scene_good": "scenes/scene_good.json",
     "scene_normal": "scenes/scene_normal.json",
-    "scene_checkpoint": "scenes/scene_checkpoint.json"
+    "scene_bad": "scenes/scene_bad.json",
+    "scene_end": "scenes/scene_end.json"
   }
 }

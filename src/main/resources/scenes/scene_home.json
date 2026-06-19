@@ -1,0 +1,17 @@
+{
+  "commands": [
+    { "type": "bgm", "bgm": "bgm_01.wav" },
+    { "type": "bg", "bg": "game_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_smile.png" },
+    { "type": "say", "who": "主角", "text": "我送你回家吧。", "color": "#FFFFFF" },
+    { "type": "say", "who": "少女", "text": "谢谢你，你总是这么体贴。", "color": "#FFB6C1" },
+    { "type": "say", "who": "少女", "text": "……到了，这就是我家。", "color": "#FFB6C1" },
+    { "type": "say", "who": "主角", "text": "今天玩得很开心。", "color": "#FFFFFF" },
+    { "type": "say", "who": "少女", "text": "嗯……我也是。", "color": "#FFB6C1" },
+    { "type": "say", "who": "主角", "text": "（她似乎有话想说……）", "color": "#CCCCCC" },
+    { "type": "choice", "choices": [
+      { "text": "鼓起勇气表白", "target": "scene_checkpoint", "score": { "affection": 8, "courage": 5 } },
+      { "text": "温柔地道别", "target": "scene_checkpoint", "score": { "affection": 2 } }
+    ]}
+  ]
+}

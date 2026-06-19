@@ -1,0 +1,11 @@
+{
+  "commands": [
+    { "type": "bg", "bg": "images/scene_library_bg.jpg" },
+    { "type": "sprite_hide" },
+    { "type": "say", "who": "主角", "text": "自那以后，我们再也没有见面……", "color": "#888888" },
+    { "type": "say", "who": "旁白", "text": "——有些缘分，错过了就是错过了——", "color": "#888888" },
+    { "type": "say", "who": "旁白", "text": "也许在另一个平行世界，他们会做出不同的选择。", "color": "#888888" },
+    { "type": "say", "who": "旁白", "text": "【坏结局：擦肩而过】", "color": "#888888" },
+    { "type": "jump", "target": "scene_end" }
+  ]
+}
