@@ -211,11 +211,13 @@ public class SaveLoadPanel extends JPanel {
 
             if (gamePanel != null) {
                 if (gamePanel.loadGameFromFile(saveFile)) {
+                    mainMenuPanel.stopMenuMusic();
                     mainMenuPanel.switchToPanel(gamePanel);
                 }
             } else {
                 GamePanel gp = new GamePanel(parentFrame, mainMenuPanel);
                 if (gp.loadGameFromFile(saveFile)) {
+                    mainMenuPanel.stopMenuMusic();
                     mainMenuPanel.switchToPanel(gp);
                 }
             }
