@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -181,6 +181,22 @@ public class SaveLoadPanel extends JPanel {
             }
         });
         card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // 让缩略图区域和标签也可以点击
+        thumbPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleSlotClick(index, saveFile);
+            }
+        });
+        thumbPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        infoLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleSlotClick(index, saveFile);
+            }
+        });
 
         return card;
     }
