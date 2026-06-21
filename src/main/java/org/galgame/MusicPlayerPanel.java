@@ -423,8 +423,8 @@ public class MusicPlayerPanel extends JPanel {
         }
         
         int coverSize = Math.max(w * 2 / 5, 280);
-        // 毛玻璃框整体左移，左侧到窗口中心线
-        int coverX = w / 2;
+        // 毛玻璃框右侧对齐窗口横向中线
+        int coverX = w / 2 - coverSize - 12;
         
         int coverY = 80;
         
