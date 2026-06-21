@@ -867,6 +867,37 @@ switch (cmd.type) {
         parentFrame.repaint();
     }
 
+    private void showAutoDismissOverlay(String message) {
+        JLayeredPane layeredPane = parentFrame.getLayeredPane();
+        JPanel overlay = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(0, 0, 0, 180));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+        overlay.setOpaque(false);
+        overlay.setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
+        JLabel label = new JLabel(message);
+        label.setFont(buttonFont.deriveFont(28f));
+        label.setForeground(new Color(255, 255, 255, 220));
+        overlay.add(label);
+        layeredPane.add(overlay, JLayeredPane.MODAL_LAYER);
+        layeredPane.revalidate();
+        layeredPane.repaint();
+        Timer dismissTimer = new Timer(1200, e -> {
+            layeredPane.remove(overlay);
+            layeredPane.revalidate();
+            layeredPane.repaint();
+        });
+        dismissTimer.setRepeats(false);
+        dismissTimer.start();
+    }
+
     // ---------- 存档/读档核心方法 ----------
     public boolean saveGameToFile(int slot) {
         if (storyManager == null) {
@@ -886,7 +917,7 @@ switch (cmd.type) {
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(saveFile))) {
                 oos.writeObject(data);
             }
-            JOptionPane.showMessageDialog(this, "存档成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+            showAutoDismissOverlay("存档成功！");
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -967,7 +998,7 @@ switch (cmd.type) {
                 storyManager.setCurrentCommandIndex(savedCmdIndex - 1);
             }
             updateDisplay();
-            JOptionPane.showMessageDialog(this, "读档成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+            showAutoDismissOverlay("读档成功！");
             return true;
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();
