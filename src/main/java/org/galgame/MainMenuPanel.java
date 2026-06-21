@@ -256,6 +256,9 @@ public class MainMenuPanel extends JPanel {
             parentFrame.setContentPane(target);
             parentFrame.revalidate();
             parentFrame.repaint();
+            if (target instanceof GamePanel) {
+                ((GamePanel) target).syncDialogAlpha();
+            }
         } else {
             showMainMenu();
         }
