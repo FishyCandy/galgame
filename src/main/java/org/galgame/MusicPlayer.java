@@ -3,6 +3,8 @@ package org.galgame;
 import com.adonax.audiocue.AudioCue;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MusicPlayer {
     private AudioCue audioCue;
@@ -12,11 +14,31 @@ public class MusicPlayer {
     private boolean loop = false;
     // 全局音量设置（0.0 ~ 1.0）
     private static double globalVolume = 0.8;
+    private static final List<MusicPlayer> instances = new ArrayList<>();
+
+    public MusicPlayer() {
+        synchronized (instances) {
+            instances.add(this);
+        }
+    }
+
     public static void setGlobalVolume(double volume) {
         globalVolume = Math.max(0.0, Math.min(1.0, volume));
+        synchronized (instances) {
+            for (MusicPlayer mp : instances) {
+                mp.applyVolume();
+            }
+        }
     }
+
     public static double getGlobalVolume() {
         return globalVolume;
+    }
+
+    public void applyVolume() {
+        if (audioCue != null && instanceId != -1 && audioCue.getIsPlaying(instanceId)) {
+            audioCue.setVolume(instanceId, globalVolume);
+        }
     }
 
     private static final int FADE_STEPS = 100;
