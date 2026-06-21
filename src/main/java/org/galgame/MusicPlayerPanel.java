@@ -21,7 +21,7 @@ public class MusicPlayerPanel extends JPanel {
     private BufferedImage bgImage, defaultCoverImage;
     private List<MusicFileInfo> musicList = new ArrayList<>();
     private int currentIndex = -1;
-    private Timer progressTimer, playlistAnimTimer;
+    private Timer progressTimer;
     
     // UI 组件
     private JLabel albumArtLabel, songTitleLabel, timeCurrentLabel, timeTotalLabel;
@@ -31,9 +31,6 @@ public class MusicPlayerPanel extends JPanel {
     private JPanel playlistPanel;
     private JScrollPane playlistScroll;
     private JPanel playlistContent;
-    private boolean playlistVisible = false;
-    private float playlistSlideX = 0f; // 0=隐藏, 1=完全显示
-    private int playlistWidth = 280;
     
     // 播放模式
     private enum PlayMode { SEQUENTIAL, SINGLE_LOOP, RANDOM }
@@ -57,14 +54,11 @@ public class MusicPlayerPanel extends JPanel {
         
         scanMusicFiles();
         createUI();
-        ;
         
-        // 进度更新定时器
         progressTimer = new Timer(200, e -> updateProgress());
         progressTimer.start();
     }
     
-    // ---- 音乐文件扫描 ----
     private void scanMusicFiles() {
         musicList.clear();
         File dir = new File("player_music");
@@ -77,7 +71,6 @@ public class MusicPlayerPanel extends JPanel {
         File[] wavs = dir.listFiles((d, n) -> n.toLowerCase().endsWith(".wav"));
         if (wavs != null) {
             for (File wav : wavs) {
-                // 匹配封面图片
                 String baseName = wav.getName();
                 baseName = baseName.substring(0, baseName.lastIndexOf('.'));
                 File cover = null;
@@ -91,7 +84,6 @@ public class MusicPlayerPanel extends JPanel {
         Collections.sort(musicList, (a, b) -> a.wavFile.getName().compareToIgnoreCase(b.wavFile.getName()));
     }
     
-    // ---- 创建 UI ----
     private void createUI() {
         // 标题
         JLabel titleLabel = new JLabel("\u266B \u97F3\u4E50\u9274\u8D4F", SwingConstants.CENTER);
@@ -113,24 +105,21 @@ public class MusicPlayerPanel extends JPanel {
         });
         add(returnBtn);
         
-        // 专辑封面（可点击切换播放列表）
+        // 专辑封面
         albumArtLabel = new JLabel() {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // 毛玻璃外框
                 g2.setColor(new Color(255, 255, 255, 50));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 g2.setColor(new Color(255, 255, 255, 100));
                 g2.setStroke(new BasicStroke(2f));
                 g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 20, 20);
-                
                 BufferedImage cover = getCurrentCover();
+                int m = 12;
                 if (cover != null) {
-                    int m = 12;
                     g2.drawImage(cover, m, m, getWidth()-2*m, getHeight()-2*m, this);
                 } else if (defaultCoverImage != null) {
-                    int m = 12;
                     g2.drawImage(defaultCoverImage, m, m, getWidth()-2*m, getHeight()-2*m, this);
                 }
                 g2.dispose();
@@ -140,28 +129,61 @@ public class MusicPlayerPanel extends JPanel {
         albumArtLabel.setOpaque(false);
         albumArtLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         albumArtLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { togglePlaylist(); }
+            public void mouseClicked(MouseEvent e) { playAtIndex(0); }
         });
         add(albumArtLabel);
         
-        // 歌曲标题
+        // 歌曲标题（封面下方）
         songTitleLabel = new JLabel(musicList.isEmpty() ? "\u6682\u65E0\u97F3\u4E50" : "\u70B9\u51FB\u64AD\u653E", SwingConstants.CENTER);
-        songTitleLabel.setFont(buttonFont.deriveFont(26f));
+        songTitleLabel.setFont(buttonFont.deriveFont(20f));
         songTitleLabel.setForeground(new Color(255, 255, 255, 220));
         add(songTitleLabel);
         
-        // 时间标签
+        // ---- 第1行: 控制按钮 ----
+        prevBtn = createControlButton("\u23EE");
+        prevBtn.addActionListener(e -> playPrevious());
+        add(prevBtn);
+        
+        playPauseBtn = createControlButton("\u25B6");
+        playPauseBtn.addActionListener(e -> togglePlayPause());
+        add(playPauseBtn);
+        
+        nextBtn = createControlButton("\u23ED");
+        nextBtn.addActionListener(e -> playNext());
+        add(nextBtn);
+        
+        stopBtn = createControlButton("\u23F9");
+        stopBtn.addActionListener(e -> stopPlayback());
+        add(stopBtn);
+        
+        // ---- 第2行: 播放模式 ----
+        seqBtn = createModeButton("\uD83D\uDD01");
+        seqBtn.setToolTipText("\u987A\u5E8F\u64AD\u653E");
+        seqBtn.addActionListener(e -> setPlayMode(PlayMode.SEQUENTIAL));
+        add(seqBtn);
+        
+        singleLoopBtn = createModeButton("\uD83D\uDD02");
+        singleLoopBtn.setToolTipText("\u5355\u66F2\u5FAA\u73AF");
+        singleLoopBtn.addActionListener(e -> setPlayMode(PlayMode.SINGLE_LOOP));
+        add(singleLoopBtn);
+        
+        randomBtn = createModeButton("\uD83D\uDD00");
+        randomBtn.setToolTipText("\u968F\u673A\u64AD\u653E");
+        randomBtn.addActionListener(e -> setPlayMode(PlayMode.RANDOM));
+        add(randomBtn);
+        updateModeButtons();
+        
+        // ---- 第3行: 进度条 ----
         timeCurrentLabel = new JLabel("00:00");
-        timeCurrentLabel.setFont(buttonFont.deriveFont(14f));
+        timeCurrentLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
         timeCurrentLabel.setForeground(new Color(255, 255, 255, 180));
         add(timeCurrentLabel);
         
         timeTotalLabel = new JLabel("00:00");
-        timeTotalLabel.setFont(buttonFont.deriveFont(14f));
+        timeTotalLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
         timeTotalLabel.setForeground(new Color(255, 255, 255, 180));
         add(timeTotalLabel);
         
-        // 进度条
         progressSlider = new JSlider(0, 1000, 0);
         progressSlider.setOpaque(false);
         progressSlider.setFocusable(false);
@@ -178,24 +200,12 @@ public class MusicPlayerPanel extends JPanel {
         });
         add(progressSlider);
         
-        // 控制按钮
-        prevBtn = createControlButton("\u23EE"); // ⏮
-        prevBtn.addActionListener(e -> playPrevious());
-        add(prevBtn);
+        // ---- 第4行: 音量 ----
+        JLabel volLabel = new JLabel("\uD83D\uDD0A");
+        volLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
+        volLabel.setForeground(new Color(255, 255, 255, 180));
+        add(volLabel);
         
-        playPauseBtn = createControlButton("\u25B6"); // ▶
-        playPauseBtn.addActionListener(e -> togglePlayPause());
-        add(playPauseBtn);
-        
-        nextBtn = createControlButton("\u23ED"); // ⏭
-        nextBtn.addActionListener(e -> playNext());
-        add(nextBtn);
-        
-        stopBtn = createControlButton("\u23F9"); // ⏹
-        stopBtn.addActionListener(e -> stopPlayback());
-        add(stopBtn);
-        
-        // 音量滑块
         volumeSlider = new JSlider(0, 100, 80);
         volumeSlider.setOpaque(false);
         volumeSlider.setFocusable(false);
@@ -205,36 +215,13 @@ public class MusicPlayerPanel extends JPanel {
         });
         add(volumeSlider);
         
-        JLabel volLabel = new JLabel("\uD83D\uDD0A");
-        volLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
-        volLabel.setForeground(new Color(255, 255, 255, 180));
-        add(volLabel);
-        
-        // 播放模式按钮
-        seqBtn = createModeButton("\uD83D\uDD01"); // 顺序
-        seqBtn.setToolTipText("\u987A\u5E8F\u64AD\u653E");
-        seqBtn.addActionListener(e -> setPlayMode(PlayMode.SEQUENTIAL));
-        add(seqBtn);
-        
-        singleLoopBtn = createModeButton("\uD83D\uDD02"); // 单曲循环
-        singleLoopBtn.setToolTipText("\u5355\u66F2\u5FAA\u73AF");
-        singleLoopBtn.addActionListener(e -> setPlayMode(PlayMode.SINGLE_LOOP));
-        add(singleLoopBtn);
-        
-        randomBtn = createModeButton("\uD83D\uDD00"); // 随机
-        randomBtn.setToolTipText("\u968F\u673A\u64AD\u653E");
-        randomBtn.addActionListener(e -> setPlayMode(PlayMode.RANDOM));
-        add(randomBtn);
-        
-        updateModeButtons();
-        
-        // 播放列表面板
+        // ---- 右侧播放列表（常驻） ----
         createPlaylistPanel();
     }
     
     private JButton createControlButton(String text) {
         JButton btn = new JButton(text);
-        btn.setFont(new Font("Dialog", Font.PLAIN, 22));;
+        btn.setFont(new Font("Dialog", Font.PLAIN, 22));
         btn.setForeground(Color.WHITE);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
@@ -255,7 +242,7 @@ public class MusicPlayerPanel extends JPanel {
     
     private JButton createModeButton(String text) {
         JButton btn = new JButton(text);
-        btn.setFont(new Font("Dialog", Font.PLAIN, 18));;
+        btn.setFont(new Font("Dialog", Font.PLAIN, 18));
         btn.setForeground(new Color(255, 255, 255, 120));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
@@ -264,14 +251,13 @@ public class MusicPlayerPanel extends JPanel {
         return btn;
     }
     
-    // ---- 播放列表 ----
     private void createPlaylistPanel() {
         playlistPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(20, 20, 40, 230));
+                g2.setColor(new Color(20, 20, 40, 200));
                 g2.fillRoundRect(5, 5, getWidth()-10, getHeight()-10, 16, 16);
                 g2.setColor(new Color(255, 255, 255, 60));
                 g2.setStroke(new BasicStroke(1.5f));
@@ -285,7 +271,7 @@ public class MusicPlayerPanel extends JPanel {
         JLabel listTitle = new JLabel("  \u64AD\u653E\u5217\u8868", SwingConstants.LEFT);
         listTitle.setFont(buttonFont.deriveFont(18f));
         listTitle.setForeground(new Color(255, 255, 255, 200));
-        listTitle.setPreferredSize(new Dimension(playlistWidth, 35));
+        listTitle.setPreferredSize(new Dimension(200, 35));
         playlistPanel.add(listTitle, BorderLayout.NORTH);
         
         playlistContent = new JPanel();
@@ -299,9 +285,7 @@ public class MusicPlayerPanel extends JPanel {
         playlistScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         playlistPanel.add(playlistScroll, BorderLayout.CENTER);
         
-        playlistPanel.setVisible(false);
         add(playlistPanel);
-        
         refreshPlaylistItems();
     }
     
@@ -312,9 +296,9 @@ public class MusicPlayerPanel extends JPanel {
             int idx = i;
             JPanel item = new JPanel(new BorderLayout(10, 0));
             item.setOpaque(false);
-            item.setMaximumSize(new Dimension(playlistWidth - 20, 40));
-            item.setPreferredSize(new Dimension(playlistWidth - 20, 40));
-            item.setMinimumSize(new Dimension(playlistWidth - 20, 40));
+            item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+            item.setPreferredSize(new Dimension(200, 38));
+            item.setMinimumSize(new Dimension(200, 38));
             
             String songName = info.getDisplayName();
             JLabel nameLabel = new JLabel((idx + 1) + ". " + songName);
@@ -322,12 +306,11 @@ public class MusicPlayerPanel extends JPanel {
             nameLabel.setForeground(idx == currentIndex ? new Color(255, 255, 150) : new Color(255, 255, 255, 180));
             
             JLabel durLabel = new JLabel(formatTime(getWavDuration(info.wavFile)));
-            durLabel.setFont(buttonFont.deriveFont(12f));
+            durLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
             durLabel.setForeground(new Color(255, 255, 255, 140));
             
             item.add(nameLabel, BorderLayout.CENTER);
             item.add(durLabel, BorderLayout.EAST);
-            
             item.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             item.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) { playAtIndex(idx); }
@@ -336,105 +319,78 @@ public class MusicPlayerPanel extends JPanel {
             });
             
             playlistContent.add(item);
-            playlistContent.add(Box.createRigidArea(new Dimension(0, 2)));
+            playlistContent.add(Box.createRigidArea(new Dimension(0, 3)));
         }
         playlistContent.revalidate();
         playlistContent.repaint();
     }
     
-    private void togglePlaylist() {
-        playlistVisible = !playlistVisible;
-        if (playlistVisible) {
-            playlistPanel.setVisible(true);
-            // 动画滑出
-            startPlaylistAnimation(true);
-        } else {
-            startPlaylistAnimation(false);
-        }
-    }
-    
-    private void startPlaylistAnimation(boolean show) {
-        if (playlistAnimTimer != null && playlistAnimTimer.isRunning()) {
-            playlistAnimTimer.stop();
-        }
-        playlistAnimTimer = new Timer(10, e -> {
-            if (show) {
-                playlistSlideX += 0.08f;
-                if (playlistSlideX >= 1f) {
-                    playlistSlideX = 1f;
-                    playlistAnimTimer.stop();
-                }
-            } else {
-                playlistSlideX -= 0.08f;
-                if (playlistSlideX <= 0f) {
-                    playlistSlideX = 0f;
-                    playlistPanel.setVisible(false);
-                    playlistAnimTimer.stop();
-                }
-            }
-            doLayout();
-            repaint();
-        });
-        playlistAnimTimer.start();
-    }
-    
-    // ---- 布局 ----
     public void doLayout() {
         int w = getWidth(), h = getHeight();
-        int margin = 30;
-        int coverSize = Math.max(getWidth() / 3, Math.min(250, h - 180));
+        int margin = 20;
         
-        // 标题
+        // 标题和返回按钮
         for (Component c : getComponents()) {
             if (c instanceof JLabel && ((JLabel)c).getText().contains("\u266B"))
-                c.setBounds((w - 300) / 2, 10, 300, 50);
+                c.setBounds((w - 300) / 2, 8, 300, 45);
             else if (c instanceof JButton && ((JButton)c).getText().equals("X"))
-                c.setBounds(w - 55, 8, 45, 45);
+                c.setBounds(w - 50, 8, 40, 40);
         }
         
-        int albumX = margin;
-        int albumY = 80;
-        albumArtLabel.setBounds(albumX, albumY, coverSize, coverSize);
+        // 封面大小：占窗口宽的1/3
+        int coverSize = Math.max(w / 3, 200);
+        int coverX = margin;
+        int coverY = 60;
+        albumArtLabel.setBounds(coverX, coverY, coverSize, coverSize);
         
-        // 歌曲标题
-        int infoX = albumX + coverSize + 30;
-        int infoW = w - infoX - margin;
-        songTitleLabel.setBounds(infoX, albumY + 10, infoW, 35);
+        // 歌曲标题（封面下方）
+        songTitleLabel.setBounds(coverX, coverY + coverSize + 8, coverSize, 25);
         
-        // 进度条区域
-        int progY = albumY + coverSize - 60;
-        timeCurrentLabel.setBounds(infoX, progY, 60, 20);
-        timeTotalLabel.setBounds(infoX + infoW - 60, progY, 60, 20);
-        progressSlider.setBounds(infoX + 60, progY - 3, infoW - 120, 26);
+        // 四行控件：从封面的正下方开始
+        int ctrlY = coverY + coverSize + 38;  // 封面下方
+        int ctrlW = coverSize;
+        int rowH = 36;
+        int gap = 6;
         
-        // 控制按钮
-        int btnY = albumY + coverSize + 15;
-        int btnSize = 45;
-        int totalBtnW = btnSize * 4 + 15 * 3;
-        int btnStartX = infoX + (infoW - totalBtnW) / 2;
-        prevBtn.setBounds(btnStartX, btnY, btnSize, btnSize);
-        playPauseBtn.setBounds(btnStartX + btnSize + 15, btnY, btnSize, btnSize);
-        nextBtn.setBounds(btnStartX + (btnSize + 15) * 2, btnY, btnSize, btnSize);
-        stopBtn.setBounds(btnStartX + (btnSize + 15) * 3, btnY, btnSize, btnSize);
+        // 第1行：控制按钮（5个按钮等分）
+        int btnCount = 4;
+        int btnW = (ctrlW - gap * (btnCount - 1)) / btnCount;
+        int btnH = rowH;
+        int row1Y = ctrlY;
+        prevBtn.setBounds(coverX, row1Y, btnW, btnH);
+        playPauseBtn.setBounds(coverX + btnW + gap, row1Y, btnW, btnH);
+        nextBtn.setBounds(coverX + (btnW + gap) * 2, row1Y, btnW, btnH);
+        stopBtn.setBounds(coverX + (btnW + gap) * 3, row1Y, btnW, btnH);
         
-        // 音量
-        int volY = btnY + btnSize + 15;
+        // 第2行：播放模式（3个按钮）
+        int modeCount = 3;
+        int modeW = (ctrlW - gap * (modeCount - 1)) / modeCount;
+        int row2Y = row1Y + rowH + gap;
+        seqBtn.setBounds(coverX, row2Y, modeW, rowH);
+        singleLoopBtn.setBounds(coverX + modeW + gap, row2Y, modeW, rowH);
+        randomBtn.setBounds(coverX + (modeW + gap) * 2, row2Y, modeW, rowH);
+        
+        // 第3行：进度条
+        int row3Y = row2Y + rowH + gap;
+        timeCurrentLabel.setBounds(coverX, row3Y, 42, rowH);
+        timeTotalLabel.setBounds(coverX + ctrlW - 42, row3Y, 42, rowH);
+        progressSlider.setBounds(coverX + 44, row3Y + 5, ctrlW - 88, rowH - 10);
+        
+        // 第4行：音量
+        int row4Y = row3Y + rowH + gap;
+        JLabel volLbl = null;
         for (Component c : getComponents()) {
             if (c instanceof JLabel && ((JLabel)c).getText().contains("\uD83D\uDD0A"))
-                c.setBounds(infoX, volY + 2, 25, 20);
+                volLbl = (JLabel) c;
         }
-        volumeSlider.setBounds(infoX + 25, volY - 3, 120, 26);
+        if (volLbl != null) volLbl.setBounds(coverX, row4Y + 5, 25, rowH - 10);
+        volumeSlider.setBounds(coverX + 28, row4Y + 5, ctrlW - 32, rowH - 10);
         
-        // 播放模式
-        int modeY = volY;
-        int modeX = infoX + 160;
-        seqBtn.setBounds(modeX, modeY, 35, 30);
-        singleLoopBtn.setBounds(modeX + 40, modeY, 35, 30);
-        randomBtn.setBounds(modeX + 80, modeY, 35, 30);
-        
-        // 播放列表
-        int plX = albumX + (int)(playlistSlideX * playlistWidth);
-        playlistPanel.setBounds(plX, albumY, playlistWidth, coverSize + 80);
+        // 右侧播放列表（封面右边，占满剩余宽度）
+        int plX = coverX + coverSize + margin;
+        int plW = w - plX - margin;
+        if (plW < 150) { plW = 150; plX = w - plW - margin; }
+        playlistPanel.setBounds(plX, coverY, plW, h - coverY - margin);
     }
     
     // ---- 播放控制 ----
@@ -444,7 +400,6 @@ public class MusicPlayerPanel extends JPanel {
         playCurrent();
         refreshPlaylistItems();
         albumArtLabel.repaint();
-        if (playlistVisible) togglePlaylist();
     }
     
     private void playCurrent() {
@@ -459,9 +414,7 @@ public class MusicPlayerPanel extends JPanel {
     
     private void togglePlayPause() {
         if (currentIndex < 0) {
-            if (!musicList.isEmpty()) {
-                playAtIndex(0);
-            }
+            if (!musicList.isEmpty()) { playAtIndex(0); }
             return;
         }
         if (musicPlayer.isPlaying()) {
@@ -469,10 +422,7 @@ public class MusicPlayerPanel extends JPanel {
             updatePlayPauseButton(false);
         } else {
             musicPlayer.resume();
-            // 如果resume不工作，重新播放
-            if (!musicPlayer.isPlaying()) {
-                playCurrent();
-            }
+            if (!musicPlayer.isPlaying()) { playCurrent(); }
             updatePlayPauseButton(true);
         }
     }
@@ -496,13 +446,7 @@ public class MusicPlayerPanel extends JPanel {
             }
         } else {
             next = currentIndex + 1;
-            if (next >= musicList.size()) {
-                if (playMode == PlayMode.SEQUENTIAL) {
-                    next = 0;
-                } else {
-                    next = 0; // single loop handled by setLooping
-                }
-            }
+            if (next >= musicList.size()) { next = 0; }
         }
         playAtIndex(next);
     }
@@ -515,7 +459,7 @@ public class MusicPlayerPanel extends JPanel {
     }
     
     private void updatePlayPauseButton(boolean playing) {
-        playPauseBtn.setText(playing ? "\u23F8" : "\u25B6"); // ⏸ or ▶
+        playPauseBtn.setText(playing ? "\u23F8" : "\u25B6");
     }
     
     private void setPlayMode(PlayMode mode) {
@@ -530,7 +474,6 @@ public class MusicPlayerPanel extends JPanel {
         randomBtn.setForeground(playMode == PlayMode.RANDOM ? Color.WHITE : new Color(255,255,255,120));
     }
     
-    // ---- 进度更新 ----
     private void updateProgress() {
         if (progressDragging) return;
         if (musicPlayer.isPlaying()) {
@@ -542,10 +485,7 @@ public class MusicPlayerPanel extends JPanel {
                 timeCurrentLabel.setText(formatTime(posUs));
                 timeTotalLabel.setText(formatTime(totalUs));
             }
-            // 检查是否播放结束
-            if (posUs >= totalUs && totalUs > 0) {
-                onTrackEnd();
-            }
+            if (posUs >= totalUs && totalUs > 0) { onTrackEnd(); }
         }
     }
     
@@ -557,7 +497,6 @@ public class MusicPlayerPanel extends JPanel {
         }
     }
     
-    // ---- 辅助方法 ----
     private BufferedImage getCurrentCover() {
         if (currentIndex >= 0 && currentIndex < musicList.size()) {
             MusicFileInfo info = musicList.get(currentIndex);
@@ -585,11 +524,8 @@ public class MusicPlayerPanel extends JPanel {
         }
     }
     
-    public void stopMusic() {
-        musicPlayer.stopImmediately();
-    }
+    public void stopMusic() { musicPlayer.stopImmediately(); }
     
-    // ---- 背景绘制 ----
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
@@ -607,7 +543,6 @@ public class MusicPlayerPanel extends JPanel {
         g2.dispose();
     }
     
-    // ---- 音乐文件信息 ----
     private static class MusicFileInfo {
         File wavFile;
         File coverFile;
@@ -625,7 +560,6 @@ public class MusicPlayerPanel extends JPanel {
             String name = wavFile.getName();
             int dot = name.lastIndexOf('.');
             if (dot > 0) name = name.substring(0, dot);
-            // 去掉开头的数字和点
             name = name.replaceFirst("^\\d+[\\.\\-\\s]*", "");
             return name;
         }
