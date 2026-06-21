@@ -84,7 +84,6 @@ public class MainMenuPanel extends JPanel {
             switchToPanel(panel);
         });
         musicBtn.addActionListener(e -> {
-            // 停止背景动画，防止与音频资源冲突
             if (animTimer != null) animTimer.stop();
             // 后台关闭菜单音乐，避免AudioCue.close()阻塞EDT
             new Thread(() -> {
