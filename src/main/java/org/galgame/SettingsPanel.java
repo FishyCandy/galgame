@@ -281,7 +281,7 @@ public class SettingsPanel extends JPanel {
             }
             g2.drawImage(bgImage, drawX, drawY, drawW, drawH, this);
             // 半透明黑色覆盖层，用于视觉区分背景和设置内容
-            g2.setColor(new Color(0, 0, 0, 40));
+            g2.setColor(new Color(0, 0, 0, 95));
             g2.fillRect(0, 0, getWidth(), getHeight());
         } else {
             GradientPaint gp = new GradientPaint(0, 0, new Color(30, 30, 60),
