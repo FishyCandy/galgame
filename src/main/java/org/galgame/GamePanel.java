@@ -20,9 +20,9 @@ public class GamePanel extends JPanel {
     private JFrame parentFrame;
     private MainMenuPanel mainMenuPanel;
     private BufferedImage bgImage;
-    private BufferedImage spriteImage; // 人物差分图
+    private BufferedImage spriteImage; // 人物差分�?
     private String currentBgPath = null;     // 当前背景路径
-    private String currentSpritePath = null; // 当前差分图路径
+    private String currentSpritePath = null; // 当前差分图路�?
 
     private StoryManager storyManager;
     private boolean waitingForChoice = false;
@@ -36,7 +36,7 @@ public class GamePanel extends JPanel {
     private JPanel rightSpacer;
     private Timer autoTimer;
     private boolean isAutoPlaying = false;
-    private boolean isEnding = false;           // 故事结束状态标志
+    private boolean isEnding = false;           // 故事结束状态标�?
     private List<String> history = new ArrayList<>();
 
     private Color currentTextColor = Color.WHITE;
@@ -45,9 +45,9 @@ public class GamePanel extends JPanel {
     private MusicPlayer musicPlayer;
 
     // ---- 背景转场相关字段 ----
-    private float transitionAlpha = 0f;          // 黑幕透明度 (0~1)
+    private float transitionAlpha = 0f;          // 黑幕透明�?(0~1)
     private float dialogFadeAlpha = 1f;
-    // ---- 全局设置（由设置页面控制） ----
+    // ---- 全局设置（由设置页面控制�?----
     private static int autoPlayDelayMs = 2000;
     private static float globalDialogAlpha = 0.5f;
 
@@ -56,16 +56,16 @@ public class GamePanel extends JPanel {
     }
     public static void setDialogAlpha(float alpha) {
         globalDialogAlpha = alpha;
-    }          // 对话框透明度 (0~1)
+    }          // 对话框透明�?(0~1)
     private boolean isBgTransitioning = false;   // 是否正在转场
     private boolean clickPending = false;
     private int fadeStep = 0;
     private int fadePhase = 0;                   // 0=淡出至黑, 1=从黑淡入
-    private String pendingBgPath = null;         // 待切换的背景图路径
-    private Timer bgTransitionTimer;             // 转场动画定时器
+    private String pendingBgPath = null;         // 待切换的背景图路�?
+    private Timer bgTransitionTimer;             // 转场动画定时�?
 
-    // ---- 差分图转场相关字段 ----
-    private float spriteAlpha = 1f;              // 差分图透明度 (0~1)
+    // ---- 差分图转场相关字�?----
+    private float spriteAlpha = 1f;              // 差分图透明�?(0~1)
     private boolean isSpriteTransitioning = false;
     private String pendingSpritePath = null;
     private Timer spriteTransitionTimer;
@@ -97,7 +97,7 @@ public class GamePanel extends JPanel {
             dialogFont = new Font("微软雅黑", Font.PLAIN, 24);
         }
 
-        // 加载按钮字体（用于选项按钮）
+        // 加载按钮字体（用于选项按钮�?
         try {
             InputStream btnFontStream = getClass().getResourceAsStream("/fonts/MyButtonFont.ttf");
             if (btnFontStream != null) {
@@ -113,7 +113,7 @@ public class GamePanel extends JPanel {
 
         storyManager = new StoryManager();
 
-        // 初始状态：全黑背景，对话框不可见
+        // 初始状态：全黑背景，对话框不可�?
         bgImage = null;
         transitionAlpha = 1f;
         dialogFadeAlpha = 0f;
@@ -139,7 +139,7 @@ public class GamePanel extends JPanel {
 
 
 
-    // ---------- 人物差分图 ----------
+    // ---------- 人物差分�?----------
     private void loadSpriteImage(String path) {
         if (path == null || path.isEmpty()) return;
         pendingSpritePath = path;
@@ -150,7 +150,7 @@ public class GamePanel extends JPanel {
         }
 
         if (spriteImage == null) {
-            // 没有当前差分图，直接加载并淡入
+            // 没有当前差分图，直接加载并淡�?
             loadSpriteFromPending();
             spriteAlpha = 0f;
             isSpriteTransitioning = true;
@@ -161,7 +161,7 @@ public class GamePanel extends JPanel {
             // 有当前差分图，先淡出
             isSpriteTransitioning = true;
             spriteFadeStep = 0;
-            spriteFadePhase = 0; // 先淡出
+            spriteFadePhase = 0; // 先淡�?
             spriteAlpha = 1f;
             startSpriteFadeTimer();
         }
@@ -191,7 +191,7 @@ public class GamePanel extends JPanel {
                 // 淡出
                 spriteAlpha = 1f - progress;
                 if (progress >= 1f) {
-                    // 切换到新图，开始淡入
+                    // 切换到新图，开始淡�?
                     loadSpriteFromPending();
                     spriteAlpha = 0f;
                     spriteFadePhase = 1;
@@ -281,7 +281,7 @@ public class GamePanel extends JPanel {
         // 固定对话框大小，防止尺寸变化
         dialogPanel.setPreferredSize(new java.awt.Dimension(400, 200));
 
-        // wrapper包裹对话框，全屏模式下左右各留边距，居中显示；同时绘制全宽半透明覆盖层
+        // wrapper包裹对话框，全屏模式下左右各留边距，居中显示；同时绘制全宽半透明覆盖�?
         JPanel dialogWrapper = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -297,7 +297,7 @@ public class GamePanel extends JPanel {
 
             @Override
             public void doLayout() {
-                // 检测是否全屏模式
+                // 检测是否全屏模�?
                 java.awt.GraphicsDevice gd = parentFrame.getGraphicsConfiguration().getDevice();
                 boolean fullscreen = (gd.getFullScreenWindow() == parentFrame);
                 int margin = parentFrame.getWidth() / 6;
@@ -382,17 +382,15 @@ public class GamePanel extends JPanel {
                     g2.setStroke(new BasicStroke(2.5f));
                     g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 20, 20);
                 }
-// 丁香紫描边效果
-                FontRenderContext frc = g2.getFontRenderContext();
+// 丁香紫描边效�?                FontRenderContext frc = g2.getFontRenderContext();
                 TextLayout tl = new TextLayout(getText(), getFont(), frc);
                 java.awt.geom.Rectangle2D tlBounds = tl.getBounds();
                 int offset = pressed ? 2 : 0;
                 float textX = (getWidth() - (float) tlBounds.getWidth()) / 2 + offset;
-                float textY = (getHeight() - (float) tlBounds.getHeight()) / 2 + tl.getAscent() + offset;
+                float textY = (getHeight() + tl.getAscent() - tl.getDescent()) / 2f + offset;
                 AffineTransform at = AffineTransform.getTranslateInstance(textX, textY);
                 Shape outline = tl.getOutline(at);
-                // 丁香紫描边
-                g2.setColor(new Color(190, 145, 220));
+                // 丁香紫描�?                g2.setColor(new Color(190, 145, 220));
                 g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 g2.draw(outline);
                 // 白色填充
@@ -433,14 +431,12 @@ public class GamePanel extends JPanel {
             double imgRatio = (double) bgImage.getWidth() / bgImage.getHeight();
             int drawW, drawH, drawX, drawY;
             if (panelRatio > imgRatio) {
-                // 面板更宽，按宽度缩放，裁剪上下
-                drawW = panelW;
+                // 面板更宽，按宽度缩放，裁剪上�?                drawW = panelW;
                 drawH = (int) (panelW / imgRatio);
                 drawX = 0;
                 drawY = (panelH - drawH) / 2;
             } else {
-                // 面板更高，按高度缩放，裁剪左右
-                drawH = panelH;
+                // 面板更高，按高度缩放，裁剪左�?                drawH = panelH;
                 drawW = (int) (panelH * imgRatio);
                 drawX = (panelW - drawW) / 2;
                 drawY = 0;
@@ -469,7 +465,7 @@ public class GamePanel extends JPanel {
             g2s.dispose();
         }
 
-        // 背景转场黑幕（覆盖在背景之上）
+        // 背景转场黑幕（覆盖在背景之上�?
         if (transitionAlpha > 0.01f) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transitionAlpha));
@@ -482,7 +478,7 @@ public class GamePanel extends JPanel {
     // ---------- 核心游戏逻辑 ----------
     public void startGame() {
         history.clear();
-        // 重置转场状态：从全黑开始淡入
+        // 重置转场状态：从全黑开始淡�?
         if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) {
             bgTransitionTimer.stop();
         }
@@ -508,7 +504,7 @@ public class GamePanel extends JPanel {
     }
 
     public void resetGame() {
-        // 重置转场状态
+        // 重置转场状�?
         if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) {
             bgTransitionTimer.stop();
         }
@@ -577,9 +573,9 @@ public class GamePanel extends JPanel {
     }
 
     /**
-     * 启动背景转场动画：
-     * 阶段0：原背景 + 对话框渐入黑幕（逐渐消失）
-     * 阶段1：黑幕中切换背景，再渐入新背景 + 空对话框
+     * 启动背景转场动画�?
+     * 阶段0：原背景 + 对话框渐入黑幕（逐渐消失�?
+     * 阶段1：黑幕中切换背景，再渐入新背�?+ 空对话框
      */
     private void startBgTransition(String newBgPath) {
         if (isBgTransitioning) return;
@@ -591,13 +587,13 @@ public class GamePanel extends JPanel {
             bgTransitionTimer.stop();
         }
 
-        // 如果没有当前背景（首次加载），跳过淡出阶段，直接从黑色淡入
+        // 如果没有当前背景（首次加载），跳过淡出阶段，直接从黑色淡�?
         if (bgImage == null) {
-            // 直接加载新背景
+            // 直接加载新背�?
             loadBgImage(pendingBgPath);
             transitionAlpha = 1f;   // 全黑覆盖
             dialogFadeAlpha = 0f;   // 对话框不可见
-            fadePhase = 1;          // 跳过阶段0，直接进入淡入
+            fadePhase = 1;          // 跳过阶段0，直接进入淡�?
             characterLabel.setText("");
             lineArea.setText("");
         } else {
@@ -611,14 +607,14 @@ public class GamePanel extends JPanel {
         bgTransitionTimer = new Timer(16, null);
         bgTransitionTimer.addActionListener(e -> {
             if (fadePhase == 0) {
-                // 第一阶段：淡出到黑幕（背景 + 对话框 + 台词一同消失）
+                // 第一阶段：淡出到黑幕（背�?+ 对话�?+ 台词一同消失）
                 fadeStep++;
                 float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
                 transitionAlpha = progress;
                 dialogFadeAlpha = globalDialogAlpha * (1f - progress);
 
                 if (progress >= 1f) {
-                    // 切换到新背景，清空台词
+                    // 切换到新背景，清空台�?
                     loadBgImage(pendingBgPath);
                     characterLabel.setText("");
                     lineArea.setText("");
@@ -626,7 +622,7 @@ public class GamePanel extends JPanel {
                     fadeStep = 0;
                 }
             } else if (fadePhase == 1) {
-                // 第二阶段：从黑幕淡入（新背景 + 空覆盖层出现）
+                // 第二阶段：从黑幕淡入（新背景 + 空覆盖层出现�?
                 fadeStep++;
                 float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
                 transitionAlpha = 1f - progress;
@@ -666,7 +662,7 @@ if (waitingForChoice) return;
                 isAutoPlaying = false;
                 autoPlayBtn.setText("Auto");
             }
-            // 命令结束：不弹窗，设为ending状态
+            // 命令结束：不弹窗，设为ending状�?
             isEnding = true;
             return;
         }
@@ -678,7 +674,7 @@ switch (cmd.type) {
                 return;
 
             case "say":
-                history.add(cmd.who + "：" + cmd.text);
+                history.add(cmd.who + "�? + cmd.text);
                 characterLabel.setText(cmd.who);
                 lineArea.setText(cmd.text);
 
@@ -705,7 +701,7 @@ switch (cmd.type) {
                     if (musicUrl != null) {
                         musicPlayer.fadeTo(musicUrl);
                     } else {
-                        System.err.println("音乐文件未找到: " + cmd.bgm);
+                        System.err.println("音乐文件未找�? " + cmd.bgm);
                     }
                 }
                 updateDisplay();
@@ -721,14 +717,14 @@ switch (cmd.type) {
                 return;
 
             case "sprite_hide":
-                // 隐藏人物差分图
+                // 隐藏人物差分�?
                 currentSpritePath = null;
                 hideSprite();
                 updateDisplay();
                 return;
 
             case "set":
-                // 设置隐藏分变量
+                // 设置隐藏分变�?
                 if (cmd.var != null && cmd.value != null) {
                     storyManager.setScore(cmd.var, cmd.value);
                 }
@@ -736,7 +732,7 @@ switch (cmd.type) {
                 return;
 
             case "check":
-                // 检查分数条件，跳转到对应场景
+                // 检查分数条件，跳转到对应场�?
                 if (cmd.var != null && cmd.min != null && cmd.target != null) {
                     String resultScene = storyManager.checkCondition(cmd.var, cmd.min, cmd.target, cmd.fallback);
                     if (resultScene != null) {
@@ -749,7 +745,7 @@ switch (cmd.type) {
                 return;
 
             case "bg":
-                // 背景切换指令：启动淡入淡出转场
+                // 背景切换指令：启动淡入淡出转�?
                 if (cmd.bg != null && !cmd.bg.isEmpty()) {
                     currentBgPath = cmd.bg;
                     startBgTransition(cmd.bg);
@@ -763,7 +759,7 @@ switch (cmd.type) {
                     isAutoPlaying = false;
                     autoPlayBtn.setText("Auto");
                 }
-                // 设置故事结束标志，播放ending背景图
+                // 设置故事结束标志，播放ending背景�?
                 isEnding = true;
                 dialogPanel.setVisible(false);
                 controlPanel.setVisible(false);
@@ -782,10 +778,10 @@ switch (cmd.type) {
     }
 
     private void showChoices(List<StoryData.ChoiceData> choiceDataList) {
-        // 使用 frame 的 JLayeredPane 实现全屏覆盖（包括顶部按钮栏和底部对话框）
+        // 使用 frame �?JLayeredPane 实现全屏覆盖（包括顶部按钮栏和底部对话框�?
         JLayeredPane layeredPane = parentFrame.getLayeredPane();
 
-        // 全屏半透明暗幕 + 居中选项按钮（带淡入动画）
+        // 全屏半透明暗幕 + 居中选项按钮（带淡入动画�?
         JPanel overlay = new JPanel(new GridBagLayout()) {
             private float alpha = 0f;
             private Timer fadeInTimer;
@@ -804,7 +800,6 @@ switch (cmd.type) {
             }
             @Override
             protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(new Color(0, 0, 0, (int)(200 * alpha)));
@@ -813,13 +808,13 @@ switch (cmd.type) {
             }
         };
 
-        // 居中竖直排列的选项按钮（统一大小，无外框）
+        // 居中竖直排列的选项按钮（统一大小，无外框�?
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setOpaque(false);
 
         // 标题
-        JLabel title = new JLabel("—— 请做出选择 ——");
+        JLabel title = new JLabel("—�?请做出选择 —�?);
         title.setFont(buttonFont.deriveFont(22f));
         title.setForeground(new Color(255, 255, 255, 200));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -840,7 +835,7 @@ switch (cmd.type) {
                 layeredPane.revalidate();
                 layeredPane.repaint();
                 storyManager.jumpToScene(opt.getTarget());
-                // 应用隐藏分
+                // 应用隐藏�?
                 if (opt.getScore() != null) {
                     for (Map.Entry<String, Integer> scoreEntry : opt.getScore().entrySet()) {
                         storyManager.addScore(scoreEntry.getKey(), scoreEntry.getValue());
@@ -859,7 +854,7 @@ switch (cmd.type) {
         layeredPane.repaint();
     }
 
-    // 辅助方法：将 ChoiceData 转换为 ChoiceOption 列表
+    // 辅助方法：将 ChoiceData 转换�?ChoiceOption 列表
     private List<ChoiceOption> getChoiceOptions(List<StoryData.ChoiceData> choiceDataList) {
         List<ChoiceOption> options = new ArrayList<>();
         for (StoryData.ChoiceData cd : choiceDataList) {
@@ -868,7 +863,7 @@ switch (cmd.type) {
         return options;
     }
 
-    // 创建毛玻璃风格选项按钮（与主菜单 createGlassButton 风格一致）
+    // 创建毛玻璃风格选项按钮（与主菜�?createGlassButton 风格一致）
     private JButton createChoiceButton(String text) {
         JButton btn = new JButton(text) {
             private boolean hovered = false;
@@ -883,7 +878,6 @@ switch (cmd.type) {
             }
             @Override
             protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 Color fillColor = pressed ? new Color(255, 255, 255, 40) : new Color(255, 255, 255, 60);
@@ -899,17 +893,15 @@ switch (cmd.type) {
                     g2.setStroke(new BasicStroke(2.5f));
                     g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 30, 30);
                 }
-// 丁香紫描边效果
-                FontRenderContext frc = g2.getFontRenderContext();
+// 丁香紫描边效�?                FontRenderContext frc = g2.getFontRenderContext();
                 TextLayout tl = new TextLayout(getText(), getFont(), frc);
                 java.awt.geom.Rectangle2D tlBounds = tl.getBounds();
                 int offset = pressed ? 2 : 0;
                 float textX = (getWidth() - (float) tlBounds.getWidth()) / 2 + offset;
-                float textY = (getHeight() - (float) tlBounds.getHeight()) / 2 + tl.getAscent() + offset;
+                float textY = (getHeight() + tl.getAscent() - tl.getDescent()) / 2f + offset;
                 AffineTransform at = AffineTransform.getTranslateInstance(textX, textY);
                 Shape outline = tl.getOutline(at);
-                // 丁香紫描边
-                g2.setColor(new Color(190, 145, 220));
+                // 丁香紫描�?                g2.setColor(new Color(190, 145, 220));
                 g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 g2.draw(outline);
                 // 白色填充
@@ -973,7 +965,7 @@ switch (cmd.type) {
     }
     public boolean saveGameToFile(int slot) {
         if (storyManager == null) {
-            JOptionPane.showMessageDialog(this, "没有可存档的进度。", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "没有可存档的进度�?, "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         File saveFile = new File("save_" + slot + ".dat");
@@ -992,7 +984,7 @@ switch (cmd.type) {
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "存档失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "存档失败�? + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -1003,7 +995,7 @@ switch (cmd.type) {
             storyManager.setCurrentSceneId(data.getCurrentSceneId());
             int savedCmdIndex = data.getCurrentCommandIndex();
 
-            // 重置所有转场状态
+            // 重置所有转场状�?
             if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) bgTransitionTimer.stop();
             if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) spriteTransitionTimer.stop();
             transitionAlpha = 0f;
@@ -1014,12 +1006,12 @@ switch (cmd.type) {
             history.clear();
             waitingForChoice = false;
 
-            // 恢复隐藏分
+            // 恢复隐藏�?
             if (data.getScores() != null) {
                 storyManager.setScores(data.getScores());
             }
 
-            // 重放场景中所有bg/sprite/bgm指令来重建状态（从索引0到存档位置）
+            // 重放场景中所有bg/sprite/bgm指令来重建状态（从索�?到存档位置）
             bgImage = null;
             currentBgPath = null;
             spriteImage = null;
@@ -1060,7 +1052,7 @@ switch (cmd.type) {
                         break;
                     case "say":
                         if (cmd.who != null && cmd.text != null) {
-                            history.add(cmd.who + "：" + cmd.text);
+                            history.add(cmd.who + "�? + cmd.text);
                         }
                         break;
                     default:
@@ -1068,7 +1060,7 @@ switch (cmd.type) {
                 }
             }
 
-            // 回退一步：存档时的索引指向下一条指令，回退到已显示的指令
+            // 回退一步：存档时的索引指向下一条指令，回退到已显示的指�?
             storyManager.setCurrentCommandIndex(savedCmdIndex);
             if (savedCmdIndex > 0) {
                 storyManager.setCurrentCommandIndex(savedCmdIndex - 1);
@@ -1077,7 +1069,7 @@ switch (cmd.type) {
             return true;
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "读档失败！", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "读档失败�?, "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -1104,7 +1096,6 @@ switch (cmd.type) {
         JPanel overlay = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(new Color(0, 0, 0, 200));
@@ -1115,7 +1106,7 @@ switch (cmd.type) {
         overlay.setOpaque(false);
         overlay.setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
 
-        // 居中竖直排列的确认按钮
+        // 居中竖直排列的确认按�?
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setOpaque(false);
