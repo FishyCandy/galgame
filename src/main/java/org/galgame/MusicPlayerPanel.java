@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.imageio.ImageIO;
 import com.adonax.audiocue.AudioCue;
@@ -236,8 +236,7 @@ public class MusicPlayerPanel extends JPanel {
             } else {
                 if (musicPlayer.isPlaying() && currentIndex >= 0) {
                     double fraction = progressSlider.getValue() / 1000.0;
-                    double framePos = musicPlayer.getFrameLength() * fraction;
-                    musicPlayer.setFramePosition(framePos);
+                    musicPlayer.seekTo(fraction);
                 }
                 progressDragging = false;
             }

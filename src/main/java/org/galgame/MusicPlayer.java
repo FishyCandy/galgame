@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import com.adonax.audiocue.AudioCue;
 import java.io.File;
@@ -174,6 +174,24 @@ public class MusicPlayer {
     public void setFramePosition(double frame) {
         if (audioCue != null && instanceId != -1) {
             audioCue.setFramePosition(instanceId, frame);
+        }
+    }
+
+    /** 设置播放位置（0.0~1.0 比例） */
+    public void setFractionalPosition(double fraction) {
+        if (audioCue != null && instanceId != -1 && audioCue.getIsActive(instanceId)) {
+            audioCue.setFractionalPosition(instanceId, fraction);
+        }
+    }
+
+    public void seekTo(double fraction) {
+        if (audioCue != null && instanceId != -1 && audioCue.getIsActive(instanceId)) {
+            boolean wasPlaying = audioCue.getIsPlaying(instanceId);
+            audioCue.stop(instanceId);
+            audioCue.setFractionalPosition(instanceId, fraction);
+            if (wasPlaying) {
+                audioCue.start(instanceId);
+            }
         }
     }
 
