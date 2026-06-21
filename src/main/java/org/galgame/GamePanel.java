@@ -719,7 +719,7 @@ switch (cmd.type) {
                 setOpaque(false);
                 setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
                 fadeInTimer = new Timer(30, e -> {
-                    alpha += 0.1f;
+                    alpha += 0.2f;
                     if (alpha >= 1f) {
                         alpha = 1f;
                         fadeInTimer.stop();
