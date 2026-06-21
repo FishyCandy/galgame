@@ -213,17 +213,64 @@ public class SaveLoadPanel extends JPanel {
                 if (gamePanel != null) {
                     if (gamePanel.loadGameFromFile(saveFile)) {
                         mainMenuPanel.stopMenuMusic();
-                        mainMenuPanel.switchToPanel(gamePanel);
+                        transitionToPanel(gamePanel);
                     }
                 } else {
                     GamePanel gp = new GamePanel(parentFrame, mainMenuPanel);
                     if (gp.loadGameFromFile(saveFile)) {
                         mainMenuPanel.stopMenuMusic();
-                        mainMenuPanel.switchToPanel(gp);
+                        transitionToPanel(gp);
                     }
                 }
             });
         }
+    }
+
+
+    // ---------- 读档黑屏过渡动画 ----------
+    private void transitionToPanel(JPanel targetPanel) {
+        JLayeredPane layeredPane = parentFrame.getLayeredPane();
+        final float[] alphaArr = {0f};
+        JPanel blackScreen = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(new Color(0, 0, 0, (int)(alphaArr[0] * 255)));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+        blackScreen.setOpaque(false);
+        blackScreen.setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
+        layeredPane.add(blackScreen, JLayeredPane.MODAL_LAYER);
+        javax.swing.Timer timer = new javax.swing.Timer(20, null);
+        timer.addActionListener(new java.awt.event.ActionListener() {
+            int phase = 0;
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                if (phase == 0) {
+                    alphaArr[0] += 0.05f;
+                    if (alphaArr[0] >= 1f) {
+                        alphaArr[0] = 1f;
+                        phase = 1;
+                        mainMenuPanel.switchToPanel(targetPanel);
+                    }
+                } else if (phase == 1) {
+                    phase = 2;
+                } else {
+                    alphaArr[0] -= 0.05f;
+                    if (alphaArr[0] <= 0f) {
+                        alphaArr[0] = 0f;
+                        timer.stop();
+                        layeredPane.remove(blackScreen);
+                        layeredPane.revalidate();
+                        layeredPane.repaint();
+                    }
+                }
+                blackScreen.repaint();
+            }
+        });
+        timer.start();
     }
 
     // ---------- 覆盖层弹窗（替代JOptionPane） ----------
