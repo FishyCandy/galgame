@@ -320,7 +320,15 @@ public class MusicPlayerPanel extends JPanel {
         for (int i = 0; i < musicList.size(); i++) {
             MusicFileInfo info = musicList.get(i);
             int idx = i;
-            JPanel item = new JPanel(new BorderLayout(12, 0));
+            JPanel item = new JPanel(new BorderLayout(12, 0)) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    if (Boolean.TRUE.equals(getClientProperty("hover"))) {
+                        g.setColor(new Color(255, 255, 255, 25));
+                        g.fillRect(0, 0, getWidth(), getHeight());
+                    }
+                }
+            };
             item.setOpaque(false);
             item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 52));
             item.setPreferredSize(new Dimension(200, 52));
@@ -341,8 +349,8 @@ public class MusicPlayerPanel extends JPanel {
             item.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             item.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) { playAtIndex(idx); }
-                public void mouseEntered(MouseEvent e) { item.setBackground(new Color(255,255,255,25)); item.setOpaque(true); item.repaint(); }
-                public void mouseExited(MouseEvent e) { item.setOpaque(false); item.repaint(); }
+                public void mouseEntered(MouseEvent e) { item.putClientProperty("hover", Boolean.TRUE); item.repaint(); }
+                public void mouseExited(MouseEvent e) { item.putClientProperty("hover", Boolean.FALSE); item.repaint(); }
             });
             
             playlistContent.add(item);
@@ -378,7 +386,7 @@ public class MusicPlayerPanel extends JPanel {
         }
         
         int coverSize = Math.max(w * 2 / 5, 280);
-        int coverX = Math.max(50, (w - coverSize) / 4);
+        // 毛玻璃框整体左移，左侧到窗口中心线`r`n        int coverX = w / 2;
         
         int coverY = 80;
         
