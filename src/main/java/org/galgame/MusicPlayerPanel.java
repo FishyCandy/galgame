@@ -39,6 +39,7 @@ public class MusicPlayerPanel extends JPanel {
     private PlayMode playMode = PlayMode.SEQUENTIAL;
     private boolean progressDragging = false;
     private JPanel glassPanel;
+    private boolean uiReady = false;
 
     public MusicPlayerPanel(JFrame frame, MainMenuPanel mainMenu, Font titleFont, Font buttonFont) {
         this.parentFrame = frame;
@@ -53,8 +54,8 @@ public class MusicPlayerPanel extends JPanel {
         try { InputStream s = getClass().getResourceAsStream("/images/player_bg.jpg"); if (s != null) bgImage = ImageIO.read(s); } catch (Exception e) {}
         try { InputStream s = getClass().getResourceAsStream("/images/record.png"); if (s != null) defaultCoverImage = ImageIO.read(s); } catch (Exception e) {}
         
-        scanMusicFiles();
         createUI();
+        uiReady = true;
         
         progressTimer = new Timer(200, e -> updateProgress());
         progressTimer.start();
@@ -67,6 +68,11 @@ public class MusicPlayerPanel extends JPanel {
                 }
             }
         });
+    }
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        if (musicList.isEmpty()) scanMusicFiles();
     }
     
     private void scanMusicFiles() {
@@ -391,8 +397,21 @@ public class MusicPlayerPanel extends JPanel {
         durationLoadTimer.start();
     }
     
-    public void doLayout() { System.out.println("MusicPlayerPanel.doLayout: " + getWidth() + "x" + getHeight() + " comps=" + getComponentCount());
+
+    @Override
+    public java.awt.Dimension getPreferredSize() {
+        if (parentFrame != null) {
+            java.awt.Dimension d = parentFrame.getContentPane().getSize();
+            if (d.width > 0 && d.height > 0) return d;
+        }
+        return new java.awt.Dimension(1024, 600);
+    }
+    
+    public void doLayout() {
+        if (!uiReady) return;
         int w = getWidth(), h = getHeight();
+        if (w <= 0 || h <= 0) return;
+        if (glassPanel == null || albumArtLabel == null) return;
         int margin = 40;
         
         for (Component c : getComponents()) {
