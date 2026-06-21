@@ -1026,6 +1026,11 @@ switch (cmd.type) {
                             }
                         }
                         break;
+                    case "say":
+                        if (cmd.who != null && cmd.text != null) {
+                            history.add(cmd.who + "：" + cmd.text);
+                        }
+                        break;
                     default:
                         break;
                 }
