@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -35,7 +35,7 @@ public class MainMenuPanel extends JPanel {
         menuMusicPlayer = new MusicPlayer();
         menuMusicPlayer.setLooping(true);
 
-        // 加载背景�?
+        // 加载背景图
         try {
             InputStream imgStream = getClass().getResourceAsStream("/menu_bg.jpg");
             if (imgStream != null) {
@@ -71,11 +71,11 @@ public class MainMenuPanel extends JPanel {
         }
 
         // 按钮
-        JButton startBtn = createGlassButton("开 �?�?�?);
-        JButton exitBtn = createGlassButton("�?�?�?�?);
-        JButton loadBtn = createGlassButton("�?�?�?�?);
-        JButton musicBtn = createGlassButton("�?�?�?�?);
-        JButton settingsBtn = createGlassButton("�?�?�?�?);
+        JButton startBtn = createGlassButton("开 始 游 戏");
+        JButton exitBtn = createGlassButton("结 束 游 戏");
+        JButton loadBtn = createGlassButton("载 入 存 档");
+        JButton musicBtn = createGlassButton("音 乐 鉴 赏");
+        JButton settingsBtn = createGlassButton("游 戏 设 置");
 
         startBtn.addActionListener(e -> startGame());
         exitBtn.addActionListener(e -> System.exit(0));
@@ -100,7 +100,7 @@ public class MainMenuPanel extends JPanel {
         buttonPanel.add(musicBtn);
         buttonPanel.add(settingsBtn);
 
-        // 用一个占位行把内容推到底�?
+        // 用一个占位行把内容推到底部
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -114,7 +114,7 @@ public class MainMenuPanel extends JPanel {
         gbc.insets = new Insets(0, 0, 15, 0);
         add(buttonPanel, gbc);
 
-        JLabel footer = new JLabel("—�?愿你拥有美好的故�?—�?);
+        JLabel footer = new JLabel("—— 愿你拥有美好的故事 ——");
         footer.setFont(new Font("楷体", Font.PLAIN, 20));
         footer.setForeground(new Color(255, 255, 255, 180));
         gbc.gridy = 2;
@@ -144,7 +144,7 @@ public class MainMenuPanel extends JPanel {
             if (musicUrl != null) {
                 menuMusicPlayer.play(musicUrl);
             } else {
-                System.err.println("菜单背景音乐未找�? " + MENU_BGM);
+                System.err.println("菜单背景音乐未找到: " + MENU_BGM);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,7 +157,7 @@ public class MainMenuPanel extends JPanel {
         }
     }
 
-    // ---------- 毛玻璃按�?----------
+    // ---------- 毛玻璃按钮 ----------
     private JButton createGlassButton(String text) {
         JButton btn = new JButton(text) {
             private boolean hovered = false;
@@ -174,7 +174,7 @@ public class MainMenuPanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // 按下时背景稍�?
+                // 按下时背景稍暗
                 Color fillColor = pressed ? new Color(255, 255, 255, 40) : new Color(255, 255, 255, 60);
                 g2.setColor(fillColor);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
@@ -189,7 +189,8 @@ public class MainMenuPanel extends JPanel {
                     g2.setStroke(new BasicStroke(2.5f));
                     g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 30, 30);
                 }
-                // 丁香紫描边效�?                FontRenderContext frc = g2.getFontRenderContext();
+                // 丁香紫描边效果
+                FontRenderContext frc = g2.getFontRenderContext();
                 TextLayout tl = new TextLayout(getText(), getFont(), frc);
                 java.awt.geom.Rectangle2D tlBounds = tl.getBounds();
                 int offset = pressed ? 2 : 0;
@@ -197,7 +198,8 @@ public class MainMenuPanel extends JPanel {
                 float textY = (getHeight() + tl.getAscent() - tl.getDescent()) / 2f + offset;
                 AffineTransform at = AffineTransform.getTranslateInstance(textX, textY);
                 Shape outline = tl.getOutline(at);
-                // 丁香紫描�?                g2.setColor(new Color(190, 145, 220));
+                // 丁香紫描边
+                g2.setColor(new Color(190, 145, 220));
                 g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 g2.draw(outline);
                 // 白色填充
@@ -261,7 +263,7 @@ public class MainMenuPanel extends JPanel {
         }
     }
 
-    // ---------- 页面切换方法（无动画�?----------
+    // ---------- 页面切换方法（无动画） ----------
     public void switchToPanel(JPanel targetPanel) {
         previousPanel = (JPanel) parentFrame.getContentPane();
         parentFrame.setContentPane(targetPanel);
@@ -280,7 +282,7 @@ public class MainMenuPanel extends JPanel {
         gamePanel.startGame();
     }
 
-    // ---------- 返回主菜�?----------
+    // ---------- 返回主菜单 ----------
     public void showMainMenu() {
         previousPanel = (JPanel) parentFrame.getContentPane();
         if (gamePanel != null) {
