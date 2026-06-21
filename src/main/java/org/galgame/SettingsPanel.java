@@ -262,7 +262,27 @@ public class SettingsPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if (bgImage != null) {
-            g2.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+            // 等比缩放裁剪，保持图片比例不变形
+            int panelW = getWidth();
+            int panelH = getHeight();
+            double panelRatio = (double) panelW / panelH;
+            double imgRatio = (double) bgImage.getWidth() / bgImage.getHeight();
+            int drawW, drawH, drawX, drawY;
+            if (panelRatio > imgRatio) {
+                drawW = panelW;
+                drawH = (int) (panelW / imgRatio);
+                drawX = 0;
+                drawY = (panelH - drawH) / 2;
+            } else {
+                drawH = panelH;
+                drawW = (int) (panelH * imgRatio);
+                drawX = (panelW - drawW) / 2;
+                drawY = 0;
+            }
+            g2.drawImage(bgImage, drawX, drawY, drawW, drawH, this);
+            // 半透明黑色覆盖层，用于视觉区分背景和设置内容
+            g2.setColor(new Color(0, 0, 0, 80));
+            g2.fillRect(0, 0, getWidth(), getHeight());
         } else {
             GradientPaint gp = new GradientPaint(0, 0, new Color(30, 30, 60),
                     getWidth(), getHeight(), new Color(10, 10, 30));
