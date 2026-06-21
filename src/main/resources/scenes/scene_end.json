@@ -1,7 +1,8 @@
 {
   "commands": [
     { "type": "sprite_hide" },
+    { "type": "bg", "bg": "game_bg.jpg" },
     { "type": "say", "who": "旁白", "text": "—— 故事结束 ——", "color": "#AAAAAA" },
-    { "type": "end" }
+    { "type": "end", "image": "game_bg.jpg" }
   ]
 }

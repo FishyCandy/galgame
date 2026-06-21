@@ -29,6 +29,7 @@ public class GamePanel extends JPanel {
     private JPanel dialogPanel;
     private Timer autoTimer;
     private boolean isAutoPlaying = false;
+    private boolean isEnding = false;           // 故事结束状态标志
     private List<String> history = new ArrayList<>();
 
     private Color currentTextColor = Color.WHITE;
@@ -441,6 +442,7 @@ public class GamePanel extends JPanel {
         lineArea.setText("");
         storyManager = new StoryManager();
         waitingForChoice = false;
+        isEnding = false;
         currentTextColor = Color.WHITE;
         updateDisplay();
     }
@@ -472,6 +474,7 @@ public class GamePanel extends JPanel {
         history.clear();
         storyManager = new StoryManager();
         waitingForChoice = false;
+        isEnding = false;
         currentTextColor = Color.WHITE;
         stopMusic();
         updateDisplay();
@@ -574,18 +577,12 @@ public class GamePanel extends JPanel {
     }
 
     public void updateDisplay() {
-        if (storyManager.isEnd()) {
-            if (autoTimer != null && autoTimer.isRunning()) {
-                autoTimer.stop();
-                isAutoPlaying = false;
-                autoPlayBtn.setText("Auto");
-            }
-            JOptionPane.showMessageDialog(this, "故事已结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
-            SwingUtilities.invokeLater(() -> mainMenuPanel.showMainMenu());
+        if (isEnding) {
+            // 故事结束：不弹窗，显示返回确认覆盖层
+            confirmReturn();
             return;
         }
-
-        if (waitingForChoice) return;
+if (waitingForChoice) return;
 
         StoryData.CommandData cmd = storyManager.nextCommand();
         if (cmd == null) {
@@ -594,12 +591,11 @@ public class GamePanel extends JPanel {
                 isAutoPlaying = false;
                 autoPlayBtn.setText("Auto");
             }
-            JOptionPane.showMessageDialog(this, "故事已结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
-            SwingUtilities.invokeLater(() -> mainMenuPanel.showMainMenu());
+            // 命令结束：不弹窗，设为ending状态
+            isEnding = true;
             return;
         }
-
-        switch (cmd.type) {
+switch (cmd.type) {
 
             case "show":
                 // 旧版show指令已废弃，自动跳过
@@ -692,9 +688,14 @@ public class GamePanel extends JPanel {
                     isAutoPlaying = false;
                     autoPlayBtn.setText("Auto");
                 }
-                JOptionPane.showMessageDialog(this, "故事结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
-                SwingUtilities.invokeLater(() -> mainMenuPanel.showMainMenu());
-                break;
+                // 设置故事结束标志，播放ending背景图
+                isEnding = true;
+                if (cmd.image != null && !cmd.image.isEmpty()) {
+                    currentBgPath = cmd.image;
+                    startBgTransition(cmd.image);
+                }
+                return;
+
 
             default:
                 break;
