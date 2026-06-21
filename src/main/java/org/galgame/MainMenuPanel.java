@@ -96,17 +96,25 @@ public class MainMenuPanel extends JPanel {
         buttonPanel.add(musicBtn);
         buttonPanel.add(settingsBtn);
 
+        // 用一个占位行把内容推到底部
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(50, 0, 60, 0);
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        add(Box.createVerticalGlue(), gbc);
+
+        gbc.gridy = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(0, 0, 15, 0);
         add(buttonPanel, gbc);
 
         JLabel footer = new JLabel("—— 愿你拥有美好的故事 ——");
         footer.setFont(new Font("楷体", Font.PLAIN, 20));
         footer.setForeground(new Color(255, 255, 255, 180));
-        gbc.gridy = 1;
-        gbc.insets = new Insets(60, 0, 30, 0);
+        gbc.gridy = 2;
+        gbc.insets = new Insets(15, 0, 40, 0);
         add(footer, gbc);
 
         if (bgImage == null) {
