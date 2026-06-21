@@ -413,7 +413,26 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (bgImage != null) {
-            g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+            // 等比缩放裁剪，保持图片比例不变形
+            int panelW = getWidth();
+            int panelH = getHeight();
+            double panelRatio = (double) panelW / panelH;
+            double imgRatio = (double) bgImage.getWidth() / bgImage.getHeight();
+            int drawW, drawH, drawX, drawY;
+            if (panelRatio > imgRatio) {
+                // 面板更宽，按宽度缩放，裁剪上下
+                drawW = panelW;
+                drawH = (int) (panelW / imgRatio);
+                drawX = 0;
+                drawY = (panelH - drawH) / 2;
+            } else {
+                // 面板更高，按高度缩放，裁剪左右
+                drawH = panelH;
+                drawW = (int) (panelH * imgRatio);
+                drawX = (panelW - drawW) / 2;
+                drawY = 0;
+            }
+            g.drawImage(bgImage, drawX, drawY, drawW, drawH, this);
         } else {
             Graphics2D g2 = (Graphics2D) g.create();
             GradientPaint gp = new GradientPaint(0, 0, new Color(30, 30, 60),
