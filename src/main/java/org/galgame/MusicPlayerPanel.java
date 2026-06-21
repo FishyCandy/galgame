@@ -230,19 +230,19 @@ public class MusicPlayerPanel extends JPanel {
         progressSlider.setOpaque(false);
         progressSlider.setFocusable(false);
         progressSlider.addChangeListener(e -> {
+        progressSlider.addChangeListener(e -> {
+            if (programmaticSliderUpdate) return;
             if (progressSlider.getValueIsAdjusting()) {
                 progressDragging = true;
-            } else if (progressDragging) {
-                progressDragging = false;
+            } else {
                 if (musicPlayer.isPlaying() && currentIndex >= 0) {
                     double fraction = progressSlider.getValue() / 1000.0;
                     double framePos = musicPlayer.getFrameLength() * fraction;
                     musicPlayer.setFramePosition(framePos);
                 }
+                progressDragging = false;
             }
         });
-        add(progressSlider);
-        
         // 绗?琛? 闊抽噺
         JLabel volLabel = new JLabel("\uD83D\uDD0A");
         volLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
