@@ -162,9 +162,9 @@ public class MainMenuPanel extends JPanel {
             private boolean pressed = false;
             {
                 addMouseListener(new java.awt.event.MouseAdapter() {
-                    public void mouseEntered(java.awt.event.MouseEvent e) { hovered = true; repaint(); }
+                    public void mouseEntered(java.awt.event.MouseEvent e) { hovered = true; repaint(); SoundEffects.playHover(); }
                     public void mouseExited(java.awt.event.MouseEvent e) { hovered = false; repaint(); }
-                    public void mousePressed(java.awt.event.MouseEvent e) { pressed = true; repaint(); }
+                    public void mousePressed(java.awt.event.MouseEvent e) { pressed = true; repaint(); SoundEffects.playClick(); }
                     public void mouseReleased(java.awt.event.MouseEvent e) { pressed = false; repaint(); }
                 });
             }

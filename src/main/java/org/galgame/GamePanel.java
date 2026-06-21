@@ -363,9 +363,9 @@ public class GamePanel extends JPanel {
             private boolean pressed = false;
             {
                 addMouseListener(new MouseAdapter() {
-                    public void mouseEntered(MouseEvent e) { hovered = true; repaint(); }
+                    public void mouseEntered(MouseEvent e) { hovered = true; repaint(); SoundEffects.playHover(); }
                     public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
-                    public void mousePressed(MouseEvent e) { pressed = true; repaint(); }
+                    public void mousePressed(MouseEvent e) { pressed = true; repaint(); SoundEffects.playClick(); }
                     public void mouseReleased(MouseEvent e) { pressed = false; repaint(); }
                 });
             }
@@ -845,9 +845,9 @@ switch (cmd.type) {
             private boolean pressed = false;
             {
                 addMouseListener(new MouseAdapter() {
-                    public void mouseEntered(MouseEvent e) { hovered = true; repaint(); }
+                    public void mouseEntered(MouseEvent e) { hovered = true; repaint(); SoundEffects.playHover(); }
                     public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
-                    public void mousePressed(MouseEvent e) { pressed = true; repaint(); }
+                    public void mousePressed(MouseEvent e) { pressed = true; repaint(); SoundEffects.playClick(); }
                     public void mouseReleased(MouseEvent e) { pressed = false; repaint(); }
                 });
             }

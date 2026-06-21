@@ -28,6 +28,7 @@ public class MusicPlayer {
             for (MusicPlayer mp : instances) {
                 mp.applyVolume();
             }
+            SoundEffects.updateVolume();
         }
     }
 

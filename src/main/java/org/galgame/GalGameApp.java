@@ -8,6 +8,9 @@ public class GalGameApp {
         // 设置 FlatLaf 深色主题
         FlatDarkLaf.setup();
 
+        // 初始化按钮音效
+        SoundEffects.init();
+
         // 提前初始化 JavaFX 工具包
         new javafx.embed.swing.JFXPanel();
 
