@@ -278,7 +278,7 @@ public class MusicPlayerPanel extends JPanel {
         playlistPanel.setLayout(new BorderLayout(0, 0));
         playlistPanel.setOpaque(false);
         
-        JLabel listTitle = new JLabel("  \u64AD\u653E\u5217\u8868", SwingConstants.LEFT);
+        JLabel listTitle = new JLabel("\u64AD\u653E\u5217\u8868", SwingConstants.LEFT);
         listTitle.setFont(buttonFont.deriveFont(18f));
         listTitle.setForeground(new Color(255, 255, 255, 200));
         listTitle.setBorder(BorderFactory.createEmptyBorder(8, 8, 4, 8));
@@ -307,17 +307,17 @@ public class MusicPlayerPanel extends JPanel {
             int idx = i;
             JPanel item = new JPanel(new BorderLayout(12, 0));
             item.setOpaque(false);
-            item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-            item.setPreferredSize(new Dimension(200, 42));
-            item.setMinimumSize(new Dimension(200, 42));
+            item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 52));
+            item.setPreferredSize(new Dimension(200, 52));
+            item.setMinimumSize(new Dimension(200, 52));
             
             String songName = info.getDisplayName();
             JLabel nameLabel = new JLabel((idx + 1) + ". " + songName);
-            nameLabel.setFont(buttonFont.deriveFont(16f));
+            nameLabel.setFont(buttonFont.deriveFont(22f));
             nameLabel.setForeground(idx == currentIndex ? new Color(255, 255, 150) : new Color(255, 255, 255, 200));
             
             JLabel durLabel = new JLabel(formatTime(getWavDuration(info.wavFile)));
-            durLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
+            durLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
             durLabel.setForeground(new Color(255, 255, 255, 160));
             
             item.add(nameLabel, BorderLayout.CENTER);
@@ -338,7 +338,7 @@ public class MusicPlayerPanel extends JPanel {
     
     public void doLayout() {
         int w = getWidth(), h = getHeight();
-        int margin = 20;
+        int margin = 40;
         
         for (Component c : getComponents()) {
             if (c instanceof JLabel && ((JLabel)c).getText().contains("\u266B"))
@@ -349,7 +349,7 @@ public class MusicPlayerPanel extends JPanel {
         
         int coverSize = Math.max(w / 3, 200);
         int coverX = margin;
-        int coverY = 60;
+        int coverY = 80;
         
         // 毛玻璃面板包围封面+四行
         int glassH = coverSize + 38 + 36*4 + 6*3 + 16;
@@ -394,11 +394,11 @@ public class MusicPlayerPanel extends JPanel {
         volumeSlider.setBounds(coverX + 28, row4Y + 5, ctrlW - 28, rowH - 10);
         
         // 播放列表（滑出动画）
-        int plFullX = coverX + coverSize + margin;
-        int plW = w - plFullX - margin;
+        int glassRight = coverX + coverSize + 12; int plFullX = glassRight + 8;
+        int plW = Math.min(280, w - plFullX - 20);
         if (plW < 150) { plW = 150; plFullX = w - plW - margin; }
         int plDisplayX = (int)(plFullX + (1f - playlistSlideX) * plW);
-        playlistPanel.setBounds(plDisplayX, coverY, plW, h - coverY - margin);
+        playlistPanel.setBounds(plDisplayX, coverY - 12, plW, glassH);
         
         // 如果播放列表可见但宽度太窄，也隐藏掉右侧区域的内容
         if (playlistVisible) {
