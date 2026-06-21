@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.imageio.ImageIO;
 import com.adonax.audiocue.AudioCue;
@@ -359,8 +359,8 @@ public class MusicPlayerPanel extends JPanel {
                 c.setBounds(w - 50, 8, 40, 40);
         }
         
-        int coverSize = Math.max(w / 3, 200);
-        int coverX = margin;
+        int coverSize = Math.max(w * 2 / 5, 280);
+        int totalW = coverSize + 24 + plW; int coverX = Math.max(20, (w - totalW) / 2 + 12);
         int coverY = 80;
         
         // 姣涚幓鐠冮潰鏉垮寘鍥村皝闈?鍥涜
@@ -408,7 +408,7 @@ public class MusicPlayerPanel extends JPanel {
         // 鎾斁鍒楄〃锛堟粦鍑哄姩鐢伙級
         int plStartX = coverX;
         int plFullX = coverX + coverSize + 12;
-        int plW = Math.min(380, w - plFullX - 20);
+        int plW = Math.min(450, w - plFullX - 20);
         if (plW < 150) plW = 150;
         int plDisplayX = (int)(plStartX + playlistSlideX * (plFullX - plStartX));
         playlistPanel.setBounds(plDisplayX, coverY - 12, plW, glassH);
