@@ -234,7 +234,7 @@ public class MusicPlayerPanel extends JPanel {
     
     private JButton createControlButton(String text) {
         JButton btn = new JButton(text);
-        btn.setFont(buttonFont.deriveFont(22f));
+        btn.setFont(new Font("Dialog", Font.PLAIN, 22));;
         btn.setForeground(Color.WHITE);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
@@ -255,7 +255,7 @@ public class MusicPlayerPanel extends JPanel {
     
     private JButton createModeButton(String text) {
         JButton btn = new JButton(text);
-        btn.setFont(buttonFont.deriveFont(18f));
+        btn.setFont(new Font("Dialog", Font.PLAIN, 18));;
         btn.setForeground(new Color(255, 255, 255, 120));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);

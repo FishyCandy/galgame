@@ -85,6 +85,7 @@ public class MainMenuPanel extends JPanel {
         });
         musicBtn.addActionListener(e -> {
             try {
+                stopMenuMusic();
                 MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
                 switchToPanel(musicPanel);
             } catch (Exception ex) {
@@ -311,6 +312,14 @@ public class MainMenuPanel extends JPanel {
             parentFrame.repaint();
             if (target instanceof GamePanel) {
                 ((GamePanel) target).syncDialogAlpha();
+            } else if (target == this) {
+                // 返回主菜单，重启BGM
+                javax.swing.Timer delayTimer = new javax.swing.Timer(200, ev -> {
+                    playMenuMusic();
+                    ((javax.swing.Timer) ev.getSource()).stop();
+                });
+                delayTimer.setRepeats(false);
+                delayTimer.start();
             }
         } else {
             showMainMenu();
