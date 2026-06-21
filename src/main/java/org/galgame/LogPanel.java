@@ -126,7 +126,7 @@ JButton returnBtn = createReturnButton();
         dialogueBox.setOpaque(false);
         dialogueBox.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
-        StrokableTextArea textArea = new StrokableTextArea(text);
+        StrokableTextArea textArea = new StrokableTextArea(); textArea.setText(text);
         textArea.setFont(dialogFont.deriveFont(26f));
         textArea.setForeground(Color.WHITE);
         textArea.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
