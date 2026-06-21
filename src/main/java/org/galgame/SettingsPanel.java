@@ -85,7 +85,7 @@ public class SettingsPanel extends JPanel {
         closeBtn.setContentAreaFilled(false);
         closeBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         closeBtn.setOpaque(false);
-        closeBtn.addActionListener(e -> mainMenuPanel.showMainMenu());
+        closeBtn.addActionListener(e -> mainMenuPanel.showPreviousPanel());
         closeBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {

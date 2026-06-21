@@ -12,6 +12,7 @@ import java.net.URL;
 public class MainMenuPanel extends JPanel {
     private JFrame parentFrame;
     private GamePanel gamePanel;
+    private JPanel previousPanel;
     private Timer animTimer;
     private float hue = 0.0f;
     private BufferedImage bgImage;
@@ -215,6 +216,7 @@ public class MainMenuPanel extends JPanel {
 
     // ---------- 页面切换方法（无动画） ----------
     public void switchToPanel(JPanel targetPanel) {
+        previousPanel = (JPanel) parentFrame.getContentPane();
         parentFrame.setContentPane(targetPanel);
         parentFrame.revalidate();
         parentFrame.repaint();
@@ -233,6 +235,7 @@ public class MainMenuPanel extends JPanel {
 
     // ---------- 返回主菜单 ----------
     public void showMainMenu() {
+        previousPanel = (JPanel) parentFrame.getContentPane();
         if (gamePanel != null) {
             gamePanel.stopMusic();
         }
@@ -244,5 +247,17 @@ public class MainMenuPanel extends JPanel {
         });
         delayTimer.setRepeats(false);
         delayTimer.start();
+    }
+
+    public void showPreviousPanel() {
+        if (previousPanel != null) {
+            JPanel target = previousPanel;
+            previousPanel = (JPanel) parentFrame.getContentPane();
+            parentFrame.setContentPane(target);
+            parentFrame.revalidate();
+            parentFrame.repaint();
+        } else {
+            showMainMenu();
+        }
     }
 }
