@@ -803,7 +803,9 @@ switch (cmd.type) {
                 fadeInTimer.start();
             }
             @Override
-            protected void paintComponent(Graphics g) {`r`n                Graphics2D g2 = (Graphics2D) g.create();
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(new Color(0, 0, 0, (int)(200 * alpha)));
                 g2.fillRect(0, 0, getWidth(), getHeight());
@@ -880,7 +882,8 @@ switch (cmd.type) {
                 });
             }
             @Override
-            protected void paintComponent(Graphics g) {`r`n                Graphics2D g2 = (Graphics2D) g.create();
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 Color fillColor = pressed ? new Color(255, 255, 255, 40) : new Color(255, 255, 255, 60);
                 g2.setColor(fillColor);
@@ -1099,7 +1102,9 @@ switch (cmd.type) {
         // 半透明暗幕 + 居中确认按钮
         JPanel overlay = new JPanel(new GridBagLayout()) {
             @Override
-            protected void paintComponent(Graphics g) {`r`n                Graphics2D g2 = (Graphics2D) g.create();
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(new Color(0, 0, 0, 200));
                 g2.fillRect(0, 0, getWidth(), getHeight());
