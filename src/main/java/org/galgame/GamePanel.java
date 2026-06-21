@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -54,6 +54,7 @@ public class GamePanel extends JPanel {
         globalDialogAlpha = alpha;
     }          // 对话框透明度 (0~1)
     private boolean isBgTransitioning = false;   // 是否正在转场
+    private boolean clickPending = false;
     private int fadeStep = 0;
     private int fadePhase = 0;                   // 0=淡出至黑, 1=从黑淡入
     private String pendingBgPath = null;         // 待切换的背景图路径
@@ -613,6 +614,12 @@ public class GamePanel extends JPanel {
                     dialogFadeAlpha = globalDialogAlpha;
                     isBgTransitioning = false;
                     bgTransitionTimer.stop();
+                    if (clickPending) {
+                        clickPending = false;
+                        nextCommand();
+                    } else if (!isEnding) {
+                        updateDisplay();
+                    }
                 }
             }
             repaint();
@@ -902,7 +909,10 @@ switch (cmd.type) {
 
     private void nextCommand() {
         if (waitingForChoice) return;
-        if (isBgTransitioning) return;
+        if (isBgTransitioning) {
+            if (isEnding) clickPending = true;
+            return;
+        }
         updateDisplay();
     }
 
