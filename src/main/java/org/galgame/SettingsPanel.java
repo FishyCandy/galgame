@@ -72,7 +72,7 @@ public class SettingsPanel extends JPanel {
         JPanel titleRow = new JPanel(new BorderLayout());
         titleRow.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("\u2699  游 戏 设 置");
+        JLabel titleLabel = new JLabel("\u2699  �?�?�?�?);
         titleLabel.setFont(titleFont.deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         titleRow.add(titleLabel, BorderLayout.WEST);
@@ -280,8 +280,7 @@ public class SettingsPanel extends JPanel {
                 drawY = 0;
             }
             g2.drawImage(bgImage, drawX, drawY, drawW, drawH, this);
-            // 半透明黑色覆盖层，用于视觉区分背景和设置内容
-            g2.setColor(new Color(0, 0, 0, 80));
+            // 半透明黑色覆盖层，用于视觉区分背景和设置内�?            g2.setColor(new Color(0, 0, 0, 40));
             g2.fillRect(0, 0, getWidth(), getHeight());
         } else {
             GradientPaint gp = new GradientPaint(0, 0, new Color(30, 30, 60),
@@ -291,7 +290,7 @@ public class SettingsPanel extends JPanel {
         }
         g2.dispose();
     }
-    /** 创建统一的图片返回按钮（鼠标悬停发光效果） */
+    /** 创建统一的图片返回按钮（鼠标悬停发光效果�?*/
     private JButton createReturnButton() {
         try {
             BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));
@@ -336,7 +335,7 @@ public class SettingsPanel extends JPanel {
             }
         } catch (Exception e) {
         }
-        JButton btn = new JButton("✕");
+        JButton btn = new JButton("�?);
         btn.setFont(buttonFont.deriveFont(22f));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
