@@ -206,7 +206,7 @@ public class MusicPlayerPanel extends JPanel {
         add(volumeSlider);
         
         JLabel volLabel = new JLabel("\uD83D\uDD0A");
-        volLabel.setFont(buttonFont.deriveFont(16f));
+        volLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
         volLabel.setForeground(new Color(255, 255, 255, 180));
         add(volLabel);
         
