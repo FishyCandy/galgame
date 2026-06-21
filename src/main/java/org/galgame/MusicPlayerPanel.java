@@ -97,7 +97,7 @@ public class MusicPlayerPanel extends JPanel {
     private void createUI() {
         // 姣涚幓鐠冨鍣紙妗嗕綇灏侀潰+鍥涜鎺т欢锛?
         glassPanel = new JPanel() {
-            protected void paintComponent(Graphics g) {
+            protected void paintComponent(Graphics g) { System.out.println("MusicPlayerPanel.paintComponent: " + getWidth() + "x" + getHeight());
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -133,7 +133,7 @@ public class MusicPlayerPanel extends JPanel {
         
         // 涓撹緫灏侀潰
         albumArtLabel = new JLabel() {
-            protected void paintComponent(Graphics g) {
+            protected void paintComponent(Graphics g) { System.out.println("MusicPlayerPanel.paintComponent: " + getWidth() + "x" + getHeight());
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(new Color(255, 255, 255, 50));
@@ -275,7 +275,7 @@ public class MusicPlayerPanel extends JPanel {
     
     private void createPlaylistPanel() {
         playlistPanel = new JPanel() {
-            protected void paintComponent(Graphics g) {
+            protected void paintComponent(Graphics g) { System.out.println("MusicPlayerPanel.paintComponent: " + getWidth() + "x" + getHeight());
                 super.paintComponent(g);
                 if (getWidth() <= 0 || getHeight() <= 0) return;
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -322,7 +322,7 @@ public class MusicPlayerPanel extends JPanel {
             int idx = i;
             JPanel item = new JPanel(new BorderLayout(12, 0)) {
                 @Override
-                protected void paintComponent(Graphics g) {
+                protected void paintComponent(Graphics g) { System.out.println("MusicPlayerPanel.paintComponent: " + getWidth() + "x" + getHeight());
                     if (Boolean.TRUE.equals(getClientProperty("hover"))) {
                         g.setColor(new Color(255, 255, 255, 25));
                         g.fillRect(0, 0, getWidth(), getHeight());
@@ -379,7 +379,7 @@ public class MusicPlayerPanel extends JPanel {
         durationLoadTimer.start();
     }
     
-    public void doLayout() {
+    public void doLayout() { System.out.println("MusicPlayerPanel.doLayout: " + getWidth() + "x" + getHeight() + " comps=" + getComponentCount());
         int w = getWidth(), h = getHeight();
         int margin = 40;
         
@@ -637,7 +637,7 @@ public class MusicPlayerPanel extends JPanel {
     
     public void stopMusic() { musicPlayer.stopImmediately(); }
     
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) { System.out.println("MusicPlayerPanel.paintComponent: " + getWidth() + "x" + getHeight());
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
         if (bgImage != null) {

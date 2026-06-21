@@ -87,7 +87,11 @@ public class MainMenuPanel extends JPanel {
             if (animTimer != null) animTimer.stop();
             try {
                 MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
+                // 调试：打印面板信息
+                System.out.println("MusicPlayerPanel created: " + musicPanel.getWidth() + "x" + musicPanel.getHeight());
+                System.out.println("Components: " + musicPanel.getComponentCount());
                 switchToPanel(musicPanel);
+                System.out.println("switchToPanel done: " + musicPanel.getWidth() + "x" + musicPanel.getHeight());
             } catch (Exception ex) {
                 ex.printStackTrace();
                 java.io.StringWriter sw = new java.io.StringWriter();
