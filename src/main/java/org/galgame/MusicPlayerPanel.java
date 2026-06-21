@@ -36,6 +36,7 @@ public class MusicPlayerPanel extends JPanel {
     private enum PlayMode { SEQUENTIAL, SINGLE_LOOP, RANDOM }
     private PlayMode playMode = PlayMode.SEQUENTIAL;
     private boolean progressDragging = false;
+    private JPanel glassPanel;
 
     public MusicPlayerPanel(JFrame frame, MainMenuPanel mainMenu, Font titleFont, Font buttonFont) {
         this.parentFrame = frame;
@@ -83,6 +84,24 @@ public class MusicPlayerPanel extends JPanel {
     }
     
     private void createUI() {
+        // 毛玻璃容器（框住封面+四行控件）
+        glassPanel = new JPanel() {
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(255, 255, 255, 40));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.setColor(new Color(255, 255, 255, 80));
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 20, 20);
+                g2.dispose();
+            }
+        };
+        glassPanel.setLayout(null);
+        glassPanel.setOpaque(false);
+        add(glassPanel);
+
         JLabel titleLabel = new JLabel("\u266B \u97F3\u4E50\u9274\u8D4F", SwingConstants.CENTER);
         titleLabel.setFont(titleFont.deriveFont(48f));
         titleLabel.setForeground(Color.WHITE);
@@ -331,6 +350,11 @@ public class MusicPlayerPanel extends JPanel {
         int coverSize = Math.max(w / 3, 200);
         int coverX = margin;
         int coverY = 60;
+        
+        // 毛玻璃面板包围封面+四行
+        int glassH = coverSize + 38 + 36*4 + 6*3 + 16;
+        glassPanel.setBounds(coverX - 12, coverY - 12, coverSize + 24, glassH);
+        
         albumArtLabel.setBounds(coverX, coverY, coverSize, coverSize);
         songTitleLabel.setBounds(coverX, coverY + coverSize + 8, coverSize, 25);
         
@@ -355,11 +379,11 @@ public class MusicPlayerPanel extends JPanel {
         singleLoopBtn.setBounds(coverX + modeW + gap, row2Y, modeW, rowH);
         randomBtn.setBounds(coverX + (modeW + gap) * 2, row2Y, modeW, rowH);
         
-        // 第3行：进度条
+        // 第3行：进度条（排头对齐）
         int row3Y = row2Y + rowH + gap;
-        timeCurrentLabel.setBounds(coverX, row3Y, 42, rowH);
-        timeTotalLabel.setBounds(coverX + ctrlW - 42, row3Y, 42, rowH);
+        timeCurrentLabel.setBounds(coverX, row3Y + 5, 42, rowH - 10);
         progressSlider.setBounds(coverX + 44, row3Y + 5, ctrlW - 88, rowH - 10);
+        timeTotalLabel.setBounds(coverX + ctrlW - 42, row3Y + 5, 42, rowH - 10);
         
         // 第4行：音量
         int row4Y = row3Y + rowH + gap;
@@ -367,7 +391,7 @@ public class MusicPlayerPanel extends JPanel {
             if (c instanceof JLabel && ((JLabel)c).getText().contains("\uD83D\uDD0A"))
                 c.setBounds(coverX, row4Y + 5, 25, rowH - 10);
         }
-        volumeSlider.setBounds(coverX + 28, row4Y + 5, ctrlW - 32, rowH - 10);
+        volumeSlider.setBounds(coverX + 28, row4Y + 5, ctrlW - 28, rowH - 10);
         
         // 播放列表（滑出动画）
         int plFullX = coverX + coverSize + margin;
