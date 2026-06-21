@@ -581,7 +581,7 @@ public class GamePanel extends JPanel {
                 autoPlayBtn.setText("Auto");
             }
             JOptionPane.showMessageDialog(this, "故事已结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
-            mainMenuPanel.showMainMenu();
+            SwingUtilities.invokeLater(() -> mainMenuPanel.showMainMenu());
             return;
         }
 
@@ -595,7 +595,7 @@ public class GamePanel extends JPanel {
                 autoPlayBtn.setText("Auto");
             }
             JOptionPane.showMessageDialog(this, "故事已结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
-            mainMenuPanel.showMainMenu();
+            SwingUtilities.invokeLater(() -> mainMenuPanel.showMainMenu());
             return;
         }
 
@@ -693,7 +693,7 @@ public class GamePanel extends JPanel {
                     autoPlayBtn.setText("Auto");
                 }
                 JOptionPane.showMessageDialog(this, "故事结束。", "提示", JOptionPane.INFORMATION_MESSAGE);
-                mainMenuPanel.showMainMenu();
+                SwingUtilities.invokeLater(() -> mainMenuPanel.showMainMenu());
                 break;
 
             default:
@@ -999,7 +999,7 @@ public class GamePanel extends JPanel {
                 toggleAutoPlay();
             }
             stopMusic();
-            mainMenuPanel.showMainMenu();
+            SwingUtilities.invokeLater(() -> mainMenuPanel.showMainMenu());
         }
     }
 
