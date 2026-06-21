@@ -360,18 +360,23 @@ public class MusicPlayerPanel extends JPanel {
         playlistContent.repaint();
         
         // 异步加载歌曲时长，避免阻塞EDT
-        new Thread(() -> {
-            for (int i = 0; i < musicList.size() && i < durLabels.size(); i++) {
-                long micros = getWavDuration(musicList.get(i).wavFile);
-                String durStr = formatTime(micros);
-                int ii = i;
-                SwingUtilities.invokeLater(() -> {
-                    if (ii < durLabels.size()) {
-                        durLabels.get(ii).setText(durStr);
-                    }
-                });
-            }
-        }).start();
+        javax.swing.Timer durationLoadTimer = new javax.swing.Timer(500, ev -> {
+            new Thread(() -> {
+                for (int i = 0; i < musicList.size() && i < durLabels.size(); i++) {
+                    long micros = getWavDurationSafe(musicList.get(i).wavFile);
+                    String durStr = formatTime(micros);
+                    int ii = i;
+                    SwingUtilities.invokeLater(() -> {
+                        if (ii < durLabels.size()) {
+                            durLabels.get(ii).setText(durStr);
+                        }
+                    });
+                }
+            }).start();
+            ((javax.swing.Timer) ev.getSource()).stop();
+        });
+        durationLoadTimer.setRepeats(false);
+        durationLoadTimer.start();
     }
     
     public void doLayout() {
@@ -493,11 +498,16 @@ public class MusicPlayerPanel extends JPanel {
     private void playCurrent() {
         if (currentIndex < 0 || currentIndex >= musicList.size()) return;
         MusicFileInfo info = musicList.get(currentIndex);
-        musicPlayer.play(info.wavFile);
-        musicPlayer.setLooping(playMode == PlayMode.SINGLE_LOOP);
         updatePlayPauseButton(true);
         songTitleLabel.setText(info.getDisplayName());
         albumArtLabel.repaint();
+        // 后台加载大音频文件，避免阻塞EDT
+        new Thread(() -> {
+            musicPlayer.play(info.wavFile);
+            SwingUtilities.invokeLater(() -> {
+                musicPlayer.setLooping(playMode == PlayMode.SINGLE_LOOP);
+            });
+        }).start();
     }
     
     private void togglePlayPause() {
@@ -600,16 +610,29 @@ public class MusicPlayerPanel extends JPanel {
         return String.format("%02d:%02d", min, sec);
     }
     
-    private long getWavDuration(File wavFile) {
+    private long getWavDurationSafe(File wavFile) {
+        java.util.concurrent.Future<Long> future = java.util.concurrent.Executors
+            .newSingleThreadExecutor().submit(() -> {
+                try {
+                    AudioCue cue = AudioCue.makeStereoCue(wavFile.toURI().toURL(), 1);
+                    cue.open();
+                    long duration = cue.getMicrosecondLength();
+                    cue.close();
+                    return duration;
+                } catch (Exception e) {
+                    return 0L;
+                }
+            });
         try {
-            AudioCue cue = AudioCue.makeStereoCue(wavFile.toURI().toURL(), 1);
-            cue.open();
-            long duration = cue.getMicrosecondLength();
-            cue.close();
-            return duration;
+            return future.get(5, java.util.concurrent.TimeUnit.SECONDS);
         } catch (Exception e) {
+            future.cancel(true);
             return 0;
         }
+    }
+    
+    private long getWavDuration(File wavFile) {
+        return getWavDurationSafe(wavFile);
     }
     
     public void stopMusic() { musicPlayer.stopImmediately(); }
