@@ -85,7 +85,6 @@ public class MusicPlayerPanel extends JPanel {
     
     private void createUI() {
         // 毛玻璃容器（框住封面+四行控件）
-        glassPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -263,6 +262,15 @@ public class MusicPlayerPanel extends JPanel {
     
     private void createPlaylistPanel() {
         playlistPanel = new JPanel() {
+            public void paint(Graphics g) {
+                int clipRight = glassPanel.getX() - getX();
+                if (clipRight <= 0) return;
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setClip(0, 0, Math.min(clipRight, getWidth()), getHeight());
+                super.paint(g2);
+                g2.dispose();
+            }
+
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -394,11 +402,11 @@ public class MusicPlayerPanel extends JPanel {
         volumeSlider.setBounds(coverX + 28, row4Y + 5, ctrlW - 28, rowH - 10);
         
         // 播放列表（滑出动画）
-        int plFullX = coverX - 12;
-        int plW = Math.min(280, w - plFullX - 20);
-        if (plW < 150) { plW = 150; plFullX = w - plW - margin; }
-        int plDisplayX = (int)(plFullX - (1f - playlistSlideX) * plW);
-        playlistPanel.setBounds(plDisplayX, coverY - 12, plW, h - coverY + 12);
+        int glassLeft = coverX - 12;
+        int plW = Math.min(380, w - 60);
+        if (plW < 150) plW = 150;
+        int plDisplayX = glassLeft - (int)(playlistSlideX * plW);
+        playlistPanel.setBounds(plDisplayX, coverY - 12, plW, glassH);
         
         // 如果播放列表可见但宽度太窄，也隐藏掉右侧区域的内容
         if (playlistVisible) {
