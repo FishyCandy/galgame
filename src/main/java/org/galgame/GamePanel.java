@@ -987,6 +987,9 @@ public class GamePanel extends JPanel {
 
     // ---------- 返回标题 ----------
     private void confirmReturn() {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        boolean wasFullScreen = (gd.getFullScreenWindow() != null);
+
         int option = JOptionPane.showConfirmDialog(
                 this,
                 "返回标题页面，未保存的进度会丢失，你确定返回吗？",
@@ -999,11 +1002,21 @@ public class GamePanel extends JPanel {
                 toggleAutoPlay();
             }
             stopMusic();
-            SwingUtilities.invokeLater(() -> mainMenuPanel.showMainMenu());
+            SwingUtilities.invokeLater(() -> {
+                // 全屏模式下，先正常退出全屏，再切换回主菜单
+                if (wasFullScreen) {
+                    gd.setFullScreenWindow(null);
+                    parentFrame.dispose();
+                    parentFrame.setUndecorated(false);
+                    parentFrame.setSize(960, 640);
+                    parentFrame.setLocationRelativeTo(null);
+                    parentFrame.setVisible(true);
+                }
+                mainMenuPanel.showMainMenu();
+            });
         }
     }
-
-    public List<?> getDialogues() { return null; }
+public List<?> getDialogues() { return null; }
 }
 
 
