@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -504,6 +504,8 @@ public class GamePanel extends JPanel {
         waitingForChoice = false;
         isEnding = false;
         currentTextColor = Color.WHITE;
+        dialogPanel.setVisible(true);
+        controlPanel.setVisible(true);
         updateDisplay();
     }
 
@@ -536,6 +538,8 @@ public class GamePanel extends JPanel {
         waitingForChoice = false;
         isEnding = false;
         currentTextColor = Color.WHITE;
+        dialogPanel.setVisible(true);
+        controlPanel.setVisible(true);
         stopMusic();
         updateDisplay();
     }
