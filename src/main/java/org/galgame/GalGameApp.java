@@ -21,7 +21,7 @@ public class GalGameApp {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("恋语之境");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1024, 640);
+            frame.setSize(1024, 576);
             frame.setLocationRelativeTo(null);
             frame.setResizable(false);
 

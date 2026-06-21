@@ -66,12 +66,6 @@ public class MainMenuPanel extends JPanel {
             buttonFont = new Font("微软雅黑", Font.BOLD, 24);
         }
 
-        // 标题
-        JLabel titleLabel = new JLabel("~ 恋 语 之 境 ~");
-        titleLabel.setFont(titleFont);
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
         // 按钮
         JButton startBtn = createGlassButton("开 始 游 戏");
         JButton exitBtn = createGlassButton("结 束 游 戏");
@@ -106,16 +100,12 @@ public class MainMenuPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(50, 0, 60, 0);
-        add(titleLabel, gbc);
-
-        gbc.gridy = 1;
-        gbc.insets = new Insets(0, 0, 0, 0);
         add(buttonPanel, gbc);
 
         JLabel footer = new JLabel("—— 愿你拥有美好的故事 ——");
         footer.setFont(new Font("楷体", Font.PLAIN, 20));
         footer.setForeground(new Color(255, 255, 255, 180));
-        gbc.gridy = 2;
+        gbc.gridy = 1;
         gbc.insets = new Insets(60, 0, 30, 0);
         add(footer, gbc);
 

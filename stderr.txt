@@ -1,3 +1,0 @@
-WARNING: Unknown module: javafx.graphics specified to --add-opens
-6ÔÂ 21, 2026 5:54:53 ÏÂÎç com.sun.javafx.application.PlatformImpl startup
-¾¯¸æ: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @56cbfb61'
