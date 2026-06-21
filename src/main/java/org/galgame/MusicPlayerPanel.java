@@ -328,7 +328,7 @@ public class MusicPlayerPanel extends JPanel {
             nameLabel.setFont(buttonFont.deriveFont(22f));
             nameLabel.setForeground(idx == currentIndex ? new Color(255, 255, 150) : new Color(255, 255, 255, 200));
             
-            JLabel durLabel = new JLabel(formatTime(getWavDuration(info.wavFile)));
+            JLabel durLabel = new JLabel("-:--"); // 异步加载时长
             durLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
             durLabel.setForeground(new Color(255, 255, 255, 160));
             
