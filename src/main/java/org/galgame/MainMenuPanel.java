@@ -84,20 +84,25 @@ public class MainMenuPanel extends JPanel {
             switchToPanel(panel);
         });
         musicBtn.addActionListener(e -> {
-            // 停止背景动画，防止与音频资源冲突
             if (animTimer != null) animTimer.stop();
-            // 后台关闭菜单音乐，避免AudioCue.close()阻塞EDT
-            new Thread(() -> {
-                stopMenuMusic();
-                SwingUtilities.invokeLater(() -> {
-                    try {
-                        MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
-                        switchToPanel(musicPanel);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-            }).start();
+            new Thread(() -> stopMenuMusic()).start();
+            // 测试：先用简单面板验证跳转
+            JPanel testPanel = new JPanel() {
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    g.setColor(new Color(200, 50, 50));
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                    g.setColor(Color.WHITE);
+                    g.setFont(new Font("Dialog", Font.BOLD, 40));
+                    g.drawString("音乐鉴赏测试面板", 100, 100);
+                }
+            };
+            testPanel.setLayout(null);
+            JButton backBtn = new JButton("返回");
+            backBtn.setBounds(50, 200, 100, 40);
+            backBtn.addActionListener(ev -> showPreviousPanel());
+            testPanel.add(backBtn);
+            switchToPanel(testPanel);
         });
         settingsBtn.addActionListener(e -> {
             SettingsPanel settingsPanel = new SettingsPanel(parentFrame, this, titleFont, buttonFont);
