@@ -13,7 +13,6 @@ import java.util.List;
 public class LogPanel extends JPanel {
     private JFrame parentFrame;
     private JPanel gamePanel;
-    private JPanel returnPanel; // 引用，用于返回
     private List<String> history;
     private Font dialogFont;
     private Font nameFont;
@@ -144,10 +143,6 @@ public class LogPanel extends JPanel {
         return card;
     }
 
-    /** HTML转义，防止台词中的特殊字符破坏HTML */
-    private String escapeHtml(String s) {
-        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-    }
 
     /** 创建毛玻璃按钮（与GamePanel一致） */
     private JButton createGlassButton(String text) {

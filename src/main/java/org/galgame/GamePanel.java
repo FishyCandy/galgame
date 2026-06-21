@@ -560,7 +560,7 @@ public class GamePanel extends JPanel {
                 fadeStep++;
                 float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
                 transitionAlpha = progress;
-                dialogFadeAlpha = 1f - progress;
+                dialogFadeAlpha = globalDialogAlpha * (1f - progress);
 
                 if (progress >= 1f) {
                     // 切换到新背景，清空台词
@@ -575,7 +575,7 @@ public class GamePanel extends JPanel {
                 fadeStep++;
                 float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
                 transitionAlpha = 1f - progress;
-                dialogFadeAlpha = progress;
+                dialogFadeAlpha = globalDialogAlpha * progress;
 
                 if (progress >= 1f) {
                     transitionAlpha = 0f;
