@@ -394,11 +394,11 @@ public class MusicPlayerPanel extends JPanel {
         volumeSlider.setBounds(coverX + 28, row4Y + 5, ctrlW - 28, rowH - 10);
         
         // 播放列表（滑出动画）
-        int glassRight = coverX + coverSize + 12; int plFullX = glassRight + 8;
+        int plFullX = coverX - 12;
         int plW = Math.min(280, w - plFullX - 20);
         if (plW < 150) { plW = 150; plFullX = w - plW - margin; }
-        int plDisplayX = (int)(plFullX + (1f - playlistSlideX) * plW);
-        playlistPanel.setBounds(plDisplayX, coverY - 12, plW, glassH);
+        int plDisplayX = (int)(plFullX - (1f - playlistSlideX) * plW);
+        playlistPanel.setBounds(plDisplayX, coverY - 12, plW, h - coverY + 12);
         
         // 如果播放列表可见但宽度太窄，也隐藏掉右侧区域的内容
         if (playlistVisible) {
