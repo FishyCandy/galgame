@@ -987,26 +987,71 @@ public class GamePanel extends JPanel {
 
     // ---------- 返回标题 ----------
     private void confirmReturn() {
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        boolean wasFullScreen = (gd.getFullScreenWindow() != null);
+        // 使用覆盖层替代JOptionPane，避免全屏下弹窗导致窗口最小化
+        JLayeredPane layeredPane = parentFrame.getLayeredPane();
 
-        // 全屏时用parentFrame作为对话框父组件，确保对话框显示在全屏窗口之上
-        int option = JOptionPane.showConfirmDialog(
-                wasFullScreen ? parentFrame : this,
-                "返回标题页面，未保存的进度会丢失，你确定返回吗？",
-                "确认返回",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
-        );
-        if (option == JOptionPane.YES_OPTION) {
-            if (isAutoPlaying) {
-                toggleAutoPlay();
+        // 半透明暗幕 + 居中确认按钮
+        JPanel overlay = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(0, 0, 0, 200));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
             }
+        };
+        overlay.setOpaque(false);
+        overlay.setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
+
+        // 居中竖直排列的确认按钮
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setOpaque(false);
+
+        JLabel title = new JLabel("返回标题页面，未保存的进度会丢失，你确定返回吗？");
+        title.setFont(buttonFont.deriveFont(20f));
+        title.setForeground(new Color(255, 255, 255, 200));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(title);
+        card.add(Box.createRigidArea(new Dimension(0, 30)));
+
+        // "确定返回"按钮
+        JButton confirmBtn = createChoiceButton("确定返回");
+        confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        Dimension btnSize = new Dimension(300, 60);
+        confirmBtn.setPreferredSize(btnSize);
+        confirmBtn.setMaximumSize(btnSize);
+        confirmBtn.setMinimumSize(btnSize);
+        confirmBtn.addActionListener(e -> {
+            layeredPane.remove(overlay);
+            layeredPane.revalidate();
+            layeredPane.repaint();
+            if (isAutoPlaying) { toggleAutoPlay(); }
             stopMusic();
-            SwingUtilities.invokeLater(() -> {
-                mainMenuPanel.showMainMenu();
-            });
-        }
+            mainMenuPanel.showMainMenu();
+        });
+        card.add(confirmBtn);
+        card.add(Box.createRigidArea(new Dimension(0, 15)));
+
+        // "取消"按钮
+        JButton cancelBtn = createChoiceButton("取消");
+        cancelBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cancelBtn.setPreferredSize(btnSize);
+        cancelBtn.setMaximumSize(btnSize);
+        cancelBtn.setMinimumSize(btnSize);
+        cancelBtn.addActionListener(e -> {
+            layeredPane.remove(overlay);
+            layeredPane.revalidate();
+            layeredPane.repaint();
+        });
+        card.add(cancelBtn);
+
+        overlay.add(card);
+        layeredPane.add(overlay, JLayeredPane.MODAL_LAYER);
+        layeredPane.revalidate();
+        layeredPane.repaint();
     }
 public List<?> getDialogues() { return null; }
 }
