@@ -1,6 +1,7 @@
 ﻿package org.galgame;
 
 import javax.imageio.ImageIO;
+import com.adonax.audiocue.AudioCue;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -56,6 +57,7 @@ public class MusicPlayerPanel extends JPanel {
         
         scanMusicFiles();
         createUI();
+        ;
         
         // 进度更新定时器
         progressTimer = new Timer(200, e -> updateProgress());
@@ -167,11 +169,8 @@ public class MusicPlayerPanel extends JPanel {
             public void mousePressed(MouseEvent e) { progressDragging = true; }
             public void mouseReleased(MouseEvent e) {
                 progressDragging = false;
-                if (musicPlayer.isPlaying() || currentIndex >= 0) {
+                if (musicPlayer.isPlaying() && currentIndex >= 0) {
                     double fraction = progressSlider.getValue() / 1000.0;
-                    long totalUs = musicPlayer.getMicrosecondLength();
-                    // 通过重新播放并seek来定位（AudioCue不支持直接seek到微秒）
-                    // 使用帧位置来seek
                     double framePos = musicPlayer.getFrameLength() * fraction;
                     musicPlayer.setFramePosition(framePos);
                 }
@@ -577,6 +576,7 @@ public class MusicPlayerPanel extends JPanel {
     private long getWavDuration(File wavFile) {
         try {
             AudioCue cue = AudioCue.makeStereoCue(wavFile.toURI().toURL(), 1);
+            cue.open();
             long duration = cue.getMicrosecondLength();
             cue.close();
             return duration;

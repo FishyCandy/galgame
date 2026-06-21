@@ -151,7 +151,11 @@ public class MusicPlayer {
     /** 获取当前播放位置（微秒）*/
     public long getMicrosecondPosition() {
         if (audioCue == null || instanceId == -1) return 0;
-        return audioCue.getMicrosecondPosition(instanceId);
+        long totalFrames = audioCue.getFrameLength();
+        long totalMicros = audioCue.getMicrosecondLength();
+        if (totalFrames <= 0 || totalMicros <= 0) return 0;
+        double currentFrame = audioCue.getFramePosition(instanceId);
+        return (long)(currentFrame / totalFrames * totalMicros);
     }
 
     /** 获取总帧数 */

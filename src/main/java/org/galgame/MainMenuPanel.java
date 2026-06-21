@@ -84,8 +84,12 @@ public class MainMenuPanel extends JPanel {
             switchToPanel(panel);
         });
         musicBtn.addActionListener(e -> {
-            MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
-            switchToPanel(musicPanel);
+            try {
+                MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
+                switchToPanel(musicPanel);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         });
         settingsBtn.addActionListener(e -> {
             SettingsPanel settingsPanel = new SettingsPanel(parentFrame, this, titleFont, buttonFont);
