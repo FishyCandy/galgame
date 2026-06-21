@@ -84,13 +84,20 @@ public class MainMenuPanel extends JPanel {
             switchToPanel(panel);
         });
         musicBtn.addActionListener(e -> {
-            try {
+            // 停止背景动画，防止与音频资源冲突
+            if (animTimer != null) animTimer.stop();
+            // 后台关闭菜单音乐，避免AudioCue.close()阻塞EDT
+            new Thread(() -> {
                 stopMenuMusic();
-                MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
-                switchToPanel(musicPanel);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
+                        switchToPanel(musicPanel);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }).start();
         });
         settingsBtn.addActionListener(e -> {
             SettingsPanel settingsPanel = new SettingsPanel(parentFrame, this, titleFont, buttonFont);
@@ -313,7 +320,8 @@ public class MainMenuPanel extends JPanel {
             if (target instanceof GamePanel) {
                 ((GamePanel) target).syncDialogAlpha();
             } else if (target == this) {
-                // 返回主菜单，重启BGM
+                // 返回主菜单，重启BGM和动画
+                if (animTimer != null) animTimer.start();
                 javax.swing.Timer delayTimer = new javax.swing.Timer(200, ev -> {
                     playMenuMusic();
                     ((javax.swing.Timer) ev.getSource()).stop();
