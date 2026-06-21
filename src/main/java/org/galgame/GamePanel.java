@@ -28,6 +28,8 @@ public class GamePanel extends JPanel {
     private JButton autoPlayBtn, logBtn;
     private JPanel dialogPanel;
     private JPanel controlPanel;
+    private JPanel leftSpacer;
+    private JPanel rightSpacer;
     private Timer autoTimer;
     private boolean isAutoPlaying = false;
     private boolean isEnding = false;           // 故事结束状态标志
@@ -305,7 +307,26 @@ public class GamePanel extends JPanel {
         // 固定对话框大小，防止尺寸变化
         dialogPanel.setPreferredSize(new java.awt.Dimension(400, 200));
 
-        add(dialogPanel, BorderLayout.SOUTH);
+        // 用wrapper包裹对话框，全屏模式下左右各留1/4屏幕宽的边距，居中显示
+        JPanel dialogWrapper = new JPanel(new BorderLayout()) {
+            @Override
+            public void doLayout() {
+                // 检测是否全屏模式
+                java.awt.GraphicsDevice gd = parentFrame.getGraphicsConfiguration().getDevice();
+                boolean fullscreen = (gd.getFullScreenWindow() == parentFrame);
+                int margin = fullscreen ? parentFrame.getWidth() / 4 : 0;
+                if (leftSpacer != null) leftSpacer.setPreferredSize(new java.awt.Dimension(margin, 1));
+                if (rightSpacer != null) rightSpacer.setPreferredSize(new java.awt.Dimension(margin, 1));
+                super.doLayout();
+            }
+        };
+        dialogWrapper.setOpaque(false);
+        leftSpacer = new JPanel(); leftSpacer.setOpaque(false);
+        rightSpacer = new JPanel(); rightSpacer.setOpaque(false);
+        dialogWrapper.add(leftSpacer, BorderLayout.WEST);
+        dialogWrapper.add(rightSpacer, BorderLayout.EAST);
+        dialogWrapper.add(dialogPanel, BorderLayout.CENTER);
+        add(dialogWrapper, BorderLayout.SOUTH);
     }
 
     private void createControlPanel() {
