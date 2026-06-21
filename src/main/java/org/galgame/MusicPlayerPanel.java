@@ -24,6 +24,8 @@ public class MusicPlayerPanel extends JPanel {
     private Timer progressTimer, playlistAnimTimer;
     private boolean playlistVisible = false;
     private float playlistSlideX = 0f;
+    private float playlistOpacity = 0f;
+    private float playlistOpacity = 0f;
     
     private JLabel albumArtLabel, songTitleLabel, timeCurrentLabel, timeTotalLabel;
     private JButton prevBtn, playPauseBtn, nextBtn;
@@ -56,6 +58,15 @@ public class MusicPlayerPanel extends JPanel {
         
         progressTimer = new Timer(200, e -> updateProgress());
         progressTimer.start();
+
+        // 点击空白区域关闭播放列表
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (playlistVisible && !playlistPanel.getBounds().contains(e.getPoint())) {
+                    togglePlaylist();
+                }
+            }
+        });
     }
     
     private void scanMusicFiles() {
@@ -263,19 +274,11 @@ public class MusicPlayerPanel extends JPanel {
     
     private void createPlaylistPanel() {
         playlistPanel = new JPanel() {
-            public void paint(Graphics g) {
-                int clipRight = glassPanel.getX() - getX();
-                if (clipRight <= 0) return;
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setClip(0, 0, Math.min(clipRight, getWidth()), getHeight());
-                super.paint(g2);
-                g2.dispose();
-            }
-
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, playlistOpacity));
                 g2.setColor(new Color(20, 20, 40, 210));
                 g2.fillRoundRect(5, 5, getWidth()-10, getHeight()-10, 16, 16);
                 g2.setColor(new Color(255, 255, 255, 60));
@@ -403,11 +406,11 @@ public class MusicPlayerPanel extends JPanel {
         volumeSlider.setBounds(coverX + 28, row4Y + 5, ctrlW - 28, rowH - 10);
         
         // 播放列表（滑出动画）
-        int glassLeft = coverX - 12;
-        int plW = Math.min(380, w - 60);
+        int plStartX = coverX;
+        int plFullX = coverX + coverSize + 12;
+        int plW = Math.min(380, w - plFullX - 20);
         if (plW < 150) plW = 150;
-        int plDisplayX = glassLeft - (int)(playlistSlideX * plW);
-        playlistPanel.setBounds(plDisplayX, coverY - 12, plW, glassH);
+        int plDisplayX = (int)(plStartX + playlistSlideX * (plFullX - plStartX));
         
         // 如果播放列表可见但宽度太窄，也隐藏掉右侧区域的内容
         if (playlistVisible) {
@@ -428,26 +431,23 @@ public class MusicPlayerPanel extends JPanel {
     }
     
     private void startPlaylistAnimation(boolean show) {
-        if (playlistAnimTimer != null && playlistAnimTimer.isRunning()) {
+        if (playlistAnimTimer != null && playlistAnimTimer.isRunning())
             playlistAnimTimer.stop();
-        }
+        long startTime = System.currentTimeMillis();
+        int duration = 350;
         playlistAnimTimer = new Timer(10, e -> {
-            if (show) {
-                playlistSlideX += 0.08f;
-                if (playlistSlideX >= 1f) {
-                    playlistSlideX = 1f;
-                    playlistAnimTimer.stop();
-                }
-            } else {
-                playlistSlideX -= 0.08f;
-                if (playlistSlideX <= 0f) {
-                    playlistSlideX = 0f;
-                    playlistPanel.setVisible(false);
-                    playlistAnimTimer.stop();
-                }
-            }
+            float rawT = (System.currentTimeMillis() - startTime) / (float) duration;
+            if (rawT > 1f) rawT = 1f;
+            float t = 1f - (1f - rawT) * (1f - rawT) * (1f - rawT);
+            if (!show) t = 1f - t;
+            playlistSlideX = t;
+            playlistOpacity = t;
             doLayout();
             repaint();
+            if (rawT >= 1f) {
+                if (!show) playlistPanel.setVisible(false);
+                playlistAnimTimer.stop();
+            }
         });
         playlistAnimTimer.start();
     }
