@@ -266,7 +266,7 @@ public class SettingsPanel extends JPanel {
             gd.setFullScreenWindow(null);
             parentFrame.dispose();
             parentFrame.setUndecorated(false);
-            parentFrame.setSize(960, 640);
+            parentFrame.setSize(1024, 640);
             parentFrame.setLocationRelativeTo(null);
             parentFrame.setVisible(true);
         }
