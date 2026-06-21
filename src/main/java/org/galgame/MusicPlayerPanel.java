@@ -291,8 +291,8 @@ public class MusicPlayerPanel extends JPanel {
         playlistPanel.setLayout(new BorderLayout(0, 0));
         playlistPanel.setOpaque(false);
         
-        JLabel listTitle = new JLabel("\u64AD\u653E\u5217\u8868", SwingConstants.LEFT);
-        listTitle.setFont(buttonFont.deriveFont(18f));
+        listTitle = new JLabel("\u64AD\u653E\u5217\u8868", SwingConstants.LEFT);
+        listTitle.setFont(buttonFont.deriveFont(26f));
         listTitle.setForeground(new Color(255, 255, 255, 200));
         listTitle.setBorder(BorderFactory.createEmptyBorder(8, 8, 4, 8));
         playlistPanel.add(listTitle, BorderLayout.NORTH);
@@ -315,6 +315,7 @@ public class MusicPlayerPanel extends JPanel {
     
     private void refreshPlaylistItems() {
         playlistContent.removeAll();
+        List<JLabel> durLabels = new ArrayList<>();
         for (int i = 0; i < musicList.size(); i++) {
             MusicFileInfo info = musicList.get(i);
             int idx = i;
@@ -329,9 +330,10 @@ public class MusicPlayerPanel extends JPanel {
             nameLabel.setFont(buttonFont.deriveFont(22f));
             nameLabel.setForeground(idx == currentIndex ? new Color(255, 255, 150) : new Color(255, 255, 255, 200));
             
-            JLabel durLabel = new JLabel("-:--"); // 异步加载时长
+            JLabel durLabel = new JLabel("-:--");
             durLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
             durLabel.setForeground(new Color(255, 255, 255, 160));
+            durLabels.add(durLabel);
             
             item.add(nameLabel, BorderLayout.CENTER);
             item.add(durLabel, BorderLayout.EAST);
@@ -347,6 +349,20 @@ public class MusicPlayerPanel extends JPanel {
         }
         playlistContent.revalidate();
         playlistContent.repaint();
+        
+        // 异步加载歌曲时长，避免阻塞EDT
+        new Thread(() -> {
+            for (int i = 0; i < musicList.size() && i < durLabels.size(); i++) {
+                long micros = getWavDuration(musicList.get(i).wavFile);
+                String durStr = formatTime(micros);
+                int ii = i;
+                SwingUtilities.invokeLater(() -> {
+                    if (ii < durLabels.size()) {
+                        durLabels.get(ii).setText(durStr);
+                    }
+                });
+            }
+        }).start();
     }
     
     public void doLayout() {
@@ -445,6 +461,7 @@ public class MusicPlayerPanel extends JPanel {
             if (!show) t = 1f - t;
             playlistSlideX = t;
             playlistOpacity = t;
+            listTitle.setForeground(new Color(255, 255, 255, (int)(200 * t)));
             doLayout();
             repaint();
             if (rawT >= 1f) {
