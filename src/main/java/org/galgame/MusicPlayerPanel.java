@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.imageio.ImageIO;
 import com.adonax.audiocue.AudioCue;
@@ -360,6 +360,7 @@ public class MusicPlayerPanel extends JPanel {
         }
         
         int coverSize = Math.max(w * 2 / 5, 280);
+        int coverX = margin;
         
         int coverY = 80;
         
