@@ -378,7 +378,7 @@ public class MusicPlayerPanel extends JPanel {
         }
         
         int coverSize = Math.max(w * 2 / 5, 280);
-        int coverX = Math.max(80, (w - coverSize) / 3);
+        int coverX = Math.max(50, (w - coverSize) / 4);
         
         int coverY = 80;
         
@@ -427,7 +427,7 @@ public class MusicPlayerPanel extends JPanel {
         // 鎾斁鍒楄〃锛堟粦鍑哄姩鐢伙級
         int plStartX = coverX;
         int plFullX = coverX + coverSize + 12;
-        int plW = Math.min(450, w - plFullX - 50);
+        int plW = coverSize + 24;
         if (plW < 150) plW = 150;
         int plDisplayX = (int)(plStartX + playlistSlideX * (plFullX - plStartX));
         playlistPanel.setBounds(plDisplayX, coverY - 12, plW, glassH);
