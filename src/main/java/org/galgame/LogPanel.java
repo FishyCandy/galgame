@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -145,7 +145,7 @@ JButton returnBtn = createReturnButton();
     }
 
 
-        /** 创建统一的图片返回按钮（鼠标悬停发光效果） */
+    /** 创建统一的图片返回按钮（鼠标悬停发光效果） */
     private JButton createReturnButton() {
         try {
             BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));

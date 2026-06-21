@@ -271,7 +271,7 @@ public class SettingsPanel extends JPanel {
         }
         g2.dispose();
     }
-        /** 创建统一的图片返回按钮（鼠标悬停发光效果） */
+    /** 创建统一的图片返回按钮（鼠标悬停发光效果） */
     private JButton createReturnButton() {
         try {
             BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));
@@ -317,7 +317,7 @@ public class SettingsPanel extends JPanel {
         } catch (Exception e) {
         }
         JButton btn = new JButton("✕");
-        btn.setFont(nameFont.deriveFont(22f));
+        btn.setFont(buttonFont.deriveFont(22f));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(false);

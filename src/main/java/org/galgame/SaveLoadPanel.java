@@ -480,7 +480,7 @@ public class SaveLoadPanel extends JPanel {
         return btn;
     }
 
-        /** 创建统一的图片返回按钮（鼠标悬停发光效果） */
+    /** 创建统一的图片返回按钮（鼠标悬停发光效果） */
     private JButton createReturnButton() {
         try {
             BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));
@@ -526,7 +526,7 @@ public class SaveLoadPanel extends JPanel {
         } catch (Exception e) {
         }
         JButton btn = new JButton("✕");
-        btn.setFont(nameFont.deriveFont(22f));
+        btn.setFont(mainMenuPanel.getTitleFont().deriveFont(22f));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(false);
