@@ -59,6 +59,15 @@ public class SaveLoadPanel extends JPanel {
 
         add(topBar, BorderLayout.NORTH);
 
+        // 存档槽区域
+        JPanel slotPanel = new JPanel(new GridLayout(2, 3, 20, 20));
+        slotPanel.setOpaque(false);
+        slotPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        for (int i = 0; i < 6; i++) {
+            slotPanel.add(createSlot(i));
+        }
+        add(slotPanel, BorderLayout.CENTER);
+
         setBackground(new Color(30, 30, 60));
     }
 
