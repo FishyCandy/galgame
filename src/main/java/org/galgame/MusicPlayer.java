@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import com.adonax.audiocue.AudioCue;
 import java.io.File;
@@ -146,6 +146,12 @@ public class MusicPlayer {
     public double getFramePosition() {
         if (audioCue == null || instanceId == -1) return 0;
         return audioCue.getFramePosition(instanceId);
+    }
+
+    /** 获取当前播放位置（微秒）*/
+    public long getMicrosecondPosition() {
+        if (audioCue == null || instanceId == -1) return 0;
+        return audioCue.getMicrosecondPosition(instanceId);
     }
 
     /** 获取总帧数 */
