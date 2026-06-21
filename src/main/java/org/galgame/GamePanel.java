@@ -312,7 +312,7 @@ public class GamePanel extends JPanel {
         JButton saveBtn = createGlassButton("Save");
         JButton loadBtn = createGlassButton("Load");
         JButton returnBtn = createGlassButton("Return");
-        JButton musicBtn = createGlassButton("Music");
+        JButton settingBtn = createGlassButton("Setting");
 
         autoPlayBtn.addActionListener(e -> toggleAutoPlay());
         logBtn.addActionListener(e -> showLog());
@@ -329,13 +329,13 @@ public class GamePanel extends JPanel {
 
         returnBtn.addActionListener(e -> confirmReturn());
 
-        musicBtn.addActionListener(e -> {
-            MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, mainMenuPanel,
+        settingBtn.addActionListener(e -> {
+            SettingsPanel settingsPanel = new SettingsPanel(parentFrame, mainMenuPanel,
                     mainMenuPanel.getTitleFont(), mainMenuPanel.getButtonFont());
-            mainMenuPanel.switchToPanel(musicPanel);
+            mainMenuPanel.switchToPanel(settingsPanel);
         });
 
-        for (JButton btn : new JButton[]{autoPlayBtn, logBtn, saveBtn, loadBtn, returnBtn, musicBtn}) {
+        for (JButton btn : new JButton[]{autoPlayBtn, logBtn, saveBtn, loadBtn, returnBtn, settingBtn}) {
             controlPanel.add(btn);
         }
         add(controlPanel, BorderLayout.NORTH);
