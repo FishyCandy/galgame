@@ -47,7 +47,7 @@ public class MusicPlayerPanel extends JPanel {
         this.buttonFont = buttonFont;
         this.musicPlayer = new MusicPlayer();
         this.musicPlayer.setLooping(false);
-        setLayout(null);
+        setLayout(null); setOpaque(true); setBackground(Color.RED);
         setOpaque(false);
         
         try { InputStream s = getClass().getResourceAsStream("/images/player_bg.jpg"); if (s != null) bgImage = ImageIO.read(s); } catch (Exception e) {}
@@ -109,7 +109,7 @@ public class MusicPlayerPanel extends JPanel {
                 g2.dispose();
             }
         };
-        glassPanel.setLayout(null);
+        glassPanel.setLayout(null); setOpaque(true); setBackground(Color.RED);
         glassPanel.setOpaque(false);
         add(glassPanel);
 
