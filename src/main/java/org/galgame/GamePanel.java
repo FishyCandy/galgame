@@ -45,7 +45,7 @@ public class GamePanel extends JPanel {
     private float dialogFadeAlpha = 1f;
     // ---- 全局设置（由设置页面控制） ----
     private static int autoPlayDelayMs = 2000;
-    private static float globalDialogAlpha = 0.85f;
+    private static float globalDialogAlpha = 0.5f;
 
     public static void setAutoPlayDelay(int ms) {
         autoPlayDelayMs = ms;

@@ -28,7 +28,7 @@ public class SettingsPanel extends JPanel {
 
     private static int globalVolume = 80;
     private static int autoPlayDelayMs = 2000;
-    private static float dialogAlpha = 0.85f;
+    private static float dialogAlpha = 0.5f;
     private JPanel mainPanel;
 
     public SettingsPanel(JFrame frame, MainMenuPanel mainMenu, Font titleFont, Font buttonFont) {
