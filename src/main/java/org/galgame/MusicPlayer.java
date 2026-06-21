@@ -10,6 +10,14 @@ public class MusicPlayer {
     private String currentFile = null;
     private Thread fadeThread = null;
     private boolean loop = false;
+    // 全局音量设置（0.0 ~ 1.0）
+    private static double globalVolume = 0.8;
+    public static void setGlobalVolume(double volume) {
+        globalVolume = Math.max(0.0, Math.min(1.0, volume));
+    }
+    public static double getGlobalVolume() {
+        return globalVolume;
+    }
 
     private static final int FADE_STEPS = 100;
     private static final int STEP_INTERVAL_MS = 15;
@@ -32,7 +40,7 @@ public class MusicPlayer {
             if (loop) {
                 audioCue.setLooping(instanceId, -1);
             }
-            fadeTo(1.0, null);
+            fadeTo(globalVolume, null);
             currentFile = url.getFile();
         } catch (Exception e) {
             // 捕获 AudioCue 加载失败（如格式不支持）

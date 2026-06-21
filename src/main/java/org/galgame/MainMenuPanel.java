@@ -75,11 +75,11 @@ public class MainMenuPanel extends JPanel {
         JButton startBtn = createGlassButton("开 始 游 戏");
         JButton exitBtn = createGlassButton("结 束 游 戏");
         JButton loadBtn = createGlassButton("载 入 存 档");
-        JButton musicBtn = createGlassButton("音 乐 播 放");
+        JButton musicBtn = createGlassButton("音 乐 鉴 赏");
+        JButton settingsBtn = createGlassButton("游 戏 设 置");
 
         startBtn.addActionListener(e -> startGame());
         exitBtn.addActionListener(e -> System.exit(0));
-        // 载入存档 → 进入读档面板（gamePanel = null）
         loadBtn.addActionListener(e -> {
             SaveLoadPanel panel = new SaveLoadPanel(parentFrame, this, null, SaveLoadPanel.Mode.LOAD);
             switchToPanel(panel);
@@ -88,13 +88,18 @@ public class MainMenuPanel extends JPanel {
             MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
             switchToPanel(musicPanel);
         });
+        settingsBtn.addActionListener(e -> {
+            SettingsPanel settingsPanel = new SettingsPanel(parentFrame, this, titleFont, buttonFont);
+            switchToPanel(settingsPanel);
+        });
 
-        JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 30, 30));
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 20, 20));
         buttonPanel.setOpaque(false);
         buttonPanel.add(startBtn);
         buttonPanel.add(exitBtn);
         buttonPanel.add(loadBtn);
         buttonPanel.add(musicBtn);
+        buttonPanel.add(settingsBtn);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -106,7 +111,7 @@ public class MainMenuPanel extends JPanel {
         gbc.insets = new Insets(0, 0, 0, 0);
         add(buttonPanel, gbc);
 
-        JLabel footer = new JLabel("—— 愿 你 拥 有 美 好 的 故 事 ——");
+        JLabel footer = new JLabel("—— 愿你拥有美好的故事 ——");
         footer.setFont(new Font("楷体", Font.PLAIN, 20));
         footer.setForeground(new Color(255, 255, 255, 180));
         gbc.gridy = 2;
@@ -233,7 +238,6 @@ public class MainMenuPanel extends JPanel {
         }
         switchToPanel(this);
         if (animTimer != null) animTimer.start();
-        // 延迟播放菜单音乐
         javax.swing.Timer delayTimer = new javax.swing.Timer(200, e -> {
             playMenuMusic();
             ((javax.swing.Timer) e.getSource()).stop();

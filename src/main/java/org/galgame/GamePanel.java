@@ -38,7 +38,17 @@ public class GamePanel extends JPanel {
 
     // ---- 背景转场相关字段 ----
     private float transitionAlpha = 0f;          // 黑幕透明度 (0~1)
-    private float dialogFadeAlpha = 1f;          // 对话框透明度 (0~1)
+    private float dialogFadeAlpha = 1f;
+    // ---- 全局设置（由设置页面控制） ----
+    private static int autoPlayDelayMs = 2000;
+    private static float globalDialogAlpha = 0.85f;
+
+    public static void setAutoPlayDelay(int ms) {
+        autoPlayDelayMs = ms;
+    }
+    public static void setDialogAlpha(float alpha) {
+        globalDialogAlpha = alpha;
+    }          // 对话框透明度 (0~1)
     private boolean isBgTransitioning = false;   // 是否正在转场
     private int fadeStep = 0;
     private int fadePhase = 0;                   // 0=淡出至黑, 1=从黑淡入
@@ -111,7 +121,7 @@ public class GamePanel extends JPanel {
             }
         });
 
-        autoTimer = new Timer(2000, e -> {
+        autoTimer = new Timer(autoPlayDelayMs, e -> {
             if (!isBgTransitioning) nextCommand();
         });
     }
@@ -520,7 +530,7 @@ public class GamePanel extends JPanel {
             lineArea.setText("");
         } else {
             transitionAlpha = 0f;
-            dialogFadeAlpha = 1f;
+            dialogFadeAlpha = globalDialogAlpha;
             fadePhase = 0;
         }
 
@@ -552,7 +562,7 @@ public class GamePanel extends JPanel {
 
                 if (progress >= 1f) {
                     transitionAlpha = 0f;
-                    dialogFadeAlpha = 1f;
+                    dialogFadeAlpha = globalDialogAlpha;
                     isBgTransitioning = false;
                     bgTransitionTimer.stop();
                 }
@@ -839,6 +849,7 @@ public class GamePanel extends JPanel {
                 storyManager = new StoryManager();
                 updateDisplay();
             }
+            autoTimer.setDelay(autoPlayDelayMs);
             autoTimer.start();
             isAutoPlaying = true;
             autoPlayBtn.setText("Stop");
@@ -890,7 +901,7 @@ public class GamePanel extends JPanel {
             if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) bgTransitionTimer.stop();
             if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) spriteTransitionTimer.stop();
             transitionAlpha = 0f;
-            dialogFadeAlpha = 1f;
+            dialogFadeAlpha = globalDialogAlpha;
             isBgTransitioning = false;
             spriteAlpha = 1f;
             isSpriteTransitioning = false;
