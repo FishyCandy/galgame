@@ -86,17 +86,10 @@ public class MainMenuPanel extends JPanel {
         musicBtn.addActionListener(e -> {
             if (animTimer != null) animTimer.stop();
             // 后台关闭菜单音乐，避免AudioCue.close()阻塞EDT
-            new Thread(() -> {
-                stopMenuMusic();
-                SwingUtilities.invokeLater(() -> {
-                    try {
-                        MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
-                        switchToPanel(musicPanel);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-            }).start();
+            new Thread(() -> stopMenuMusic()).start();
+            // 立即创建音乐鉴赏面板，不等后台线程完成
+            MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
+            switchToPanel(musicPanel);
         });
         settingsBtn.addActionListener(e -> {
             SettingsPanel settingsPanel = new SettingsPanel(parentFrame, this, titleFont, buttonFont);
