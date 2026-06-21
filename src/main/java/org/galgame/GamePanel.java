@@ -990,8 +990,18 @@ public class GamePanel extends JPanel {
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         boolean wasFullScreen = (gd.getFullScreenWindow() != null);
 
+        // 全屏模式下，先正常退出全屏再弹窗
+        if (wasFullScreen) {
+            gd.setFullScreenWindow(null);
+            parentFrame.dispose();
+            parentFrame.setUndecorated(false);
+            parentFrame.setSize(1024, 640);
+            parentFrame.setLocationRelativeTo(null);
+            parentFrame.setVisible(true);
+        }
+
         int option = JOptionPane.showConfirmDialog(
-                this,
+                parentFrame,
                 "返回标题页面，未保存的进度会丢失，你确定返回吗？",
                 "确认返回",
                 JOptionPane.YES_NO_OPTION,
@@ -1003,17 +1013,18 @@ public class GamePanel extends JPanel {
             }
             stopMusic();
             SwingUtilities.invokeLater(() -> {
-                // 全屏模式下，先正常退出全屏，再切换回主菜单
-                if (wasFullScreen) {
-                    gd.setFullScreenWindow(null);
-                    parentFrame.dispose();
-                    parentFrame.setUndecorated(false);
-                    parentFrame.setSize(1024, 640);
-                    parentFrame.setLocationRelativeTo(null);
-                    parentFrame.setVisible(true);
-                }
                 mainMenuPanel.showMainMenu();
             });
+        } else {
+            // 用户取消，如果之前是全屏则重新进入全屏
+            if (wasFullScreen) {
+                SwingUtilities.invokeLater(() -> {
+                    parentFrame.dispose();
+                    parentFrame.setUndecorated(true);
+                    parentFrame.setVisible(true);
+                    gd.setFullScreenWindow(parentFrame);
+                });
+            }
         }
     }
 public List<?> getDialogues() { return null; }
