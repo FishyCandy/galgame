@@ -77,15 +77,16 @@ public class SettingsPanel extends JPanel {
         titleLabel.setForeground(Color.WHITE);
         titleRow.add(titleLabel, BorderLayout.WEST);
 
-        JLabel closeBtn = new JLabel("\u2715");
-        closeBtn.setFont(buttonFont.deriveFont(28f));
+        JButton closeBtn = new JButton("X");
+        closeBtn.setFont(buttonFont.deriveFont(22f));
         closeBtn.setForeground(Color.WHITE);
+        closeBtn.setFocusPainted(false);
+        closeBtn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        closeBtn.setContentAreaFilled(false);
         closeBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        closeBtn.setOpaque(false);
+        closeBtn.addActionListener(e -> mainMenuPanel.showMainMenu());
         closeBtn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                mainMenuPanel.showMainMenu();
-            }
             @Override
             public void mouseEntered(MouseEvent e) {
                 closeBtn.setForeground(new Color(255, 100, 100));
