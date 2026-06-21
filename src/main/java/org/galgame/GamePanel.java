@@ -488,6 +488,15 @@ public class GamePanel extends JPanel {
         }
     }
 
+    /**
+     * 同步对话框透明度（从设置页返回时调用）
+     */
+    public void syncDialogAlpha() {
+        dialogFadeAlpha = globalDialogAlpha;
+        repaint();
+    }
+
+
     // ---------- 背景转场 ----------
 
     /**
