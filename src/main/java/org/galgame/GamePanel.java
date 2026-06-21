@@ -27,6 +27,7 @@ public class GamePanel extends JPanel {
     private JTextArea lineArea;
     private JButton autoPlayBtn, logBtn;
     private JPanel dialogPanel;
+    private JPanel controlPanel;
     private Timer autoTimer;
     private boolean isAutoPlaying = false;
     private boolean isEnding = false;           // 故事结束状态标志
@@ -304,7 +305,7 @@ public class GamePanel extends JPanel {
     }
 
     private void createControlPanel() {
-        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         controlPanel.setOpaque(false);
 
         autoPlayBtn = createGlassButton("Auto");
@@ -690,6 +691,8 @@ switch (cmd.type) {
                 }
                 // 设置故事结束标志，播放ending背景图
                 isEnding = true;
+                dialogPanel.setVisible(false);
+                controlPanel.setVisible(false);
                 if (cmd.image != null && !cmd.image.isEmpty()) {
                     currentBgPath = cmd.image;
                     startBgTransition(cmd.image);
@@ -1011,7 +1014,7 @@ switch (cmd.type) {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setOpaque(false);
 
-        JLabel title = new JLabel("返回标题页面，未保存的进度会丢失，你确定返回吗？");
+        JLabel title = new JLabel((isEnding ? "游戏结束，你确定返回吗？" : "返回标题页面，未保存的进度会丢失，你确定返回吗？"));
         title.setFont(buttonFont.deriveFont(20f));
         title.setForeground(new Color(255, 255, 255, 200));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
