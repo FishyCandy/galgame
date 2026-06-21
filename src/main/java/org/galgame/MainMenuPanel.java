@@ -85,6 +85,7 @@ public class MainMenuPanel extends JPanel {
         });
         musicBtn.addActionListener(e -> {
             if (animTimer != null) animTimer.stop();
+            stopMenuMusic();
             MusicPlayerPanel mp = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
             switchToPanel(mp);
         });

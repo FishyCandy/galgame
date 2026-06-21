@@ -38,6 +38,7 @@ public class MusicPlayerPanel extends JPanel {
     private enum PlayMode { SEQUENTIAL, SINGLE_LOOP, RANDOM }
     private PlayMode playMode = PlayMode.SEQUENTIAL;
     private boolean progressDragging = false;
+    private boolean programmaticSliderUpdate = false;
     private JPanel glassPanel;
     private boolean uiReady = false;
 
@@ -60,7 +61,7 @@ public class MusicPlayerPanel extends JPanel {
         progressTimer = new Timer(200, e -> updateProgress());
         progressTimer.start();
 
-        // 閻愮懓鍤粚铏规閸栧搫鐓欓崗鎶芥４閹绢厽鏂侀崚妤勩€?
+        // 鐐瑰嚮绌虹櫧鍖哄煙鍏抽棴鎾斁鍒楄〃
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (playlistVisible && !playlistPanel.getBounds().contains(e.getPoint())) {
@@ -78,7 +79,7 @@ public class MusicPlayerPanel extends JPanel {
     private void scanMusicFiles() {
         musicList.clear();
         File dir = null;
-        // 棣栧厛灏濊瘯classpath璧勬簮璺緞
+        // 首先尝试classpath资源路径
         try {
             URL u = getClass().getResource("/player_music");
             if (u != null) {
@@ -90,7 +91,7 @@ public class MusicPlayerPanel extends JPanel {
                 }
             }
         } catch (Exception ignored) {}
-        // 濡傛灉classpath鎵句笉鍒帮紝灏濊瘯鐩稿璺緞
+        // 如果classpath找不到，尝试相对路径
         if (dir == null || !dir.exists() || !dir.isDirectory()) {
             dir = new File("player_music");
         }
@@ -117,7 +118,7 @@ public class MusicPlayerPanel extends JPanel {
     }
     
     private void createUI() {
-        // 濮ｆ稓骞撻悹鍐啇閸ｎ煉绱欏鍡曠秶鐏忎線娼?閸ユ稖顢戦幒褌娆㈤敍?
+        // 姣涚幓鐠冨鍣紙妗嗕綇灏侀潰+鍥涜鎺т欢锛?
         glassPanel = new JPanel() {
             protected void paintComponent(Graphics g) { super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -152,7 +153,7 @@ public class MusicPlayerPanel extends JPanel {
         });
         add(returnBtn);
         
-        // 娑撴捁绶亸渚€娼?
+        // 涓撹緫灏侀潰
         albumArtLabel = new JLabel() {
             protected void paintComponent(Graphics g) { Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -184,7 +185,7 @@ public class MusicPlayerPanel extends JPanel {
         songTitleLabel.setForeground(new Color(255, 255, 255, 220));
         add(songTitleLabel);
         
-        // 缁?鐞? 閳?閳?閳?閳?
+        // 绗?琛? 鈴?鈻?鈴?鈴?
         prevBtn = createControlButton("\u23EE");
         prevBtn.addActionListener(e -> playPrevious());
         add(prevBtn);
@@ -197,7 +198,7 @@ public class MusicPlayerPanel extends JPanel {
         nextBtn.addActionListener(e -> playNext());
         add(nextBtn);
         
-        // 缁?鐞? 棣冩敚 棣冩敜 棣冩敘
+        // 绗?琛? 馃攣 馃攤 馃攢
         seqBtn = createModeButton("\uD83D\uDD01");
         seqBtn.setToolTipText("\u987A\u5E8F\u64AD\u653E");
         seqBtn.addActionListener(e -> setPlayMode(PlayMode.SEQUENTIAL));
@@ -214,7 +215,7 @@ public class MusicPlayerPanel extends JPanel {
         add(randomBtn);
         updateModeButtons();
         
-        // 缁?鐞? 鏉╂稑瀹抽弶?
+        // 绗?琛? 杩涘害鏉?
         timeCurrentLabel = new JLabel("00:00");
         timeCurrentLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
         timeCurrentLabel.setForeground(new Color(255, 255, 255, 180));
@@ -242,7 +243,7 @@ public class MusicPlayerPanel extends JPanel {
         });
         add(progressSlider);
         
-        // 缁?鐞? 闂婃娊鍣?
+        // 绗?琛? 闊抽噺
         JLabel volLabel = new JLabel("\uD83D\uDD0A");
         volLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
         volLabel.setForeground(new Color(255, 255, 255, 180));
@@ -257,7 +258,7 @@ public class MusicPlayerPanel extends JPanel {
         });
         add(volumeSlider);
         
-        // 閹绢厽鏂侀崚妤勩€?
+        // 鎾斁鍒楄〃
         createPlaylistPanel();
     }
     
@@ -377,7 +378,7 @@ public class MusicPlayerPanel extends JPanel {
         playlistContent.revalidate();
         playlistContent.repaint();
         
-        // 寮傛鍔犺浇姝屾洸鏃堕暱锛岄伩鍏嶉樆濉濫DT
+        // 异步加载歌曲时长，避免阻塞EDT
         javax.swing.Timer durationLoadTimer = new javax.swing.Timer(500, ev -> {
             new Thread(() -> {
                 for (int i = 0; i < musicList.size() && i < durLabels.size(); i++) {
@@ -427,7 +428,7 @@ public class MusicPlayerPanel extends JPanel {
         
         int coverY = 80;
         
-        // 濮ｆ稓骞撻悹鍐桨閺夊灝瀵橀崶鏉戠殱闂?閸ユ稖顢?
+        // 姣涚幓鐠冮潰鏉垮寘鍥村皝闈?鍥涜
         int glassH = coverSize + 20 + 30*4 + 4*3 + 12;
         glassPanel.setBounds(coverX - 12, coverY - 12, coverSize + 24, glassH);
         
@@ -439,7 +440,7 @@ public class MusicPlayerPanel extends JPanel {
         int rowH = 30;
         int gap = 4;
         
-        // 缁?鐞涘矉绱?娑擃亝甯堕崚鑸靛瘻闁?
+        // 绗?琛岋細3涓帶鍒舵寜閽?
         int btnCount = 3;
         int btnW = (ctrlW - gap * (btnCount - 1)) / btnCount;
         int row1Y = ctrlY;
@@ -447,7 +448,7 @@ public class MusicPlayerPanel extends JPanel {
         playPauseBtn.setBounds(coverX + btnW + gap, row1Y, btnW, rowH);
         nextBtn.setBounds(coverX + (btnW + gap) * 2, row1Y, btnW, rowH);
         
-        // 缁?鐞涘矉绱?娑擃亝膩瀵繑瀵滈柦?
+        // 绗?琛岋細3涓ā寮忔寜閽?
         int modeCount = 3;
         int modeW = (ctrlW - gap * (modeCount - 1)) / modeCount;
         int row2Y = row1Y + rowH + gap;
@@ -455,13 +456,13 @@ public class MusicPlayerPanel extends JPanel {
         singleLoopBtn.setBounds(coverX + modeW + gap, row2Y, modeW, rowH);
         randomBtn.setBounds(coverX + (modeW + gap) * 2, row2Y, modeW, rowH);
         
-        // 缁?鐞涘矉绱版潻娑樺閺夆槄绱欓幒鎺戙仈鐎靛綊缍堥敍?
+        // 绗?琛岋細杩涘害鏉★紙鎺掑ご瀵归綈锛?
         int row3Y = row2Y + rowH + gap;
         timeCurrentLabel.setBounds(coverX, row3Y + 5, 42, rowH - 10);
         progressSlider.setBounds(coverX + 44, row3Y + 5, ctrlW - 88, rowH - 10);
         timeTotalLabel.setBounds(coverX + ctrlW - 42, row3Y + 5, 42, rowH - 10);
         
-        // 缁?鐞涘矉绱伴棅鎶藉櫤
+        // 绗?琛岋細闊抽噺
         int row4Y = row3Y + rowH + gap;
         for (Component c : getComponents()) {
             if (c instanceof JLabel && ((JLabel)c).getText().contains("\uD83D\uDD0A"))
@@ -469,7 +470,7 @@ public class MusicPlayerPanel extends JPanel {
         }
         volumeSlider.setBounds(coverX + 28, row4Y + 5, ctrlW - 28, rowH - 10);
         
-        // 閹绢厽鏂侀崚妤勩€冮敍鍫熺拨閸戝搫濮╅悽浼欑礆
+        // 鎾斁鍒楄〃锛堟粦鍑哄姩鐢伙級
         int plStartX = coverX;
         int plFullX = coverX + coverSize + 12;
         int plW = coverSize + 24;
@@ -477,7 +478,7 @@ public class MusicPlayerPanel extends JPanel {
         int plDisplayX = (int)(plStartX + playlistSlideX * (plFullX - plStartX));
         playlistPanel.setBounds(plDisplayX, coverY - 12, plW, glassH);
         
-        // 婵″倹鐏夐幘顓熸杹閸掓銆冮崣顖濐潌娴ｅ棗顔旀惔锕€銇婄粣鍕剁礉娑旂喖娈ｉ挊蹇斿竴閸欏厖鏅堕崠鍝勭厵閻ㄥ嫬鍞寸€?
+        // 濡傛灉鎾斁鍒楄〃鍙浣嗗搴﹀お绐勶紝涔熼殣钘忔帀鍙充晶鍖哄煙鐨勫唴瀹?
         if (playlistVisible) {
             songTitleLabel.setVisible(false);
         } else {
@@ -518,7 +519,7 @@ public class MusicPlayerPanel extends JPanel {
         playlistAnimTimer.start();
     }
     
-    // ---- 閹绢厽鏂侀幒褍鍩?----
+    // ---- 鎾斁鎺у埗 ----
     private void playAtIndex(int index) {
         if (index < 0 || index >= musicList.size()) return;
         currentIndex = index;
@@ -533,7 +534,7 @@ public class MusicPlayerPanel extends JPanel {
         updatePlayPauseButton(true);
         songTitleLabel.setText(info.getDisplayName());
         albumArtLabel.repaint();
-        // 鍚庡彴鍔犺浇澶ч煶棰戞枃浠讹紝閬垮厤闃诲EDT
+        // 后台加载大音频文件，避免阻塞EDT
         new Thread(() -> {
             musicPlayer.play(info.wavFile);
             SwingUtilities.invokeLater(() -> {
@@ -611,7 +612,9 @@ public class MusicPlayerPanel extends JPanel {
             long totalUs = musicPlayer.getMicrosecondLength();
             if (totalUs > 0) {
                 int val = (int)(posUs * 1000 / totalUs);
+                programmaticSliderUpdate = true;
                 progressSlider.setValue(Math.min(val, 1000));
+                programmaticSliderUpdate = false;
                 timeCurrentLabel.setText(formatTime(posUs));
                 timeTotalLabel.setText(formatTime(totalUs));
             }
