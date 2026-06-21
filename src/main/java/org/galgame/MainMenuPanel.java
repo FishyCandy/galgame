@@ -85,19 +85,32 @@ public class MainMenuPanel extends JPanel {
         });
         musicBtn.addActionListener(e -> {
             if (animTimer != null) animTimer.stop();
+            // 测试：先创建MusicPlayerPanel看看能否成功
+            System.out.println("Creating MusicPlayerPanel...");
+            MusicPlayerPanel mp = null;
             try {
-                MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
-                // 调试：打印面板信息
-                System.out.println("MusicPlayerPanel created: " + musicPanel.getWidth() + "x" + musicPanel.getHeight());
-                System.out.println("Components: " + musicPanel.getComponentCount());
-                switchToPanel(musicPanel);
-                System.out.println("switchToPanel done: " + musicPanel.getWidth() + "x" + musicPanel.getHeight());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                java.io.StringWriter sw = new java.io.StringWriter();
-                ex.printStackTrace(new java.io.PrintWriter(sw));
-                JOptionPane.showMessageDialog(parentFrame, "音乐鉴赏加载失败:\n" + sw.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                mp = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
+                System.out.println("MusicPlayerPanel OK, comps=" + mp.getComponentCount());
+            } catch (Throwable t) {
+                System.out.println("FAILED: " + t.getClass().getName() + ": " + t.getMessage());
+                t.printStackTrace();
             }
+            // 无论如何，切换到简单测试面板
+            JPanel p = new JPanel() {
+                protected void paintComponent(Graphics g) {
+                    g.setColor(mp != null ? Color.GREEN : Color.RED);
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                    g.setColor(Color.WHITE);
+                    g.setFont(new Font("Dialog", Font.BOLD, 30));
+                    g.drawString(mp != null ? "MusicPlayerPanel OK" : "MusicPlayerPanel FAILED", 50, 100);
+                }
+            };
+            p.setLayout(null);
+            JButton back = new JButton("返回");
+            back.setBounds(50, 200, 100, 40);
+            back.addActionListener(ev -> showPreviousPanel());
+            p.add(back);
+            switchToPanel(p);
         });
         settingsBtn.addActionListener(e -> {
             SettingsPanel settingsPanel = new SettingsPanel(parentFrame, this, titleFont, buttonFont);
