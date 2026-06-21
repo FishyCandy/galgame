@@ -238,30 +238,8 @@ public class GamePanel extends JPanel {
     private void createDialogPanel() {
         dialogPanel = new JPanel(new BorderLayout(15, 15)) {
             @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // 对话框背景和边框随 dialogFadeAlpha 淡出/淡入
-                int bgAlpha = Math.round(160 * dialogFadeAlpha);
-                int borderAlpha = Math.round(180 * dialogFadeAlpha);
-                int innerAlpha = Math.round(30 * dialogFadeAlpha);
-
-                g2.setColor(new Color(255, 255, 255, bgAlpha));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-                g2.setColor(new Color(255, 255, 255, borderAlpha));
-                g2.setStroke(new BasicStroke(1.5f));
-                g2.drawRoundRect(1, 1, getWidth()-3, getHeight()-3, 30, 30);
-                g2.setColor(new Color(255, 255, 255, innerAlpha));
-                g2.setStroke(new BasicStroke(3f));
-                g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 30, 30);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-
-            @Override
             protected void paintChildren(Graphics g) {
-                // 转场动画时文字随对话框淡入淡出，静态状态下文字保持完全不透明
+                // 转场动画时文字随覆盖层淡入淡出，静态状态下文字保持完全不透明
                 if (isBgTransitioning) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, dialogFadeAlpha));
@@ -307,8 +285,20 @@ public class GamePanel extends JPanel {
         // 固定对话框大小，防止尺寸变化
         dialogPanel.setPreferredSize(new java.awt.Dimension(400, 200));
 
-        // 用wrapper包裹对话框，全屏模式下左右各留1/4屏幕宽的边距，居中显示
+        // wrapper包裹对话框，全屏模式下左右各留边距，居中显示；同时绘制全宽半透明覆盖层
         JPanel dialogWrapper = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                // 全宽半透明覆盖层，透明度由 dialogFadeAlpha 控制
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int alpha = Math.round(180 * dialogFadeAlpha);
+                g2.setColor(new Color(255, 255, 255, alpha));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+                super.paintComponent(g);
+            }
+
             @Override
             public void doLayout() {
                 // 检测是否全屏模式
@@ -592,7 +582,7 @@ public class GamePanel extends JPanel {
                     fadeStep = 0;
                 }
             } else if (fadePhase == 1) {
-                // 第二阶段：从黑幕淡入（新背景 + 空对话框出现）
+                // 第二阶段：从黑幕淡入（新背景 + 空覆盖层出现）
                 fadeStep++;
                 float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
                 transitionAlpha = 1f - progress;
