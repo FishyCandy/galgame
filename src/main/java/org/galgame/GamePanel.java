@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,9 +16,9 @@ public class GamePanel extends JPanel {
     private JFrame parentFrame;
     private MainMenuPanel mainMenuPanel;
     private BufferedImage bgImage;
-    private BufferedImage spriteImage; // 人物差分图
-    private String currentBgPath = null;     // 当前背景路径
-    private String currentSpritePath = null; // 当前差分图路径
+    private BufferedImage spriteImage; // 浜虹墿宸垎鍥?
+    private String currentBgPath = null;     // 褰撳墠鑳屾櫙璺緞
+    private String currentSpritePath = null; // 褰撳墠宸垎鍥捐矾寰?
 
     private StoryManager storyManager;
     private boolean waitingForChoice = false;
@@ -32,7 +32,7 @@ public class GamePanel extends JPanel {
     private JPanel rightSpacer;
     private Timer autoTimer;
     private boolean isAutoPlaying = false;
-    private boolean isEnding = false;           // 故事结束状态标志
+    private boolean isEnding = false;           // 鏁呬簨缁撴潫鐘舵€佹爣蹇?
     private List<String> history = new ArrayList<>();
 
     private Color currentTextColor = Color.WHITE;
@@ -40,10 +40,10 @@ public class GamePanel extends JPanel {
     private Font buttonFont;
     private MusicPlayer musicPlayer;
 
-    // ---- 背景转场相关字段 ----
-    private float transitionAlpha = 0f;          // 黑幕透明度 (0~1)
+    // ---- 鑳屾櫙杞満鐩稿叧瀛楁 ----
+    private float transitionAlpha = 0f;          // 榛戝箷閫忔槑搴?(0~1)
     private float dialogFadeAlpha = 1f;
-    // ---- 全局设置（由设置页面控制） ----
+    // ---- 鍏ㄥ眬璁剧疆锛堢敱璁剧疆椤甸潰鎺у埗锛?----
     private static int autoPlayDelayMs = 2000;
     private static float globalDialogAlpha = 0.5f;
 
@@ -52,20 +52,20 @@ public class GamePanel extends JPanel {
     }
     public static void setDialogAlpha(float alpha) {
         globalDialogAlpha = alpha;
-    }          // 对话框透明度 (0~1)
-    private boolean isBgTransitioning = false;   // 是否正在转场
+    }          // 瀵硅瘽妗嗛€忔槑搴?(0~1)
+    private boolean isBgTransitioning = false;   // 鏄惁姝ｅ湪杞満
     private int fadeStep = 0;
-    private int fadePhase = 0;                   // 0=淡出至黑, 1=从黑淡入
-    private String pendingBgPath = null;         // 待切换的背景图路径
-    private Timer bgTransitionTimer;             // 转场动画定时器
+    private int fadePhase = 0;                   // 0=娣″嚭鑷抽粦, 1=浠庨粦娣″叆
+    private String pendingBgPath = null;         // 寰呭垏鎹㈢殑鑳屾櫙鍥捐矾寰?
+    private Timer bgTransitionTimer;             // 杞満鍔ㄧ敾瀹氭椂鍣?
 
-    // ---- 差分图转场相关字段 ----
-    private float spriteAlpha = 1f;              // 差分图透明度 (0~1)
+    // ---- 宸垎鍥捐浆鍦虹浉鍏冲瓧娈?----
+    private float spriteAlpha = 1f;              // 宸垎鍥鹃€忔槑搴?(0~1)
     private boolean isSpriteTransitioning = false;
     private String pendingSpritePath = null;
     private Timer spriteTransitionTimer;
     private int spriteFadeStep = 0;
-    private int spriteFadePhase = 0;             // 0=淡出, 1=淡入
+    private int spriteFadePhase = 0;             // 0=娣″嚭, 1=娣″叆
 
     public GamePanel(JFrame frame, MainMenuPanel mainMenu) {
         this.parentFrame = frame;
@@ -84,15 +84,15 @@ public class GamePanel extends JPanel {
                 ge.registerFont(rawFont);
                 dialogFont = rawFont.deriveFont(24f);
             } else {
-                dialogFont = new Font("微软雅黑", Font.PLAIN, 24);
-                System.err.println("字体文件未找到，使用系统默认字体");
+                dialogFont = new Font("寰蒋闆呴粦", Font.PLAIN, 24);
+                System.err.println("瀛椾綋鏂囦欢鏈壘鍒帮紝浣跨敤绯荤粺榛樿瀛椾綋");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            dialogFont = new Font("微软雅黑", Font.PLAIN, 24);
+            dialogFont = new Font("寰蒋闆呴粦", Font.PLAIN, 24);
         }
 
-        // 加载按钮字体（用于选项按钮）
+        // 鍔犺浇鎸夐挳瀛椾綋锛堢敤浜庨€夐」鎸夐挳锛?
         try {
             InputStream btnFontStream = getClass().getResourceAsStream("/fonts/MyButtonFont.ttf");
             if (btnFontStream != null) {
@@ -100,15 +100,15 @@ public class GamePanel extends JPanel {
                 GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
                 ge.registerFont(buttonFont);
             } else {
-                buttonFont = new Font("微软雅黑", Font.BOLD, 24);
+                buttonFont = new Font("寰蒋闆呴粦", Font.BOLD, 24);
             }
         } catch (Exception e) {
-            buttonFont = new Font("微软雅黑", Font.BOLD, 24);
+            buttonFont = new Font("寰蒋闆呴粦", Font.BOLD, 24);
         }
 
         storyManager = new StoryManager();
 
-        // 初始状态：全黑背景，对话框不可见
+        // 鍒濆鐘舵€侊細鍏ㄩ粦鑳屾櫙锛屽璇濇涓嶅彲瑙?
         bgImage = null;
         transitionAlpha = 1f;
         dialogFadeAlpha = 0f;
@@ -134,29 +134,29 @@ public class GamePanel extends JPanel {
 
 
 
-    // ---------- 人物差分图 ----------
+    // ---------- 浜虹墿宸垎鍥?----------
     private void loadSpriteImage(String path) {
         if (path == null || path.isEmpty()) return;
         pendingSpritePath = path;
 
-        // 停止之前的转场定时器
+        // 鍋滄涔嬪墠鐨勮浆鍦哄畾鏃跺櫒
         if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) {
             spriteTransitionTimer.stop();
         }
 
         if (spriteImage == null) {
-            // 没有当前差分图，直接加载并淡入
+            // 娌℃湁褰撳墠宸垎鍥撅紝鐩存帴鍔犺浇骞舵贰鍏?
             loadSpriteFromPending();
             spriteAlpha = 0f;
             isSpriteTransitioning = true;
             spriteFadeStep = 0;
-            spriteFadePhase = 1; // 直接进入淡入阶段
+            spriteFadePhase = 1; // 鐩存帴杩涘叆娣″叆闃舵
             startSpriteFadeTimer();
         } else {
-            // 有当前差分图，先淡出
+            // 鏈夊綋鍓嶅樊鍒嗗浘锛屽厛娣″嚭
             isSpriteTransitioning = true;
             spriteFadeStep = 0;
-            spriteFadePhase = 0; // 先淡出
+            spriteFadePhase = 0; // 鍏堟贰鍑?
             spriteAlpha = 1f;
             startSpriteFadeTimer();
         }
@@ -172,7 +172,7 @@ public class GamePanel extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.err.println("差分图未找到: " + pendingSpritePath);
+        System.err.println("宸垎鍥炬湭鎵惧埌: " + pendingSpritePath);
     }
 
     private void startSpriteFadeTimer() {
@@ -183,17 +183,17 @@ public class GamePanel extends JPanel {
             float progress = Math.min(1f, (float) spriteFadeStep / STEPS);
 
             if (spriteFadePhase == 0) {
-                // 淡出
+                // 娣″嚭
                 spriteAlpha = 1f - progress;
                 if (progress >= 1f) {
-                    // 切换到新图，开始淡入
+                    // 鍒囨崲鍒版柊鍥撅紝寮€濮嬫贰鍏?
                     loadSpriteFromPending();
                     spriteAlpha = 0f;
                     spriteFadePhase = 1;
                     spriteFadeStep = 0;
                 }
             } else if (spriteFadePhase == 1) {
-                // 淡入
+                // 娣″叆
                 spriteAlpha = progress;
                 if (progress >= 1f) {
                     spriteAlpha = 1f;
@@ -215,7 +215,7 @@ public class GamePanel extends JPanel {
 
         isSpriteTransitioning = true;
         spriteFadeStep = 0;
-        spriteFadePhase = 0; // 淡出
+        spriteFadePhase = 0; // 娣″嚭
         spriteAlpha = 1f;
 
         final int STEPS = 20;
@@ -239,7 +239,7 @@ public class GamePanel extends JPanel {
         dialogPanel = new JPanel(new BorderLayout(15, 15)) {
             @Override
             protected void paintChildren(Graphics g) {
-                // 转场动画时文字随覆盖层淡入淡出，静态状态下文字保持完全不透明
+                // 杞満鍔ㄧ敾鏃舵枃瀛楅殢瑕嗙洊灞傛贰鍏ユ贰鍑猴紝闈欐€佺姸鎬佷笅鏂囧瓧淇濇寔瀹屽叏涓嶉€忔槑
                 if (isBgTransitioning) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, dialogFadeAlpha));
@@ -265,11 +265,11 @@ public class GamePanel extends JPanel {
         lineArea.setOpaque(false);
         lineArea.setForeground(currentTextColor);
         lineArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        // 彻底隐藏光标和选中效果（galgame对话框不应有光标）
-        lineArea.getCaret().setVisible(false);           // 隐藏光标闪烁
-        lineArea.setCaretColor(new java.awt.Color(0, 0, 0, 0));     // 光标颜色透明
-        lineArea.setSelectionColor(new java.awt.Color(0, 0, 0, 0)); // 选中背景透明
-        lineArea.setSelectedTextColor(lineArea.getForeground());     // 选中文字颜色不变
+        // 褰诲簳闅愯棌鍏夋爣鍜岄€変腑鏁堟灉锛坓algame瀵硅瘽妗嗕笉搴旀湁鍏夋爣锛?
+        lineArea.getCaret().setVisible(false);           // 闅愯棌鍏夋爣闂儊
+        lineArea.setCaretColor(new java.awt.Color(0, 0, 0, 0));     // 鍏夋爣棰滆壊閫忔槑
+        lineArea.setSelectionColor(new java.awt.Color(0, 0, 0, 0)); // 閫変腑鑳屾櫙閫忔槑
+        lineArea.setSelectedTextColor(lineArea.getForeground());     // 閫変腑鏂囧瓧棰滆壊涓嶅彉
         lineArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -282,14 +282,14 @@ public class GamePanel extends JPanel {
         textPanel.add(characterLabel, BorderLayout.NORTH);
         textPanel.add(lineArea, BorderLayout.CENTER);
         dialogPanel.add(textPanel, BorderLayout.CENTER);
-        // 固定对话框大小，防止尺寸变化
+        // 鍥哄畾瀵硅瘽妗嗗ぇ灏忥紝闃叉灏哄鍙樺寲
         dialogPanel.setPreferredSize(new java.awt.Dimension(400, 200));
 
-        // wrapper包裹对话框，全屏模式下左右各留边距，居中显示；同时绘制全宽半透明覆盖层
+        // wrapper鍖呰９瀵硅瘽妗嗭紝鍏ㄥ睆妯″紡涓嬪乏鍙冲悇鐣欒竟璺濓紝灞呬腑鏄剧ず锛涘悓鏃剁粯鍒跺叏瀹藉崐閫忔槑瑕嗙洊灞?
         JPanel dialogWrapper = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
-                // 全宽半透明覆盖层，透明度由 dialogFadeAlpha 控制
+                // 鍏ㄥ鍗婇€忔槑瑕嗙洊灞傦紝閫忔槑搴︾敱 dialogFadeAlpha 鎺у埗
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 int alpha = Math.round(180 * dialogFadeAlpha);
@@ -301,7 +301,7 @@ public class GamePanel extends JPanel {
 
             @Override
             public void doLayout() {
-                // 检测是否全屏模式
+                // 妫€娴嬫槸鍚﹀叏灞忔ā寮?
                 java.awt.GraphicsDevice gd = parentFrame.getGraphicsConfiguration().getDevice();
                 boolean fullscreen = (gd.getFullScreenWindow() == parentFrame);
                 int margin = parentFrame.getWidth() / 6;
@@ -431,7 +431,7 @@ public class GamePanel extends JPanel {
             g2.dispose();
         }
 
-        // 绘制人物差分图（全屏高度，支持淡入淡出）
+        // 缁樺埗浜虹墿宸垎鍥撅紙鍏ㄥ睆楂樺害锛屾敮鎸佹贰鍏ユ贰鍑猴級
         if (spriteImage != null) {
             Graphics2D g2s = (Graphics2D) g.create();
             g2s.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, spriteAlpha));
@@ -445,7 +445,7 @@ public class GamePanel extends JPanel {
             g2s.dispose();
         }
 
-        // 背景转场黑幕（覆盖在背景之上）
+        // 鑳屾櫙杞満榛戝箷锛堣鐩栧湪鑳屾櫙涔嬩笂锛?
         if (transitionAlpha > 0.01f) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transitionAlpha));
@@ -455,10 +455,10 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // ---------- 核心游戏逻辑 ----------
+    // ---------- 鏍稿績娓告垙閫昏緫 ----------
     public void startGame() {
         history.clear();
-        // 重置转场状态：从全黑开始淡入
+        // 閲嶇疆杞満鐘舵€侊細浠庡叏榛戝紑濮嬫贰鍏?
         if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) {
             bgTransitionTimer.stop();
         }
@@ -484,7 +484,7 @@ public class GamePanel extends JPanel {
     }
 
     public void resetGame() {
-        // 重置转场状态
+        // 閲嶇疆杞満鐘舵€?
         if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) {
             bgTransitionTimer.stop();
         }
@@ -524,7 +524,7 @@ public class GamePanel extends JPanel {
     }
 
     /**
-     * 同步对话框透明度（从设置页返回时调用）
+     * 鍚屾瀵硅瘽妗嗛€忔槑搴︼紙浠庤缃〉杩斿洖鏃惰皟鐢級
      */
     public void syncDialogAlpha() {
         dialogFadeAlpha = globalDialogAlpha;
@@ -532,10 +532,10 @@ public class GamePanel extends JPanel {
     }
 
 
-    // ---------- 背景转场 ----------
+    // ---------- 鑳屾櫙杞満 ----------
 
     /**
-     * 加载背景图片
+     * 鍔犺浇鑳屾櫙鍥剧墖
      */
     private void loadBgImage(String path) {
         if (path != null && !path.isEmpty()) {
@@ -549,13 +549,13 @@ public class GamePanel extends JPanel {
                 e.printStackTrace();
             }
         }
-        System.err.println("背景图未找到: " + path);
+        System.err.println("鑳屾櫙鍥炬湭鎵惧埌: " + path);
     }
 
     /**
-     * 启动背景转场动画：
-     * 阶段0：原背景 + 对话框渐入黑幕（逐渐消失）
-     * 阶段1：黑幕中切换背景，再渐入新背景 + 空对话框
+     * 鍚姩鑳屾櫙杞満鍔ㄧ敾锛?
+     * 闃舵0锛氬師鑳屾櫙 + 瀵硅瘽妗嗘笎鍏ラ粦骞曪紙閫愭笎娑堝け锛?
+     * 闃舵1锛氶粦骞曚腑鍒囨崲鑳屾櫙锛屽啀娓愬叆鏂拌儗鏅?+ 绌哄璇濇
      */
     private void startBgTransition(String newBgPath) {
         if (isBgTransitioning) return;
@@ -567,13 +567,13 @@ public class GamePanel extends JPanel {
             bgTransitionTimer.stop();
         }
 
-        // 如果没有当前背景（首次加载），跳过淡出阶段，直接从黑色淡入
+        // 濡傛灉娌℃湁褰撳墠鑳屾櫙锛堥娆″姞杞斤級锛岃烦杩囨贰鍑洪樁娈碉紝鐩存帴浠庨粦鑹叉贰鍏?
         if (bgImage == null) {
-            // 直接加载新背景
+            // 鐩存帴鍔犺浇鏂拌儗鏅?
             loadBgImage(pendingBgPath);
-            transitionAlpha = 1f;   // 全黑覆盖
-            dialogFadeAlpha = 0f;   // 对话框不可见
-            fadePhase = 1;          // 跳过阶段0，直接进入淡入
+            transitionAlpha = 1f;   // 鍏ㄩ粦瑕嗙洊
+            dialogFadeAlpha = 0f;   // 瀵硅瘽妗嗕笉鍙
+            fadePhase = 1;          // 璺宠繃闃舵0锛岀洿鎺ヨ繘鍏ユ贰鍏?
             characterLabel.setText("");
             lineArea.setText("");
         } else {
@@ -587,14 +587,14 @@ public class GamePanel extends JPanel {
         bgTransitionTimer = new Timer(16, null);
         bgTransitionTimer.addActionListener(e -> {
             if (fadePhase == 0) {
-                // 第一阶段：淡出到黑幕（背景 + 对话框 + 台词一同消失）
+                // 绗竴闃舵锛氭贰鍑哄埌榛戝箷锛堣儗鏅?+ 瀵硅瘽妗?+ 鍙拌瘝涓€鍚屾秷澶憋級
                 fadeStep++;
                 float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
                 transitionAlpha = progress;
                 dialogFadeAlpha = globalDialogAlpha * (1f - progress);
 
                 if (progress >= 1f) {
-                    // 切换到新背景，清空台词
+                    // 鍒囨崲鍒版柊鑳屾櫙锛屾竻绌哄彴璇?
                     loadBgImage(pendingBgPath);
                     characterLabel.setText("");
                     lineArea.setText("");
@@ -602,7 +602,7 @@ public class GamePanel extends JPanel {
                     fadeStep = 0;
                 }
             } else if (fadePhase == 1) {
-                // 第二阶段：从黑幕淡入（新背景 + 空覆盖层出现）
+                // 绗簩闃舵锛氫粠榛戝箷娣″叆锛堟柊鑳屾櫙 + 绌鸿鐩栧眰鍑虹幇锛?
                 fadeStep++;
                 float progress = Math.min(1f, (float) fadeStep / STEPS_PER_PHASE);
                 transitionAlpha = 1f - progress;
@@ -623,7 +623,7 @@ public class GamePanel extends JPanel {
 
     public void updateDisplay() {
         if (isEnding) {
-            // 故事结束：不弹窗，显示返回确认覆盖层
+            // 鏁呬簨缁撴潫锛氫笉寮圭獥锛屾樉绀鸿繑鍥炵‘璁よ鐩栧眰
             confirmReturn();
             return;
         }
@@ -636,19 +636,19 @@ if (waitingForChoice) return;
                 isAutoPlaying = false;
                 autoPlayBtn.setText("Auto");
             }
-            // 命令结束：不弹窗，设为ending状态
+            // 鍛戒护缁撴潫锛氫笉寮圭獥锛岃涓篹nding鐘舵€?
             isEnding = true;
             return;
         }
 switch (cmd.type) {
 
             case "show":
-                // 旧版show指令已废弃，自动跳过
+                // 鏃х増show鎸囦护宸插簾寮冿紝鑷姩璺宠繃
                 updateDisplay();
                 return;
 
             case "say":
-                history.add(cmd.who + "：" + cmd.text);
+                history.add(cmd.who + "锛? + cmd.text);
                 characterLabel.setText(cmd.who);
                 lineArea.setText(cmd.text);
 
@@ -675,14 +675,14 @@ switch (cmd.type) {
                     if (musicUrl != null) {
                         musicPlayer.fadeTo(musicUrl);
                     } else {
-                        System.err.println("音乐文件未找到: " + cmd.bgm);
+                        System.err.println("闊充箰鏂囦欢鏈壘鍒? " + cmd.bgm);
                     }
                 }
                 updateDisplay();
                 return;
 
             case "sprite":
-                // 显示人物差分图（具有延续性）
+                // 鏄剧ず浜虹墿宸垎鍥撅紙鍏锋湁寤剁画鎬э級
                 if (cmd.sprite != null && !cmd.sprite.isEmpty()) {
                     currentSpritePath = cmd.sprite;
                     loadSpriteImage(cmd.sprite);
@@ -691,14 +691,14 @@ switch (cmd.type) {
                 return;
 
             case "sprite_hide":
-                // 隐藏人物差分图
+                // 闅愯棌浜虹墿宸垎鍥?
                 currentSpritePath = null;
                 hideSprite();
                 updateDisplay();
                 return;
 
             case "set":
-                // 设置隐藏分变量
+                // 璁剧疆闅愯棌鍒嗗彉閲?
                 if (cmd.var != null && cmd.value != null) {
                     storyManager.setScore(cmd.var, cmd.value);
                 }
@@ -706,7 +706,7 @@ switch (cmd.type) {
                 return;
 
             case "check":
-                // 检查分数条件，跳转到对应场景
+                // 妫€鏌ュ垎鏁版潯浠讹紝璺宠浆鍒板搴斿満鏅?
                 if (cmd.var != null && cmd.min != null && cmd.target != null) {
                     String resultScene = storyManager.checkCondition(cmd.var, cmd.min, cmd.target, cmd.fallback);
                     if (resultScene != null) {
@@ -719,12 +719,12 @@ switch (cmd.type) {
                 return;
 
             case "bg":
-                // 背景切换指令：启动淡入淡出转场
+                // 鑳屾櫙鍒囨崲鎸囦护锛氬惎鍔ㄦ贰鍏ユ贰鍑鸿浆鍦?
                 if (cmd.bg != null && !cmd.bg.isEmpty()) {
                     currentBgPath = cmd.bg;
                     startBgTransition(cmd.bg);
                 }
-                // 不立即推进到下一条指令，等待转场完成后的用户点击
+                // 涓嶇珛鍗虫帹杩涘埌涓嬩竴鏉℃寚浠わ紝绛夊緟杞満瀹屾垚鍚庣殑鐢ㄦ埛鐐瑰嚮
                 return;
 
             case "end":
@@ -733,7 +733,7 @@ switch (cmd.type) {
                     isAutoPlaying = false;
                     autoPlayBtn.setText("Auto");
                 }
-                // 设置故事结束标志，播放ending背景图
+                // 璁剧疆鏁呬簨缁撴潫鏍囧織锛屾挱鏀緀nding鑳屾櫙鍥?
                 isEnding = true;
                 dialogPanel.setVisible(false);
                 controlPanel.setVisible(false);
@@ -752,10 +752,10 @@ switch (cmd.type) {
     }
 
     private void showChoices(List<StoryData.ChoiceData> choiceDataList) {
-        // 使用 frame 的 JLayeredPane 实现全屏覆盖（包括顶部按钮栏和底部对话框）
+        // 浣跨敤 frame 鐨?JLayeredPane 瀹炵幇鍏ㄥ睆瑕嗙洊锛堝寘鎷《閮ㄦ寜閽爮鍜屽簳閮ㄥ璇濇锛?
         JLayeredPane layeredPane = parentFrame.getLayeredPane();
 
-        // 全屏半透明暗幕 + 居中选项按钮（带淡入动画）
+        // 鍏ㄥ睆鍗婇€忔槑鏆楀箷 + 灞呬腑閫夐」鎸夐挳锛堝甫娣″叆鍔ㄧ敾锛?
         JPanel overlay = new JPanel(new GridBagLayout()) {
             private float alpha = 0f;
             private Timer fadeInTimer;
@@ -783,24 +783,24 @@ switch (cmd.type) {
             }
         };
 
-        // 居中竖直排列的选项按钮（统一大小，无外框）
+        // 灞呬腑绔栫洿鎺掑垪鐨勯€夐」鎸夐挳锛堢粺涓€澶у皬锛屾棤澶栨锛?
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setOpaque(false);
 
-        // 标题
-        JLabel title = new JLabel("—— 请做出选择 ——");
+        // 鏍囬
+        JLabel title = new JLabel("鈥斺€?璇峰仛鍑洪€夋嫨 鈥斺€?);
         title.setFont(buttonFont.deriveFont(22f));
         title.setForeground(new Color(255, 255, 255, 200));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(title);
         card.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // 固定大小的选项按钮
+        // 鍥哄畾澶у皬鐨勯€夐」鎸夐挳
         for (ChoiceOption opt : getChoiceOptions(choiceDataList)) {
             JButton btn = createChoiceButton(opt.getText());
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-            // 固定按钮大小：宽 420，高 60
+            // 鍥哄畾鎸夐挳澶у皬锛氬 420锛岄珮 60
             Dimension btnSize = new Dimension(420, 60);
             btn.setPreferredSize(btnSize);
             btn.setMaximumSize(btnSize);
@@ -810,7 +810,7 @@ switch (cmd.type) {
                 layeredPane.revalidate();
                 layeredPane.repaint();
                 storyManager.jumpToScene(opt.getTarget());
-                // 应用隐藏分
+                // 搴旂敤闅愯棌鍒?
                 if (opt.getScore() != null) {
                     for (Map.Entry<String, Integer> scoreEntry : opt.getScore().entrySet()) {
                         storyManager.addScore(scoreEntry.getKey(), scoreEntry.getValue());
@@ -829,7 +829,7 @@ switch (cmd.type) {
         layeredPane.repaint();
     }
 
-    // 辅助方法：将 ChoiceData 转换为 ChoiceOption 列表
+    // 杈呭姪鏂规硶锛氬皢 ChoiceData 杞崲涓?ChoiceOption 鍒楄〃
     private List<ChoiceOption> getChoiceOptions(List<StoryData.ChoiceData> choiceDataList) {
         List<ChoiceOption> options = new ArrayList<>();
         for (StoryData.ChoiceData cd : choiceDataList) {
@@ -838,7 +838,7 @@ switch (cmd.type) {
         return options;
     }
 
-    // 创建毛玻璃风格选项按钮（与主菜单 createGlassButton 风格一致）
+    // 鍒涘缓姣涚幓鐠冮鏍奸€夐」鎸夐挳锛堜笌涓昏彍鍗?createGlassButton 椋庢牸涓€鑷达級
     private JButton createChoiceButton(String text) {
         JButton btn = new JButton(text) {
             private boolean hovered = false;
@@ -903,7 +903,6 @@ switch (cmd.type) {
     private void nextCommand() {
         if (waitingForChoice) return;
         if (isBgTransitioning) return;
-        if (isSpriteTransitioning) return;
         updateDisplay();
     }
 
@@ -932,7 +931,7 @@ switch (cmd.type) {
     }
     public boolean saveGameToFile(int slot) {
         if (storyManager == null) {
-            JOptionPane.showMessageDialog(this, "没有可存档的进度。", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "娌℃湁鍙瓨妗ｇ殑杩涘害銆?, "閿欒", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         File saveFile = new File("save_" + slot + ".dat");
@@ -951,7 +950,7 @@ switch (cmd.type) {
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "存档失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "瀛樻。澶辫触锛? + ex.getMessage(), "閿欒", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -962,7 +961,7 @@ switch (cmd.type) {
             storyManager.setCurrentSceneId(data.getCurrentSceneId());
             int savedCmdIndex = data.getCurrentCommandIndex();
 
-            // 重置所有转场状态
+            // 閲嶇疆鎵€鏈夎浆鍦虹姸鎬?
             if (bgTransitionTimer != null && bgTransitionTimer.isRunning()) bgTransitionTimer.stop();
             if (spriteTransitionTimer != null && spriteTransitionTimer.isRunning()) spriteTransitionTimer.stop();
             transitionAlpha = 0f;
@@ -973,12 +972,12 @@ switch (cmd.type) {
             history.clear();
             waitingForChoice = false;
 
-            // 恢复隐藏分
+            // 鎭㈠闅愯棌鍒?
             if (data.getScores() != null) {
                 storyManager.setScores(data.getScores());
             }
 
-            // 重放场景中所有bg/sprite/bgm指令来重建状态（从索引0到存档位置）
+            // 閲嶆斁鍦烘櫙涓墍鏈塨g/sprite/bgm鎸囦护鏉ラ噸寤虹姸鎬侊紙浠庣储寮?鍒板瓨妗ｄ綅缃級
             bgImage = null;
             currentBgPath = null;
             spriteImage = null;
@@ -1022,7 +1021,7 @@ switch (cmd.type) {
                 }
             }
 
-            // 回退一步：存档时的索引指向下一条指令，回退到已显示的指令
+            // 鍥為€€涓€姝ワ細瀛樻。鏃剁殑绱㈠紩鎸囧悜涓嬩竴鏉℃寚浠わ紝鍥為€€鍒板凡鏄剧ず鐨勬寚浠?
             storyManager.setCurrentCommandIndex(savedCmdIndex);
             if (savedCmdIndex > 0) {
                 storyManager.setCurrentCommandIndex(savedCmdIndex - 1);
@@ -1031,7 +1030,7 @@ switch (cmd.type) {
             return true;
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "读档失败！", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "璇绘。澶辫触锛?, "閿欒", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -1049,12 +1048,12 @@ switch (cmd.type) {
         return thumb;
     }
 
-    // ---------- 返回标题 ----------
+    // ---------- 杩斿洖鏍囬 ----------
     private void confirmReturn() {
-        // 使用覆盖层替代JOptionPane，避免全屏下弹窗导致窗口最小化
+        // 浣跨敤瑕嗙洊灞傛浛浠OptionPane锛岄伩鍏嶅叏灞忎笅寮圭獥瀵艰嚧绐楀彛鏈€灏忓寲
         JLayeredPane layeredPane = parentFrame.getLayeredPane();
 
-        // 半透明暗幕 + 居中确认按钮
+        // 鍗婇€忔槑鏆楀箷 + 灞呬腑纭鎸夐挳
         JPanel overlay = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -1069,20 +1068,20 @@ switch (cmd.type) {
         overlay.setOpaque(false);
         overlay.setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
 
-        // 居中竖直排列的确认按钮
+        // 灞呬腑绔栫洿鎺掑垪鐨勭‘璁ゆ寜閽?
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setOpaque(false);
 
-        JLabel title = new JLabel((isEnding ? "游戏结束，你确定返回吗？" : "返回标题页面，未保存的进度会丢失，你确定返回吗？"));
+        JLabel title = new JLabel((isEnding ? "娓告垙缁撴潫锛屼綘纭畾杩斿洖鍚楋紵" : "杩斿洖鏍囬椤甸潰锛屾湭淇濆瓨鐨勮繘搴︿細涓㈠け锛屼綘纭畾杩斿洖鍚楋紵"));
         title.setFont(buttonFont.deriveFont(20f));
         title.setForeground(new Color(255, 255, 255, 200));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(title);
         card.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // "确定返回"按钮
-        JButton confirmBtn = createChoiceButton("确定返回");
+        // "纭畾杩斿洖"鎸夐挳
+        JButton confirmBtn = createChoiceButton("纭畾杩斿洖");
         confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         Dimension btnSize = new Dimension(300, 60);
         confirmBtn.setPreferredSize(btnSize);
@@ -1099,8 +1098,8 @@ switch (cmd.type) {
         card.add(confirmBtn);
         card.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        // "取消"按钮
-        JButton cancelBtn = createChoiceButton("取消");
+        // "鍙栨秷"鎸夐挳
+        JButton cancelBtn = createChoiceButton("鍙栨秷");
         cancelBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         cancelBtn.setPreferredSize(btnSize);
         cancelBtn.setMaximumSize(btnSize);
