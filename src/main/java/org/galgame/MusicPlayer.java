@@ -142,6 +142,31 @@ public class MusicPlayer {
         return audioCue.getIsPlaying(instanceId);
     }
 
+    /** 获取当前播放位置（帧） */
+    public double getFramePosition() {
+        if (audioCue == null || instanceId == -1) return 0;
+        return audioCue.getFramePosition(instanceId);
+    }
+
+    /** 获取总帧数 */
+    public long getFrameLength() {
+        if (audioCue == null) return 0;
+        return audioCue.getFrameLength();
+    }
+
+    /** 获取总时长（微秒） */
+    public long getMicrosecondLength() {
+        if (audioCue == null) return 0;
+        return audioCue.getMicrosecondLength();
+    }
+
+    /** 设置播放位置（帧） */
+    public void setFramePosition(double frame) {
+        if (audioCue != null && instanceId != -1) {
+            audioCue.setFramePosition(instanceId, frame);
+        }
+    }
+
     public String getCurrentFile() {
         return currentFile;
     }
