@@ -208,9 +208,10 @@ public class MusicPlayerPanel extends JPanel {
         progressSlider = new JSlider(0, 1000, 0);
         progressSlider.setOpaque(false);
         progressSlider.setFocusable(false);
-        progressSlider.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) { progressDragging = true; }
-            public void mouseReleased(MouseEvent e) {
+        progressSlider.addChangeListener(e -> {
+            if (progressSlider.getValueIsAdjusting()) {
+                progressDragging = true;
+            } else if (progressDragging) {
                 progressDragging = false;
                 if (musicPlayer.isPlaying() && currentIndex >= 0) {
                     double fraction = progressSlider.getValue() / 1000.0;
@@ -377,21 +378,21 @@ public class MusicPlayerPanel extends JPanel {
         }
         
         int coverSize = Math.max(w * 2 / 5, 280);
-        int coverX = margin;
+        int coverX = Math.max(80, (w - coverSize) / 3);
         
         int coverY = 80;
         
         // 姣涚幓鐠冮潰鏉垮寘鍥村皝闈?鍥涜
-        int glassH = coverSize + 38 + 36*4 + 6*3 + 16;
+        int glassH = coverSize + 20 + 30*4 + 4*3 + 12;
         glassPanel.setBounds(coverX - 12, coverY - 12, coverSize + 24, glassH);
         
         albumArtLabel.setBounds(coverX, coverY, coverSize, coverSize);
         songTitleLabel.setBounds(coverX, coverY + coverSize + 8, coverSize, 25);
         
-        int ctrlY = coverY + coverSize + 38;
+        int ctrlY = coverY + coverSize + 20;
         int ctrlW = coverSize;
-        int rowH = 36;
-        int gap = 6;
+        int rowH = 30;
+        int gap = 4;
         
         // 绗?琛岋細3涓帶鍒舵寜閽?
         int btnCount = 3;
