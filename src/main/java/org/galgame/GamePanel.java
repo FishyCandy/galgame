@@ -23,8 +23,8 @@ public class GamePanel extends JPanel {
     private StoryManager storyManager;
     private boolean waitingForChoice = false;
 
-    private OutlineLabel characterLabel;
-    private OutlineTextArea lineArea;
+    private StrokableLabel characterLabel;
+    private StrokableTextArea lineArea;
     private JButton autoPlayBtn, logBtn;
     private JPanel dialogPanel;
     private JPanel controlPanel;
@@ -254,11 +254,11 @@ public class GamePanel extends JPanel {
         dialogPanel.setOpaque(false);
         dialogPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        characterLabel = new OutlineLabel("");
+        characterLabel = new StrokableLabel("");
         characterLabel.setFont(dialogFont.deriveFont(26f));
         characterLabel.setForeground(currentTextColor);
 
-        lineArea = new OutlineTextArea();
+        lineArea = new StrokableTextArea();
         lineArea.setFont(dialogFont.deriveFont(22f));
         lineArea.setForeground(currentTextColor);
         lineArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
