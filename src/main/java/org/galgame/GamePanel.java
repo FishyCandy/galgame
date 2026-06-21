@@ -6,6 +6,10 @@ import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -378,13 +382,22 @@ public class GamePanel extends JPanel {
                     g2.setStroke(new BasicStroke(2.5f));
                     g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 20, 20);
                 }
-                g2.setColor(getForeground());
-                g2.setFont(getFont());
-                FontMetrics fm = g2.getFontMetrics();
+// 丁香紫描边效果
+                FontRenderContext frc = g2.getFontRenderContext();
+                TextLayout tl = new TextLayout(getText(), getFont(), frc);
+                java.awt.geom.Rectangle2D tlBounds = tl.getBounds();
                 int offset = pressed ? 2 : 0;
-                int x = (getWidth() - fm.stringWidth(getText())) / 2 + offset;
-                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent() + offset;
-                g2.drawString(getText(), x, y);
+                float textX = (getWidth() - (float) tlBounds.getWidth()) / 2 + offset;
+                float textY = (getHeight() - (float) tlBounds.getHeight()) / 2 + tl.getAscent() + offset;
+                AffineTransform at = AffineTransform.getTranslateInstance(textX, textY);
+                Shape outline = tl.getOutline(at);
+                // 丁香紫描边
+                g2.setColor(new Color(190, 145, 220));
+                g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2.draw(outline);
+                // 白色填充
+                g2.setColor(getForeground());
+                g2.fill(outline);
                 g2.dispose();
             }
             @Override
@@ -886,13 +899,22 @@ switch (cmd.type) {
                     g2.setStroke(new BasicStroke(2.5f));
                     g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 30, 30);
                 }
-                g2.setColor(getForeground());
-                g2.setFont(getFont());
-                FontMetrics fm = g2.getFontMetrics();
+// 丁香紫描边效果
+                FontRenderContext frc = g2.getFontRenderContext();
+                TextLayout tl = new TextLayout(getText(), getFont(), frc);
+                java.awt.geom.Rectangle2D tlBounds = tl.getBounds();
                 int offset = pressed ? 2 : 0;
-                int x = (getWidth() - fm.stringWidth(getText())) / 2 + offset;
-                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent() + offset;
-                g2.drawString(getText(), x, y);
+                float textX = (getWidth() - (float) tlBounds.getWidth()) / 2 + offset;
+                float textY = (getHeight() - (float) tlBounds.getHeight()) / 2 + tl.getAscent() + offset;
+                AffineTransform at = AffineTransform.getTranslateInstance(textX, textY);
+                Shape outline = tl.getOutline(at);
+                // 丁香紫描边
+                g2.setColor(new Color(190, 145, 220));
+                g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2.draw(outline);
+                // 白色填充
+                g2.setColor(getForeground());
+                g2.fill(outline);
                 g2.dispose();
             }
             @Override
