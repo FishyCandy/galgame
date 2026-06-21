@@ -2,6 +2,8 @@ package org.galgame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +35,9 @@ public class LogPanel extends JPanel {
         topBar.setOpaque(false);
         topBar.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        JButton backBtn = createGlassButton("← 返回游戏");
-        backBtn.addActionListener(e -> returnToGame());
-        topBar.add(backBtn, BorderLayout.WEST);
-
+JButton returnBtn = createReturnButton();
+        returnBtn.addActionListener(e -> returnToGame());
+        topBar.add(returnBtn, BorderLayout.EAST);
         JLabel titleLabel = new JLabel("台词回顾", JLabel.CENTER);
         titleLabel.setFont(nameFont.deriveFont(28f));
         titleLabel.setForeground(Color.WHITE);
@@ -144,46 +145,33 @@ public class LogPanel extends JPanel {
     }
 
 
-    /** 创建毛玻璃按钮（与GamePanel一致） */
-    private JButton createGlassButton(String text) {
-        JButton btn = new JButton(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 60));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                g2.setColor(new Color(255, 255, 255, 150));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
-                g2.setColor(getForeground());
-                g2.setFont(getFont());
-                FontMetrics fm = g2.getFontMetrics();
-                int x = (getWidth() - fm.stringWidth(getText())) / 2;
-                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
-                g2.drawString(getText(), x, y);
-                g2.dispose();
+    /** 创建统一的图片返回按钮 */
+    private JButton createReturnButton() {
+        try {
+            BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));
+            if (img != null) {
+                Image scaled = img.getScaledInstance(36, 36, Image.SCALE_SMOOTH);
+                JButton btn = new JButton(new ImageIcon(scaled));
+                btn.setOpaque(false);
+                btn.setContentAreaFilled(false);
+                btn.setBorderPainted(false);
+                btn.setFocusPainted(false);
+                btn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                return btn;
             }
-            @Override
-            public void setOpaque(boolean opaque) { super.setOpaque(false); }
-        };
-        btn.setFont(nameFont.deriveFont(14f));
+        } catch (Exception e) {
+        }
+        JButton btn = new JButton("✕");
+        btn.setFont(nameFont.deriveFont(22f));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
         btn.setContentAreaFilled(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                btn.setForeground(new Color(255, 255, 200));
-                btn.repaint();
-            }
-            public void mouseExited(MouseEvent e) {
-                btn.setForeground(Color.WHITE);
-                btn.repaint();
-            }
-        });
         return btn;
     }
+
 
     /** 返回游戏画面 */
     private void returnToGame() {

@@ -77,30 +77,9 @@ public class SettingsPanel extends JPanel {
         titleLabel.setForeground(Color.WHITE);
         titleRow.add(titleLabel, BorderLayout.WEST);
 
-        JButton closeBtn = new JButton("X");
-        closeBtn.setFont(buttonFont.deriveFont(22f));
-        closeBtn.setForeground(Color.WHITE);
-        closeBtn.setFocusPainted(false);
-        closeBtn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
-        closeBtn.setContentAreaFilled(false);
-        closeBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        closeBtn.setOpaque(false);
+        JButton closeBtn = createReturnButton();
         closeBtn.addActionListener(e -> mainMenuPanel.showPreviousPanel());
-        closeBtn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                closeBtn.setForeground(new Color(255, 100, 100));
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                closeBtn.setForeground(Color.WHITE);
-            }
-        });
-
-        JPanel closePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        closePanel.setOpaque(false);
-        closePanel.add(closeBtn);
-        titleRow.add(closePanel, BorderLayout.EAST);
+        titleRow.add(closeBtn, BorderLayout.EAST);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -292,4 +271,31 @@ public class SettingsPanel extends JPanel {
         }
         g2.dispose();
     }
+    /** 创建统一的图片返回按钮 */
+    private JButton createReturnButton() {
+        try {
+            BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));
+            if (img != null) {
+                Image scaled = img.getScaledInstance(36, 36, Image.SCALE_SMOOTH);
+                JButton btn = new JButton(new ImageIcon(scaled));
+                btn.setOpaque(false);
+                btn.setContentAreaFilled(false);
+                btn.setBorderPainted(false);
+                btn.setFocusPainted(false);
+                btn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                return btn;
+            }
+        } catch (Exception e) {
+        }
+        JButton btn = new JButton("✕");
+        btn.setFont(buttonFont.deriveFont(22f));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
 }

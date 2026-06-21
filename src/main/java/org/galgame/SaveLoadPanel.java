@@ -36,28 +36,18 @@ public class SaveLoadPanel extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        // 标题
+        // 顶部栏：标题 + 返回按钮
+        JPanel topBar = new JPanel(new BorderLayout());
+        topBar.setOpaque(false);
+        topBar.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
         JLabel titleLabel = new JLabel(mode == Mode.SAVE ? "💾 存档" : "📂 读档");
         titleLabel.setFont(mainMenuPanel.getTitleFont().deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
-        add(titleLabel, BorderLayout.NORTH);
+        topBar.add(titleLabel, BorderLayout.CENTER);
 
-        // 存档槽区域
-        JPanel slotPanel = new JPanel(new GridLayout(2, 3, 20, 20));
-        slotPanel.setOpaque(false);
-        slotPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
-        for (int i = 0; i < 6; i++) {
-            slotPanel.add(createSlot(i));
-        }
-        add(slotPanel, BorderLayout.CENTER);
-
-        // 返回按钮
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        bottomPanel.setOpaque(false);
-        JButton returnBtn = createGlassButton("↩ 返回");
-        returnBtn.setFont(mainMenuPanel.getButtonFont().deriveFont(20f));
+        JButton returnBtn = createReturnButton();
         returnBtn.addActionListener(e -> {
             if (gamePanel != null) {
                 mainMenuPanel.switchToPanel(gamePanel);
@@ -65,8 +55,9 @@ public class SaveLoadPanel extends JPanel {
                 mainMenuPanel.showMainMenu();
             }
         });
-        bottomPanel.add(returnBtn);
-        add(bottomPanel, BorderLayout.SOUTH);
+        topBar.add(returnBtn, BorderLayout.EAST);
+
+        add(topBar, BorderLayout.NORTH);
 
         setBackground(new Color(30, 30, 60));
     }
@@ -405,13 +396,28 @@ public class SaveLoadPanel extends JPanel {
     private void refreshSlots() {
         // 简单刷新：重新构建整个面板
         removeAll();
-        // 重新添加标题
+        // 重新添加顶部栏
+        JPanel topBar = new JPanel(new BorderLayout());
+        topBar.setOpaque(false);
+        topBar.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
         JLabel titleLabel = new JLabel(mode == Mode.SAVE ? "💾 存档" : "📂 读档");
         titleLabel.setFont(mainMenuPanel.getTitleFont().deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
-        add(titleLabel, BorderLayout.NORTH);
+        topBar.add(titleLabel, BorderLayout.CENTER);
+
+        JButton returnBtn = createReturnButton();
+        returnBtn.addActionListener(e -> {
+            if (gamePanel != null) {
+                mainMenuPanel.switchToPanel(gamePanel);
+            } else {
+                mainMenuPanel.showMainMenu();
+            }
+        });
+        topBar.add(returnBtn, BorderLayout.EAST);
+
+        add(topBar, BorderLayout.NORTH);
 
         JPanel slotPanel = new JPanel(new GridLayout(2, 3, 20, 20));
         slotPanel.setOpaque(false);
@@ -421,19 +427,6 @@ public class SaveLoadPanel extends JPanel {
         }
         add(slotPanel, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        bottomPanel.setOpaque(false);
-        JButton returnBtn = createGlassButton("↩ 返回");
-        returnBtn.setFont(mainMenuPanel.getButtonFont().deriveFont(20f));
-        returnBtn.addActionListener(e -> {
-            if (gamePanel != null) {
-                mainMenuPanel.switchToPanel(gamePanel);
-            } else {
-                mainMenuPanel.showMainMenu();
-            }
-        });
-        bottomPanel.add(returnBtn);
-        add(bottomPanel, BorderLayout.SOUTH);
 
         revalidate();
         repaint();
@@ -475,6 +468,33 @@ public class SaveLoadPanel extends JPanel {
                 btn.repaint();
             }
         });
+        return btn;
+    }
+
+    /** 创建统一的图片返回按钮 */
+    private JButton createReturnButton() {
+        try {
+            BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));
+            if (img != null) {
+                Image scaled = img.getScaledInstance(36, 36, Image.SCALE_SMOOTH);
+                JButton btn = new JButton(new ImageIcon(scaled));
+                btn.setOpaque(false);
+                btn.setContentAreaFilled(false);
+                btn.setBorderPainted(false);
+                btn.setFocusPainted(false);
+                btn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                return btn;
+            }
+        } catch (Exception e) {
+        }
+        JButton btn = new JButton("✕");
+        btn.setFont(mainMenuPanel.getTitleFont().deriveFont(22f));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
     }
 
