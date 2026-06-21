@@ -314,7 +314,7 @@ public class GamePanel extends JPanel {
                 // 检测是否全屏模式
                 java.awt.GraphicsDevice gd = parentFrame.getGraphicsConfiguration().getDevice();
                 boolean fullscreen = (gd.getFullScreenWindow() == parentFrame);
-                int margin = fullscreen ? parentFrame.getWidth() / 4 : 0;
+                int margin = fullscreen ? parentFrame.getWidth() / 6 : 0;
                 if (leftSpacer != null) leftSpacer.setPreferredSize(new java.awt.Dimension(margin, 1));
                 if (rightSpacer != null) rightSpacer.setPreferredSize(new java.awt.Dimension(margin, 1));
                 super.doLayout();
