@@ -85,10 +85,15 @@ public class MainMenuPanel extends JPanel {
         });
         musicBtn.addActionListener(e -> {
             if (animTimer != null) animTimer.stop();
-            // 先不停止菜单音乐，测试是否是stopMenuMusic导致的
-            // new Thread(() -> stopMenuMusic()).start();
-            MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
-            switchToPanel(musicPanel);
+            try {
+                MusicPlayerPanel musicPanel = new MusicPlayerPanel(parentFrame, this, titleFont, buttonFont);
+                switchToPanel(musicPanel);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                java.io.StringWriter sw = new java.io.StringWriter();
+                ex.printStackTrace(new java.io.PrintWriter(sw));
+                JOptionPane.showMessageDialog(parentFrame, "音乐鉴赏加载失败:\n" + sw.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            }
         });
         settingsBtn.addActionListener(e -> {
             SettingsPanel settingsPanel = new SettingsPanel(parentFrame, this, titleFont, buttonFont);
