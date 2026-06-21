@@ -230,7 +230,6 @@ public class MusicPlayerPanel extends JPanel {
         progressSlider.setOpaque(false);
         progressSlider.setFocusable(false);
         progressSlider.addChangeListener(e -> {
-        progressSlider.addChangeListener(e -> {
             if (programmaticSliderUpdate) return;
             if (progressSlider.getValueIsAdjusting()) {
                 progressDragging = true;
@@ -243,6 +242,8 @@ public class MusicPlayerPanel extends JPanel {
                 progressDragging = false;
             }
         });
+        add(progressSlider);
+        
         // 绗?琛? 闊抽噺
         JLabel volLabel = new JLabel("\uD83D\uDD0A");
         volLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
