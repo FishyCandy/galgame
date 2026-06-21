@@ -259,11 +259,15 @@ public class GamePanel extends JPanel {
 
             @Override
             protected void paintChildren(Graphics g) {
-                // 让对话框内的所有子组件（角色名、台词）也随 dialogFadeAlpha 淡出/淡入
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, dialogFadeAlpha));
-                super.paintChildren(g2);
-                g2.dispose();
+                // 转场动画时文字随对话框淡入淡出，静态状态下文字保持完全不透明
+                if (isBgTransitioning) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, dialogFadeAlpha));
+                    super.paintChildren(g2);
+                    g2.dispose();
+                } else {
+                    super.paintChildren(g);
+                }
             }
         };
         dialogPanel.setOpaque(false);
