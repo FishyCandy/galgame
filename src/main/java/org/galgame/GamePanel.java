@@ -359,19 +359,39 @@ public class GamePanel extends JPanel {
 
     private JButton createGlassButton(String text) {
         JButton btn = new JButton(text) {
+            private boolean hovered = false;
+            private boolean pressed = false;
+            {
+                addMouseListener(new MouseAdapter() {
+                    public void mouseEntered(MouseEvent e) { hovered = true; repaint(); }
+                    public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
+                    public void mousePressed(MouseEvent e) { pressed = true; repaint(); }
+                    public void mouseReleased(MouseEvent e) { pressed = false; repaint(); }
+                });
+            }
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 60));
+                Color fillColor = pressed ? new Color(255, 255, 255, 40) : new Color(255, 255, 255, 60);
+                g2.setColor(fillColor);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 g2.setColor(new Color(255, 255, 255, 150));
                 g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 20, 20);
+                if (hovered) {
+                    g2.setColor(new Color(255, 255, 255, 30));
+                    g2.setStroke(new BasicStroke(6f));
+                    g2.drawRoundRect(3, 3, getWidth()-7, getHeight()-7, 20, 20);
+                    g2.setColor(new Color(255, 255, 255, 70));
+                    g2.setStroke(new BasicStroke(2.5f));
+                    g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 20, 20);
+                }
                 g2.setColor(getForeground());
                 g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
-                int x = (getWidth() - fm.stringWidth(getText())) / 2;
-                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+                int offset = pressed ? 2 : 0;
+                int x = (getWidth() - fm.stringWidth(getText())) / 2 + offset;
+                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent() + offset;
                 g2.drawString(getText(), x, y);
                 g2.dispose();
             }
@@ -821,20 +841,40 @@ switch (cmd.type) {
     // 创建毛玻璃风格选项按钮（与主菜单 createGlassButton 风格一致）
     private JButton createChoiceButton(String text) {
         JButton btn = new JButton(text) {
+            private boolean hovered = false;
+            private boolean pressed = false;
+            {
+                addMouseListener(new MouseAdapter() {
+                    public void mouseEntered(MouseEvent e) { hovered = true; repaint(); }
+                    public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
+                    public void mousePressed(MouseEvent e) { pressed = true; repaint(); }
+                    public void mouseReleased(MouseEvent e) { pressed = false; repaint(); }
+                });
+            }
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 60));
+                Color fillColor = pressed ? new Color(255, 255, 255, 40) : new Color(255, 255, 255, 60);
+                g2.setColor(fillColor);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
                 g2.setColor(new Color(255, 255, 255, 120));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30);
+                if (hovered) {
+                    g2.setColor(new Color(255, 255, 255, 30));
+                    g2.setStroke(new BasicStroke(6f));
+                    g2.drawRoundRect(3, 3, getWidth()-7, getHeight()-7, 30, 30);
+                    g2.setColor(new Color(255, 255, 255, 70));
+                    g2.setStroke(new BasicStroke(2.5f));
+                    g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 30, 30);
+                }
                 g2.setColor(getForeground());
                 g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
-                int x = (getWidth() - fm.stringWidth(getText())) / 2;
-                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+                int offset = pressed ? 2 : 0;
+                int x = (getWidth() - fm.stringWidth(getText())) / 2 + offset;
+                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent() + offset;
                 g2.drawString(getText(), x, y);
                 g2.dispose();
             }
