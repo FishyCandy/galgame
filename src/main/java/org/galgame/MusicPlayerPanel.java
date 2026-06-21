@@ -33,6 +33,7 @@ public class MusicPlayerPanel extends JPanel {
     private JPanel playlistPanel;
     private JScrollPane playlistScroll;
     private JPanel playlistContent;
+    private JLabel listTitle;
     
     private enum PlayMode { SEQUENTIAL, SINGLE_LOOP, RANDOM }
     private PlayMode playMode = PlayMode.SEQUENTIAL;
