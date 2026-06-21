@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +6,6 @@ import java.awt.font.TextLayout;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.text.AttributedString;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +15,12 @@ public class OutlineTextArea extends JPanel {
     private Color textColor = Color.WHITE;
     private Color outlineColor = Color.BLACK;
     private float outlineWidth = 2.5f;
-    private Font textFont;
     private List<TextLayout> lines = new ArrayList<>();
 
     public OutlineTextArea() {
         setOpaque(false);
-        textFont = new Font("微软雅黑", Font.PLAIN, 22);
+        Font defaultFont = new Font("寰蒋闆呴粦", Font.PLAIN, 22);
+        super.setFont(defaultFont);
     }
 
     public OutlineTextArea(String initialText) {
@@ -39,14 +38,10 @@ public class OutlineTextArea extends JPanel {
 
     @Override
     public void setFont(Font font) {
-        this.textFont = font;
         super.setFont(font);
         lines.clear();
         repaint();
     }
-
-    @Override
-    public Font getFont() { return textFont; }
 
     @Override
     public void setForeground(Color color) {
@@ -72,8 +67,9 @@ public class OutlineTextArea extends JPanel {
         FontRenderContext frc = g2.getFontRenderContext();
         float wrappingWidth = Math.max(100, getWidth() - insets.left - insets.right);
 
+        Font currentFont = getFont();
         AttributedString as = new AttributedString(text);
-        as.addAttribute(java.awt.font.TextAttribute.FONT, textFont);
+        as.addAttribute(java.awt.font.TextAttribute.FONT, currentFont);
         LineBreakMeasurer measurer = new LineBreakMeasurer(as.getIterator(), frc);
 
         while (measurer.getPosition() < text.length()) {
@@ -91,6 +87,16 @@ public class OutlineTextArea extends JPanel {
             y += layout.getAscent() + layout.getDescent() + layout.getLeading();
         }
         g2.dispose();
+    }
+
+
+    @Override
+    public Dimension getPreferredSize() {
+        if (isPreferredSizeSet()) return super.getPreferredSize();
+        Font currentFont = getFont();
+        FontMetrics fm = getFontMetrics(currentFont != null ? currentFont : new Font("寰蒋闆呴粦", Font.PLAIN, 22));
+        int lineHeight = (fm != null) ? fm.getHeight() : 30;
+        return new Dimension(400, Math.max(lineHeight * 3, 60));
     }
 
     @Override
