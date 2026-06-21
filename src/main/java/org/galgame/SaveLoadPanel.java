@@ -188,42 +188,173 @@ public class SaveLoadPanel extends JPanel {
     private void handleSlotClick(int index, File saveFile) {
         if (mode == Mode.SAVE) {
             if (saveFile.exists()) {
-                int option = JOptionPane.showConfirmDialog(
-                        this, "该槽已有存档，是否覆盖？", "确认覆盖",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                if (option != JOptionPane.YES_OPTION) return;
-            }
-            if (gamePanel != null) {
-                boolean success = gamePanel.saveGameToFile(index);
-                if (success) refreshSlots();
+                showOverlayConfirm("该槽已有存档，是否覆盖？", "确定覆盖", "取消", () -> {
+                    if (gamePanel != null) {
+                        boolean success = gamePanel.saveGameToFile(index);
+                        if (success) refreshSlots();
+                    } else {
+                        showOverlayMessage("无法存档：未在游戏中。", "确定");
+                    }
+                });
             } else {
-                JOptionPane.showMessageDialog(this, "无法存档：未在游戏中。", "错误", JOptionPane.ERROR_MESSAGE);
+                if (gamePanel != null) {
+                    boolean success = gamePanel.saveGameToFile(index);
+                    if (success) refreshSlots();
+                } else {
+                    showOverlayMessage("无法存档：未在游戏中。", "确定");
+                }
             }
         } else {
             if (!saveFile.exists()) {
-                JOptionPane.showMessageDialog(this, "该槽为空，无法读档。", "提示", JOptionPane.INFORMATION_MESSAGE);
+                showOverlayMessage("该槽为空，无法读档。", "确定");
                 return;
             }
-            int option = JOptionPane.showConfirmDialog(
-                    this, "是否从该槽读档？", "确认读档",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (option != JOptionPane.YES_OPTION) return;
-
-            if (gamePanel != null) {
-                if (gamePanel.loadGameFromFile(saveFile)) {
-                    mainMenuPanel.stopMenuMusic();
-                    mainMenuPanel.switchToPanel(gamePanel);
+            showOverlayConfirm("是否从该槽读档？", "确定读档", "取消", () -> {
+                if (gamePanel != null) {
+                    if (gamePanel.loadGameFromFile(saveFile)) {
+                        mainMenuPanel.stopMenuMusic();
+                        mainMenuPanel.switchToPanel(gamePanel);
+                    }
+                } else {
+                    GamePanel gp = new GamePanel(parentFrame, mainMenuPanel);
+                    if (gp.loadGameFromFile(saveFile)) {
+                        mainMenuPanel.stopMenuMusic();
+                        mainMenuPanel.switchToPanel(gp);
+                    }
                 }
-            } else {
-                GamePanel gp = new GamePanel(parentFrame, mainMenuPanel);
-                if (gp.loadGameFromFile(saveFile)) {
-                    mainMenuPanel.stopMenuMusic();
-                    mainMenuPanel.switchToPanel(gp);
-                }
-            }
+            });
         }
     }
 
+    // ---------- 覆盖层弹窗（替代JOptionPane） ----------
+    private void showOverlayConfirm(String message, String confirmText, String cancelText, Runnable onConfirm) {
+        JLayeredPane layeredPane = parentFrame.getLayeredPane();
+        JPanel overlay = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(0, 0, 0, 200));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+        overlay.setOpaque(false);
+        overlay.setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setOpaque(false);
+        JLabel label = new JLabel(message);
+        label.setFont(mainMenuPanel.getButtonFont().deriveFont(20f));
+        label.setForeground(new Color(255, 255, 255, 200));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(label);
+        card.add(Box.createRigidArea(new Dimension(0, 30)));
+        JButton confirmBtn = createOverlayButton(confirmText);
+        confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        confirmBtn.addActionListener(e -> {
+            layeredPane.remove(overlay);
+            layeredPane.revalidate();
+            layeredPane.repaint();
+            if (onConfirm != null) onConfirm.run();
+        });
+        card.add(confirmBtn);
+        card.add(Box.createRigidArea(new Dimension(0, 15)));
+        JButton cancelBtn = createOverlayButton(cancelText);
+        cancelBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cancelBtn.addActionListener(e -> {
+            layeredPane.remove(overlay);
+            layeredPane.revalidate();
+            layeredPane.repaint();
+        });
+        card.add(cancelBtn);
+        overlay.add(card);
+        layeredPane.add(overlay, JLayeredPane.MODAL_LAYER);
+        layeredPane.revalidate();
+        layeredPane.repaint();
+    }
+
+    private void showOverlayMessage(String message, String confirmText) {
+        JLayeredPane layeredPane = parentFrame.getLayeredPane();
+        JPanel overlay = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(0, 0, 0, 200));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+        overlay.setOpaque(false);
+        overlay.setBounds(0, 0, parentFrame.getWidth(), parentFrame.getHeight());
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setOpaque(false);
+        JLabel label = new JLabel(message);
+        label.setFont(mainMenuPanel.getButtonFont().deriveFont(20f));
+        label.setForeground(new Color(255, 255, 255, 200));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(label);
+        card.add(Box.createRigidArea(new Dimension(0, 30)));
+        JButton confirmBtn = createOverlayButton(confirmText);
+        confirmBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        confirmBtn.addActionListener(e -> {
+            layeredPane.remove(overlay);
+            layeredPane.revalidate();
+            layeredPane.repaint();
+        });
+        card.add(confirmBtn);
+        overlay.add(card);
+        layeredPane.add(overlay, JLayeredPane.MODAL_LAYER);
+        layeredPane.revalidate();
+        layeredPane.repaint();
+    }
+
+    private JButton createOverlayButton(String text) {
+        JButton btn = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(255, 255, 255, 60));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+                g2.setColor(new Color(255, 255, 255, 120));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30);
+                g2.setColor(getForeground());
+                g2.setFont(getFont());
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+                g2.drawString(getText(), x, y);
+                g2.dispose();
+            }
+            @Override
+            public void setOpaque(boolean opaque) { super.setOpaque(false); }
+        };
+        btn.setFont(mainMenuPanel.getButtonFont());
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(15, 30, 15, 30));
+        btn.setContentAreaFilled(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(300, 60));
+        btn.setMaximumSize(new Dimension(300, 60));
+        btn.setMinimumSize(new Dimension(300, 60));
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btn.setForeground(new Color(255, 255, 200));
+                btn.repaint();
+            }
+            public void mouseExited(MouseEvent e) {
+                btn.setForeground(Color.WHITE);
+                btn.repaint();
+            }
+        });
+        return btn;
+    }
     private void refreshSlots() {
         // 简单刷新：重新构建整个面板
         removeAll();
