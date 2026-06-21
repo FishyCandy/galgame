@@ -23,8 +23,8 @@ public class GamePanel extends JPanel {
     private StoryManager storyManager;
     private boolean waitingForChoice = false;
 
-    private JLabel characterLabel;
-    private JTextArea lineArea;
+    private OutlineLabel characterLabel;
+    private OutlineTextArea lineArea;
     private JButton autoPlayBtn, logBtn;
     private JPanel dialogPanel;
     private JPanel controlPanel;
@@ -254,26 +254,17 @@ public class GamePanel extends JPanel {
         dialogPanel.setOpaque(false);
         dialogPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        characterLabel = new JLabel("");
+        characterLabel = new OutlineLabel("");
         characterLabel.setFont(dialogFont.deriveFont(26f));
         characterLabel.setForeground(currentTextColor);
 
-        lineArea = new JTextArea(3, 35);
+        lineArea = new OutlineTextArea();
         lineArea.setFont(dialogFont.deriveFont(22f));
-        lineArea.setLineWrap(true);
-        lineArea.setWrapStyleWord(true);
-        lineArea.setEditable(false);
-        lineArea.setOpaque(false);
         lineArea.setForeground(currentTextColor);
         lineArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        // 彻底隐藏光标和选中效果（galgame对话框不应有光标）
-        lineArea.getCaret().setVisible(false);           // 隐藏光标闪烁
-        lineArea.setCaretColor(new java.awt.Color(0, 0, 0, 0));     // 光标颜色透明
-        lineArea.setSelectionColor(new java.awt.Color(0, 0, 0, 0)); // 选中背景透明
-        lineArea.setSelectedTextColor(lineArea.getForeground());     // 选中文字颜色不变
         lineArea.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 if (!waitingForChoice && !isBgTransitioning) nextCommand();
             }
         });

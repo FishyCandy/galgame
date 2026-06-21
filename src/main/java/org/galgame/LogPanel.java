@@ -99,7 +99,7 @@ JButton returnBtn = createReturnButton();
         card.setPreferredSize(new Dimension(800, 200));
 
         // 左侧角色名（在毛玻璃框外）
-        JLabel nameLabel = new JLabel(showName ? who : "");
+        OutlineLabel nameLabel = new OutlineLabel(showName ? who : "");
         nameLabel.setFont(nameFont);
         nameLabel.setForeground(new Color(255, 220, 150));
         nameLabel.setPreferredSize(new Dimension(120, 36));
@@ -126,17 +126,9 @@ JButton returnBtn = createReturnButton();
         dialogueBox.setOpaque(false);
         dialogueBox.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
-        JTextArea textArea = new JTextArea(text);
+        OutlineTextArea textArea = new OutlineTextArea(text);
         textArea.setFont(dialogFont.deriveFont(26f));
         textArea.setForeground(Color.WHITE);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setEditable(false);
-        textArea.setOpaque(false);
-        textArea.getCaret().setVisible(false);
-        textArea.setCaretColor(new Color(0, 0, 0, 0));
-        textArea.setSelectionColor(new Color(0, 0, 0, 0));
-        textArea.setSelectedTextColor(Color.WHITE);
         textArea.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
         dialogueBox.add(textArea, BorderLayout.CENTER);
 
