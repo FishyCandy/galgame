@@ -71,12 +71,28 @@ public class MusicPlayerPanel extends JPanel {
     
     private void scanMusicFiles() {
         musicList.clear();
-        File dir = new File("player_music");
-        if (!dir.exists() || !dir.isDirectory()) {
-            try {
-                URL u = getClass().getResource("/player_music");
-                if (u != null) dir = new File(u.toURI());
-            } catch (Exception ignored) {}
+        File dir = null;
+        // 首先尝试classpath资源路径
+        try {
+            URL u = getClass().getResource("/player_music");
+            if (u != null) {
+                try {
+                    dir = new File(u.toURI());
+                } catch (Exception e) {
+                    String path = u.getPath();
+                    if (path != null) dir = new File(path);
+                }
+            }
+        } catch (Exception ignored) {}
+        // 如果classpath找不到，尝试相对路径
+        if (dir == null || !dir.exists() || !dir.isDirectory()) {
+            dir = new File("player_music");
+        }
+        if (dir == null || !dir.exists() || !dir.isDirectory()) {
+            dir = new File("src/main/resources/player_music");
+        }
+        if (dir == null || !dir.exists() || !dir.isDirectory()) {
+            return;
         }
         File[] wavs = dir.listFiles((d, n) -> n.toLowerCase().endsWith(".wav"));
         if (wavs != null) {
