@@ -85,6 +85,7 @@ public class MusicPlayerPanel extends JPanel {
     
     private void createUI() {
         // 毛玻璃容器（框住封面+四行控件）
+        glassPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
