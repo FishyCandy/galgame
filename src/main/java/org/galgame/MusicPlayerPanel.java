@@ -382,7 +382,7 @@ public class MusicPlayerPanel extends JPanel {
     public void doLayout() {
         int w = getWidth(), h = getHeight();
         int margin = 30;
-        int coverSize = Math.min(200, h - 180);
+        int coverSize = Math.max(getWidth() / 3, Math.min(250, h - 180));
         
         // 标题
         for (Component c : getComponents()) {
