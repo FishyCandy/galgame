@@ -29,6 +29,7 @@ public class SettingsPanel extends JPanel {
     private static int globalVolume = 80;
     private static int autoPlayDelayMs = 2000;
     private static float dialogAlpha = 0.85f;
+    private JPanel mainPanel;
 
     public SettingsPanel(JFrame frame, MainMenuPanel mainMenu, Font titleFont, Font buttonFont) {
         this.parentFrame = frame;
@@ -48,7 +49,7 @@ public class SettingsPanel extends JPanel {
             bgImage = null;
         }
 
-        JPanel mainPanel = new JPanel(new GridBagLayout()) {
+        mainPanel = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -71,7 +72,7 @@ public class SettingsPanel extends JPanel {
         JPanel titleRow = new JPanel(new BorderLayout());
         titleRow.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("\u2699  Ê∏∏ Êàè ËÆæ ÁΩÆ");
+        JLabel titleLabel = new JLabel("\u2699  Ê∏?Êà?ËÆ?ÁΩ?);
         titleLabel.setFont(titleFont.deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         titleRow.add(titleLabel, BorderLayout.WEST);
@@ -209,6 +210,7 @@ public class SettingsPanel extends JPanel {
             dialogAlpha = val / 100.0f;
             dialogAlphaValueLabel.setText(val + "%");
             GamePanel.setDialogAlpha(dialogAlpha);
+            mainPanel.repaint();
         });
         alphaRow.add(dialogAlphaSlider, BorderLayout.CENTER);
         alphaRow.add(dialogAlphaValueLabel, BorderLayout.EAST);
