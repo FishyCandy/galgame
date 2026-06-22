@@ -134,9 +134,9 @@ public class SaveLoadPanel extends JPanel {
 
         // 使用自定义缩略图面板
         ThumbPanel thumbPanel = new ThumbPanel();
-        thumbPanel.setPreferredSize(new Dimension(160, 90));
-        thumbPanel.setMinimumSize(new Dimension(160, 90));
-        thumbPanel.setMaximumSize(new Dimension(160, 90));
+        thumbPanel.setPreferredSize(new Dimension(200, 112));
+        thumbPanel.setMinimumSize(new Dimension(200, 112));
+        thumbPanel.setMaximumSize(new Dimension(200, 112));
         thumbPanel.setOpaque(false);
 
         // 底部信息标签（时间）
@@ -151,12 +151,13 @@ public class SaveLoadPanel extends JPanel {
                 SaveData data = (SaveData) ois.readObject();
                 if (data.getThumbnailBytes() != null && data.getThumbnailBytes().length > 0) {
                     BufferedImage thumb = ImageIO.read(new ByteArrayInputStream(data.getThumbnailBytes()));
-                    // 缩放至 160x90，完全填满
-                    Image scaled = thumb.getScaledInstance(160, 90, Image.SCALE_SMOOTH);
-                    BufferedImage scaledImg = new BufferedImage(160, 90, BufferedImage.TYPE_INT_RGB);
-                    Graphics g = scaledImg.getGraphics();
-                    g.drawImage(scaled, 0, 0, null);
-                    g.dispose();
+                    // 高质量缩放至 200x112，完全填满
+                    BufferedImage scaledImg = new BufferedImage(200, 112, BufferedImage.TYPE_INT_RGB);
+                    Graphics2D g2d = scaledImg.createGraphics();
+                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                    g2d.drawImage(thumb, 0, 0, 200, 112, null);
+                    g2d.dispose();
                     thumbPanel.setThumbImage(scaledImg);
                 } else {
                     thumbPanel.setEmptyText("无预览");
