@@ -49,11 +49,7 @@ public class SaveLoadPanel extends JPanel {
 
         JButton returnBtn = createReturnButton();
         returnBtn.addActionListener(e -> {
-            if (gamePanel != null) {
-                mainMenuPanel.switchToPanel(gamePanel);
-            } else {
-                mainMenuPanel.showMainMenu();
-            }
+            mainMenuPanel.showPreviousPanel();
         });
         topBar.add(returnBtn, BorderLayout.EAST);
 
@@ -455,11 +451,7 @@ public class SaveLoadPanel extends JPanel {
 
         JButton returnBtn = createReturnButton();
         returnBtn.addActionListener(e -> {
-            if (gamePanel != null) {
-                mainMenuPanel.switchToPanel(gamePanel);
-            } else {
-                mainMenuPanel.showMainMenu();
-            }
+            mainMenuPanel.showPreviousPanel();
         });
         topBar.add(returnBtn, BorderLayout.EAST);
 
@@ -547,7 +539,7 @@ public class SaveLoadPanel extends JPanel {
                     private boolean pressed = false;
                     {
                         addMouseListener(new MouseAdapter() {
-                            public void mouseEntered(MouseEvent e) { hovered = true; repaint(); SoundEffects.playHover(); }
+                            public void mousePressed(MouseEvent e) { pressed = true; repaint(); SoundEffects.playClick(); }
                             public void mouseReleased(MouseEvent e) { pressed = false; repaint(); }
                         });
                     }
