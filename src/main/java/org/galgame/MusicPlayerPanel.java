@@ -315,7 +315,7 @@ public class MusicPlayerPanel extends JPanel {
         listTitle = new JLabel("\u64AD\u653E\u5217\u8868", SwingConstants.LEFT);
         listTitle.setFont(buttonFont.deriveFont(26f));
         listTitle.setForeground(new Color(255, 255, 255, 200));
-        listTitle.setBorder(BorderFactory.createEmptyBorder(8, 8, 4, 8));
+        listTitle.setBorder(BorderFactory.createEmptyBorder(8, 18, 4, 8));
         playlistPanel.add(listTitle, BorderLayout.NORTH);
         
         playlistContent = new JPanel();
@@ -325,7 +325,7 @@ public class MusicPlayerPanel extends JPanel {
         playlistScroll = new JScrollPane(playlistContent);
         playlistScroll.setOpaque(false);
         playlistScroll.getViewport().setOpaque(false);
-        playlistScroll.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
+        playlistScroll.setBorder(BorderFactory.createEmptyBorder(0, 18, 8, 8));
         playlistScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         playlistPanel.add(playlistScroll, BorderLayout.CENTER);
         
@@ -340,7 +340,7 @@ public class MusicPlayerPanel extends JPanel {
         for (int i = 0; i < musicList.size(); i++) {
             MusicFileInfo info = musicList.get(i);
             int idx = i;
-            JPanel item = new JPanel(new BorderLayout(12, 0)) {
+            JPanel item = new JPanel(new BorderLayout(18, 0)) {
                 @Override
                 protected void paintComponent(Graphics g) { if (Boolean.TRUE.equals(getClientProperty("hover"))) {
                         g.setColor(new Color(255, 255, 255, 25));
@@ -435,7 +435,7 @@ public class MusicPlayerPanel extends JPanel {
         albumArtLabel.setBounds(coverX, coverY, coverSize, coverSize);
         songTitleLabel.setBounds(coverX, coverY + coverSize + 8, coverSize, 25);
         
-        int ctrlY = coverY + coverSize + 20;
+        int ctrlY = coverY + coverSize + 38;
         int ctrlW = coverSize;
         int rowH = 30;
         int gap = 4;
