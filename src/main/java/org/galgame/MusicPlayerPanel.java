@@ -432,7 +432,7 @@ public class MusicPlayerPanel extends JPanel {
         int coverY = 80;
         
         // 姣涚幓鐠冮潰鏉垮寘鍥村皝闈?鍥涜
-        int glassH = coverSize + 20 + 30*4 + 4*3 + 24;
+        int glassH = coverSize + 20 + 30*4 + 4*3 + 36;
         glassPanel.setBounds(coverX - 12, coverY - 12, coverSize + 24, glassH);
         
         albumArtLabel.setBounds(coverX, coverY, coverSize, coverSize);
