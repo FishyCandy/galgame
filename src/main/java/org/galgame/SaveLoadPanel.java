@@ -545,14 +545,6 @@ public class SaveLoadPanel extends JPanel {
                     }
                     @Override
                     protected void paintComponent(Graphics g) {
-                        if (pressed) {
-                            Graphics2D g3 = (Graphics2D) g.create();
-                            g3.translate(1, 1);
-                            super.paintComponent(g3);
-                            g3.dispose();
-                        } else {
-                            super.paintComponent(g);
-                        }
                         // 光圈常驻
                         {
                             Graphics2D g2 = (Graphics2D) g.create();
@@ -572,6 +564,14 @@ public class SaveLoadPanel extends JPanel {
                             g2.setStroke(new BasicStroke(3f));
                             g2.drawOval(cx - r, cy - r, r * 2, r * 2);
                             g2.dispose();
+                        }
+                        if (pressed) {
+                            Graphics2D g3 = (Graphics2D) g.create();
+                            g3.translate(1, 1);
+                            super.paintComponent(g3);
+                            g3.dispose();
+                        } else {
+                            super.paintComponent(g);
                         }
                     }
                 };
