@@ -544,17 +544,25 @@ public class SaveLoadPanel extends JPanel {
             if (img != null) {
                 Image scaled = img.getScaledInstance(36, 36, Image.SCALE_SMOOTH);
                 JButton btn = new JButton(new ImageIcon(scaled)) {
-                    private boolean hovered = false;
+                    private boolean pressed = false;
                     {
                         addMouseListener(new MouseAdapter() {
                             public void mouseEntered(MouseEvent e) { hovered = true; repaint(); SoundEffects.playHover(); }
-                            public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
+                            public void mouseReleased(MouseEvent e) { pressed = false; repaint(); }
                         });
                     }
                     @Override
                     protected void paintComponent(Graphics g) {
-                        super.paintComponent(g);
-                        if (hovered) {
+                        if (pressed) {
+                            Graphics2D g3 = (Graphics2D) g.create();
+                            g3.translate(1, 1);
+                            super.paintComponent(g3);
+                            g3.dispose();
+                        } else {
+                            super.paintComponent(g);
+                        }
+                        // 光圈常驻
+                        {
                             Graphics2D g2 = (Graphics2D) g.create();
                             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                             int cx = getWidth() / 2;
