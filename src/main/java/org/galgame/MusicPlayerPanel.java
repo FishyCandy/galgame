@@ -361,6 +361,7 @@ public class MusicPlayerPanel extends JPanel {
             
             JLabel durLabel = new JLabel(info.cachedDuration != null ? info.cachedDuration : "-:--");
             durLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
+            durLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
             durLabel.setForeground(new Color(255, 255, 255, 160));
             durLabels.add(durLabel);
             
@@ -431,7 +432,7 @@ public class MusicPlayerPanel extends JPanel {
         int coverY = 80;
         
         // 姣涚幓鐠冮潰鏉垮寘鍥村皝闈?鍥涜
-        int glassH = coverSize + 20 + 30*4 + 4*3 + 12;
+        int glassH = coverSize + 20 + 30*4 + 4*3 + 24;
         glassPanel.setBounds(coverX - 12, coverY - 12, coverSize + 24, glassH);
         
         albumArtLabel.setBounds(coverX, coverY, coverSize, coverSize);
