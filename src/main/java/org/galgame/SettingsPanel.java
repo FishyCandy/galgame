@@ -354,6 +354,9 @@ public class SettingsPanel extends JPanel {
                             int cx = getWidth() / 2;
                             int cy = getHeight() / 2;
                             int r = Math.min(getWidth(), getHeight()) / 2 - 2;
+                            // 光圈内背景
+                            g2.setColor(new Color(0, 0, 0, 80));
+                            g2.fillOval(cx - r, cy - r, r * 2, r * 2);
                             // 外圈柔光
                             g2.setColor(new Color(255, 255, 255, 30));
                             g2.setStroke(new BasicStroke(8f));
