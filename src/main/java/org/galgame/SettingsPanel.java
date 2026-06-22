@@ -75,7 +75,7 @@ public class SettingsPanel extends JPanel {
         JPanel titleRow = new JPanel(new BorderLayout());
         titleRow.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("\u2699  游 戏 设 置");
+        JLabel titleLabel = new JLabel("游 戏 设 置");
         titleLabel.setFont(titleFont.deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         titleRow.add(titleLabel, BorderLayout.WEST);

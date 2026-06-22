@@ -136,7 +136,7 @@ public class MusicPlayerPanel extends JPanel {
         glassPanel.setOpaque(false);
         add(glassPanel);
 
-        JLabel titleLabel = new JLabel("\u266B \u97F3\u4E50\u9274\u8D4F", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("\u97F3\u4E50\u9274\u8D4F", SwingConstants.CENTER);
         titleLabel.setFont(titleFont.deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         add(titleLabel);
@@ -419,7 +419,7 @@ public class MusicPlayerPanel extends JPanel {
         int margin = 40;
         
         for (Component c : getComponents()) {
-            if (c instanceof JLabel && ((JLabel)c).getText().contains("\u266B"))
+            if (c instanceof JLabel && ((JLabel)c).getText().contains("\u97F3\u4E50\u9274\u8D4F"))
                 c.setBounds((w - 300) / 2, 8, 300, 45);
             else if (c instanceof JButton && ((JButton)c).getText().equals("X"))
                 c.setBounds(w - 50, 8, 40, 40);

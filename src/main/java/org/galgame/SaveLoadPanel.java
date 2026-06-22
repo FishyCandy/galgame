@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -41,7 +41,7 @@ public class SaveLoadPanel extends JPanel {
         topBar.setOpaque(false);
         topBar.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        JLabel titleLabel = new JLabel(mode == Mode.SAVE ? "💾 存档" : "📂 读档");
+        JLabel titleLabel = new JLabel(mode == Mode.SAVE ? "存档" : "读档");
         titleLabel.setFont(mainMenuPanel.getTitleFont().deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -446,7 +446,7 @@ public class SaveLoadPanel extends JPanel {
         topBar.setOpaque(false);
         topBar.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        JLabel titleLabel = new JLabel(mode == Mode.SAVE ? "💾 存档" : "📂 读档");
+        JLabel titleLabel = new JLabel(mode == Mode.SAVE ? "存档" : "读档");
         titleLabel.setFont(mainMenuPanel.getTitleFont().deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
