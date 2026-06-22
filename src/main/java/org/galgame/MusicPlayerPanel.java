@@ -137,7 +137,7 @@ public class MusicPlayerPanel extends JPanel {
         add(glassPanel);
 
         JLabel titleLabel = new JLabel("\u266B \u97F3\u4E50\u9274\u8D4F", SwingConstants.CENTER);
-        titleLabel.setFont(titleFont.deriveFont(48f));
+        titleLabel.setFont(titleFont.deriveFont(40f));
         titleLabel.setForeground(Color.WHITE);
         add(titleLabel);
         
