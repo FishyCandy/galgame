@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,10 +25,13 @@ public class SettingsPanel extends JPanel {
     private JLabel volumeValueLabel;
     private JLabel autoSpeedValueLabel;
     private JLabel dialogAlphaValueLabel;
+    private JSlider sfxVolumeSlider;
+    private JLabel sfxVolumeValueLabel;
 
     private static int globalVolume = 80;
     private static int autoPlayDelayMs = 2000;
     private static float dialogAlpha = 0.5f;
+    private static int sfxVolume = 80;
     private JPanel mainPanel;
 
     public SettingsPanel(JFrame frame, MainMenuPanel mainMenu, Font titleFont, Font buttonFont) {
@@ -138,8 +141,36 @@ public class SettingsPanel extends JPanel {
         volumeRow.add(volumeValueLabel, BorderLayout.EAST);
         mainPanel.add(volumeRow, gbc);
 
+        // ---- 音效音量 ----
         gbc.gridx = 0;
         gbc.gridy = 3;
+        gbc.insets = new Insets(10, 10, 5, 5);
+        JLabel sfxLabel = createSettingLabel("\u97F3\u6548\u97F3\u91CF");
+        mainPanel.add(sfxLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.insets = new Insets(10, 5, 5, 10);
+        JPanel sfxRow = new JPanel(new BorderLayout(10, 0));
+        sfxRow.setOpaque(false);
+        sfxVolumeSlider = new JSlider(0, 100, sfxVolume);
+        styleSlider(sfxVolumeSlider);
+        sfxVolumeValueLabel = new JLabel(sfxVolume + "%");
+        sfxVolumeValueLabel.setFont(buttonFont.deriveFont(18f));
+        sfxVolumeValueLabel.setForeground(Color.WHITE);
+        sfxVolumeValueLabel.setPreferredSize(new Dimension(50, 25));
+        sfxVolumeSlider.addChangeListener(e -> {
+            int val = sfxVolumeSlider.getValue();
+            sfxVolume = val;
+            sfxVolumeValueLabel.setText(val + "%");
+            SoundEffects.setVolume(val / 100.0);
+        });
+        sfxRow.add(sfxVolumeSlider, BorderLayout.CENTER);
+        sfxRow.add(sfxVolumeValueLabel, BorderLayout.EAST);
+        mainPanel.add(sfxRow, gbc);
+
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         gbc.insets = new Insets(10, 10, 5, 5);
         JLabel autoSpeedLabel = createSettingLabel("\u81EA\u52A8\u64AD\u653E\u901F\u5EA6");
         mainPanel.add(autoSpeedLabel, gbc);
@@ -168,7 +199,7 @@ public class SettingsPanel extends JPanel {
         mainPanel.add(autoSpeedRow, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.insets = new Insets(10, 10, 5, 5);
         JLabel alphaLabel = createSettingLabel("\u5BF9\u8BDD\u6846\u900F\u660E\u5EA6");
         mainPanel.add(alphaLabel, gbc);
@@ -196,7 +227,7 @@ public class SettingsPanel extends JPanel {
         mainPanel.add(alphaRow, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 0, 0);
         JPanel spacer = new JPanel();
@@ -255,6 +286,7 @@ public class SettingsPanel extends JPanel {
     public static int getGlobalVolume() { return globalVolume; }
     public static int getAutoPlayDelayMs() { return autoPlayDelayMs; }
     public static float getDialogAlpha() { return dialogAlpha; }
+    public static int getSfxVolume() { return sfxVolume; }
 
     @Override
     protected void paintComponent(Graphics g) {

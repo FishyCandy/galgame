@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import com.adonax.audiocue.AudioCue;
 import java.net.URL;
@@ -12,6 +12,7 @@ public class SoundEffects {
     private static int hoverInstance = -1;
     private static int clickInstance = -1;
     private static boolean initialized = false;
+    private static double sfxVolume = 0.8;
 
     public static void init() {
         if (initialized) return;
@@ -36,7 +37,7 @@ public class SoundEffects {
     public static void playHover() {
         if (hoverCue == null) return;
         try {
-            hoverInstance = hoverCue.play(MusicPlayer.getGlobalVolume());
+            hoverInstance = hoverCue.play(sfxVolume);
         } catch (Exception ignored) {}
     }
 
@@ -44,13 +45,13 @@ public class SoundEffects {
     public static void playClick() {
         if (clickCue == null) return;
         try {
-            clickInstance = clickCue.play(MusicPlayer.getGlobalVolume());
+            clickInstance = clickCue.play(sfxVolume);
         } catch (Exception ignored) {}
     }
 
     /** 更新音效音量（跟随全局音量） */
     public static void updateVolume() {
-        double vol = MusicPlayer.getGlobalVolume();
+        double vol = sfxVolume;
         if (hoverCue != null && hoverInstance != -1 && hoverCue.getIsPlaying(hoverInstance)) {
             hoverCue.setVolume(hoverInstance, vol);
         }
@@ -60,6 +61,12 @@ public class SoundEffects {
     }
 
     /** 释放资源 */
+
+    /** 设置音效音量（0.0~1.0） */
+    public static void setVolume(double vol) {
+        sfxVolume = vol;
+    }
+
     public static void close() {
         if (hoverCue != null) { hoverCue.close(); hoverCue = null; }
         if (clickCue != null) { clickCue.close(); clickCue = null; }
