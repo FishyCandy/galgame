@@ -115,6 +115,7 @@ public class MusicPlayerPanel extends JPanel {
             }
         }
         Collections.sort(musicList, (a, b) -> a.wavFile.getName().compareToIgnoreCase(b.wavFile.getName()));
+        SwingUtilities.invokeLater(() -> refreshPlaylistItems());
     }
     
     private void createUI() {
@@ -358,7 +359,7 @@ public class MusicPlayerPanel extends JPanel {
             nameLabel.setFont(buttonFont.deriveFont(22f));
             nameLabel.setForeground(idx == currentIndex ? new Color(255, 255, 150) : new Color(255, 255, 255, 200));
             
-            JLabel durLabel = new JLabel("-:--");
+            JLabel durLabel = new JLabel(info.cachedDuration != null ? info.cachedDuration : "-:--");
             durLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
             durLabel.setForeground(new Color(255, 255, 255, 160));
             durLabels.add(durLabel);
@@ -388,6 +389,7 @@ public class MusicPlayerPanel extends JPanel {
                     SwingUtilities.invokeLater(() -> {
                         if (ii < durLabels.size()) {
                             durLabels.get(ii).setText(durStr);
+                            musicList.get(ii).cachedDuration = durStr;
                         }
                     });
                 }
@@ -692,6 +694,7 @@ public class MusicPlayerPanel extends JPanel {
         File wavFile;
         File coverFile;
         BufferedImage coverImage;
+        String cachedDuration;
         
         MusicFileInfo(File wav, File cover) {
             this.wavFile = wav;
