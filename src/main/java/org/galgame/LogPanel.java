@@ -35,7 +35,7 @@ public class LogPanel extends JPanel {
         this.gamePanel = gamePanel;
         this.history = new ArrayList<>(history);
         this.dialogFont = dialogFont;
-        this.nameFont = dialogFont.deriveFont(20f);
+        this.nameFont = dialogFont.deriveFont(18f);
         this.textFont = dialogFont.deriveFont(26f);
         this.titleFont = dialogFont.deriveFont(28f);
 
@@ -89,7 +89,7 @@ public class LogPanel extends JPanel {
             row.setAlignmentX(LEFT_ALIGNMENT);
             rows.add(row);
             listPanel.add(row);
-            listPanel.add(Box.createVerticalStrut(10));
+            listPanel.add(Box.createRigidArea(new Dimension(800, 10)));
         }
     }
 
@@ -129,7 +129,8 @@ public class LogPanel extends JPanel {
             setLayout(null);
             setOpaque(false);
             setPreferredSize(new Dimension(800, 100));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+            setMinimumSize(new Dimension(800, 100));
+            setMaximumSize(new Dimension(800, 100));
 
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
