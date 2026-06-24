@@ -12,7 +12,7 @@ public class GalGameApp {
         SoundEffects.init();
 
         // 提前初始化 JavaFX 工具包
-        new javafx.embed.swing.JFXPanel();
+        try { new javafx.embed.swing.JFXPanel(); } catch (Exception e) { System.err.println("JavaFX涓嶅彲鐢ㄣ€?缁х画杩愯"); }
 
         // 开启全局字体抗锯齿
         System.setProperty("awt.useSystemAAFontSettings", "on");
