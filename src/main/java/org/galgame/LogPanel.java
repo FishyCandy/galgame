@@ -24,7 +24,7 @@ public class LogPanel extends JPanel {
     private JScrollPane scrollPane;
 
     private static final int AVATAR_SIZE = 72;
-    private static final int ROW_HEIGHT = 80;
+    private static final int ROW_HEIGHT = 120;
     private Map<String, BufferedImage> avatarCache = new HashMap<>();
 
     public LogPanel(JFrame frame, JPanel gamePanel, java.util.List<String> history, Font dialogFont) {
