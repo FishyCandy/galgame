@@ -304,6 +304,13 @@ public class MusicPlayerPanel extends JPanel {
                 g2.drawRoundRect(5, 5, getWidth()-11, getHeight()-11, 16, 16);
                 g2.dispose();
             }
+            @Override
+            protected void paintChildren(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, playlistOpacity));
+                super.paintChildren(g2);
+                g2.dispose();
+            }
         };
         playlistPanel.setLayout(new BorderLayout(0, 0));
         playlistPanel.setOpaque(false);
@@ -417,7 +424,7 @@ public class MusicPlayerPanel extends JPanel {
             if (c instanceof JLabel && ((JLabel)c).getText().contains("\u97F3\u4E50\u9274\u8D4F"))
                 c.setBounds((w - 300) / 2, 8, 300, 45);
             else if (c instanceof JButton && "returnBtn".equals(c.getName()))
-                c.setBounds(w - 50, 8, 40, 40);
+                c.setBounds(w - 58, 16, 40, 40);
         }
         
         int coverSize = Math.max(w * 2 / 5, 280);
