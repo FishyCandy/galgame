@@ -63,8 +63,8 @@ public class LogPanel extends JPanel {
 
         scrollPane = new JScrollPane(listPanel);
         scrollPane.setOpaque(false);
-        scrollPane.getViewport().setBackground(new Color(20, 20, 40));
-        scrollPane.getViewport().setOpaque(true);
+        scrollPane.getViewport().setOpaque(false);
+        // viewport 透明，背景由 LogPanel 的 paintComponent 绘制游戏背景图
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -123,10 +123,11 @@ public class LogPanel extends JPanel {
 
                 int w = getWidth(), h = getHeight();
 
-                // ---- 整行背景：默认半透明，悬停时整行变为不透明（覆盖 w 全宽） ----
-                int bgAlpha = hovered ? 80 : 0;
-                if (bgAlpha > 0) {
-                    g2.setColor(new Color(255, 255, 255, bgAlpha));
+                // ---- 整行背景：始终绘制深色背景（防止滚动叠影），悬停时更亮 ----
+                g2.setColor(new Color(0, 0, 0, 200));
+                g2.fillRect(0, 0, w, h);
+                if (hovered) {
+                    g2.setColor(new Color(255, 255, 255, 60));
                     g2.fillRect(0, 0, w, h);
                 }
 
