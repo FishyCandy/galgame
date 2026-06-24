@@ -123,8 +123,12 @@ public class LogPanel extends JPanel {
 
                 int w = getWidth(), h = getHeight();
 
+                // ---- 限制绘制区域，防止文字溢出到其他组件（如顶部栏） ----
+                Shape oldClip = g2.getClip();
+                g2.clipRect(0, 0, w, h);
+
                 // ---- 整行背景：极低透明度底色防止滚动叠影，悬停时轻微高亮 ----
-                g2.setColor(new Color(0, 0, 0, 2));
+                g2.setColor(new Color(0, 0, 0, 25));
                 g2.fillRect(0, 0, w, h);
                 if (hovered) {
                     g2.setColor(new Color(255, 255, 255, 30));
@@ -162,6 +166,7 @@ public class LogPanel extends JPanel {
                 g2.setColor(new Color(255, 255, 255, textAlpha));
                 g2.fill(outline);
 
+                g2.setClip(oldClip);
                 g2.dispose();
             }
         };
