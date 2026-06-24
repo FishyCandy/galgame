@@ -66,7 +66,7 @@ public class LogPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
@@ -89,7 +89,7 @@ public class LogPanel extends JPanel {
             row.setAlignmentX(LEFT_ALIGNMENT);
             rows.add(row);
             listPanel.add(row);
-            listPanel.add(Box.createRigidArea(new Dimension(800, 10)));
+            listPanel.add(Box.createVerticalStrut(10));
         }
     }
 
@@ -128,9 +128,9 @@ public class LogPanel extends JPanel {
 
             setLayout(null);
             setOpaque(false);
-            setPreferredSize(new Dimension(800, 100));
-            setMinimumSize(new Dimension(800, 100));
-            setMaximumSize(new Dimension(800, 100));
+            setPreferredSize(new Dimension(800, 120));
+            setMinimumSize(new Dimension(100, 120));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
 
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
@@ -195,26 +195,17 @@ public class LogPanel extends JPanel {
 
             // ---- 抽屉式头像 ----
             if (drawerProgress > 0.01f && avatar != null) {
-                Shape originalClip = g2.getClip();
-                g2.setClip(ins.left, ins.top, drawerW, getHeight() - ins.top - ins.bottom);
-
                 int avatarX = ins.left + 8;
-                int avatarY = isFirst ? cardY + 16 : cardY + (cardH - AVATAR_SIZE) / 2;
+                int avatarY = isFirst ? cardY + 8 : cardY + (cardH - AVATAR_SIZE) / 2;
 
                 if (drawerProgress > 0.05f) {
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, drawerProgress));
                     Shape circle = new Ellipse2D.Float(avatarX, avatarY, AVATAR_SIZE, AVATAR_SIZE);
-                    if (originalClip != null) {
-                        Area a = new Area(originalClip);
-                        a.intersect(new Area(circle));
-                        g2.setClip(a);
-                    } else {
-                        g2.setClip(circle);
-                    }
+                    g2.setClip(circle);
                     g2.drawImage(avatar, avatarX, avatarY, AVATAR_SIZE, AVATAR_SIZE, null);
+                    g2.setClip(null);
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
                 }
-                g2.setClip(originalClip);
 
                 // 角色名（仅首句显示在头像下方）
                 if (isFirst) {
@@ -222,7 +213,7 @@ public class LogPanel extends JPanel {
                     g2.setFont(nameFont);
                     FontMetrics fm = g2.getFontMetrics();
                     int nameX = avatarX + (AVATAR_SIZE - fm.stringWidth(characterName)) / 2;
-                    int nameY = avatarY + AVATAR_SIZE + fm.getAscent() + 4;
+                    int nameY = avatarY + AVATAR_SIZE + fm.getAscent() + 2;
                     drawStrokedText(g2, characterName, nameX, nameY);
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
                 }
