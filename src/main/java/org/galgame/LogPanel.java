@@ -1,148 +1,284 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.image.BufferedImage;
+import java.awt.geom.*;
+import java.io.InputStream;
+import java.util.*;
 
 /**
- * 台词回顾页面 —— 以专门页面形式展示历史台词。
- * 左侧角色名，右侧台词，毛玻璃卡片样式，连续同一角色省略名字。
+ * 台词回顾页面 —— 悬停抽屉式头像信息块 + 连续发言归并。
+ * 鼠标悬停任一台词行：该行毛玻璃卡片高亮，左侧滑入圆形头像和角色名。
+ * 同一角色连续发言时仅首句显示头像，直至其他角色打断连续性。
  */
 public class LogPanel extends JPanel {
     private JFrame parentFrame;
     private JPanel gamePanel;
-    private List<String> history;
+    private java.util.List<String> history;
     private Font dialogFont;
     private Font nameFont;
-    private Timer bgAnimTimer;
+    private Font textFont;
+    private Font titleFont;
 
-    public LogPanel(JFrame frame, JPanel gamePanel, List<String> history, Font dialogFont) {
+    private static final int AVATAR_SIZE = 72;
+    private static final int DRAWER_WIDTH = AVATAR_SIZE + 20;
+
+    private Map<String, BufferedImage> avatarCache = new HashMap<>();
+    private DialogueRow currentHoveredRow;
+    private java.util.List<DialogueRow> rows = new ArrayList<>();
+
+    public LogPanel(JFrame frame, JPanel gamePanel, java.util.List<String> history, Font dialogFont) {
         this.parentFrame = frame;
         this.gamePanel = gamePanel;
-        this.history = new ArrayList<>(history); // 防御性拷贝
+        this.history = new ArrayList<>(history);
         this.dialogFont = dialogFont;
         this.nameFont = dialogFont.deriveFont(30f);
+        this.textFont = dialogFont.deriveFont(26f);
+        this.titleFont = dialogFont.deriveFont(28f);
 
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        // ---- 顶部：返回按钮 + 标题 ----
+        // ---- 顶部栏：标题 + 返回按钮 ----
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
         topBar.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-JButton returnBtn = createReturnButton();
+        JButton returnBtn = createReturnButton();
         returnBtn.addActionListener(e -> returnToGame());
         topBar.add(returnBtn, BorderLayout.EAST);
-        JLabel titleLabel = new JLabel("台词回顾", JLabel.CENTER);
-        titleLabel.setFont(nameFont.deriveFont(28f));
+
+        JLabel titleLabel = new JLabel("\u53f0\u8bcd\u56de\u987e", JLabel.CENTER);
+        titleLabel.setFont(titleFont);
         titleLabel.setForeground(Color.WHITE);
         topBar.add(titleLabel, BorderLayout.CENTER);
-
         add(topBar, BorderLayout.NORTH);
 
-        // ---- 中间：滚动台词列表 ----
+        // ---- 中间：可滚动的台词列表 ----
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
+        buildRows(listPanel);
 
-        String lastWho = null;
-        for (String entry : history) {
-            String who = "";
-            String text = entry;
-            int colonIdx = entry.indexOf("\uFF1A"); // 全角冒号
-            if (colonIdx > 0) {
-                who = entry.substring(0, colonIdx).trim();
-                text = entry.substring(colonIdx + 1).trim();
-            }
-
-            boolean showName = !who.equals(lastWho);
-            lastWho = who;
-
-            JPanel card = createDialogueCard(who, text, showName);
-            card.setAlignmentX(Component.CENTER_ALIGNMENT);
-            listPanel.add(card);
-            listPanel.add(Box.createVerticalStrut(8)); // 卡片间距
-        }
-
-        // 包装进滚动面板
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
-
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
-
-        // ---- 背景动画（简单暗色渐变） ----
-        bgAnimTimer = new Timer(30, e -> repaint());
-        bgAnimTimer.start();
     }
 
-    /**
-     * 创建单条台词的毛玻璃卡片
-     * @param who      角色名
-     * @param text     台词内容
-     * @param showName 是否显示角色名
-     */
-    private JPanel createDialogueCard(String who, String text, boolean showName) {
-        // 外层容器：无毛玻璃，只负责排列角色名和台词框
-        JPanel card = new JPanel(new BorderLayout(20, 0));
-        card.setOpaque(false);
-        card.setBorder(BorderFactory.createEmptyBorder(6, 20, 6, 20));
-        card.setMaximumSize(new Dimension(800, 200));
-        card.setMinimumSize(new Dimension(800, 200));
-        card.setPreferredSize(new Dimension(800, 200));
-
-        // 左侧角色名（在毛玻璃框外）
-        StrokableLabel nameLabel = new StrokableLabel(showName ? who : "");
-        nameLabel.setFont(nameFont);
-        nameLabel.setForeground(new Color(255, 220, 150));
-        nameLabel.setPreferredSize(new Dimension(120, 36));
-        nameLabel.setMinimumSize(new Dimension(120, 36));
-        nameLabel.setMaximumSize(new Dimension(120, 36));
-        nameLabel.setHorizontalAlignment(JLabel.CENTER);
-        nameLabel.setVerticalAlignment(JLabel.TOP);
-        card.add(nameLabel, BorderLayout.WEST);
-
-        // 右侧台词框（毛玻璃只框台词）
-        JPanel dialogueBox = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 60));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                g2.setColor(new Color(255, 255, 255, 140));
-                g2.setStroke(new BasicStroke(1.5f));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
-                g2.dispose();
+    private void buildRows(JPanel listPanel) {
+        String lastWho = null;
+        for (String entry : history) {
+            String who = "";
+            String text = entry;
+            int colonIdx = entry.indexOf('\uFF1A');
+            if (colonIdx > 0) {
+                who = entry.substring(0, colonIdx).trim();
+                text = entry.substring(colonIdx + 1).trim();
             }
-        };
-        dialogueBox.setOpaque(false);
-        dialogueBox.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+            boolean isFirst = !who.equals(lastWho);
+            lastWho = who;
 
-        StrokableTextArea textArea = new StrokableTextArea(); textArea.setText(text);
-        textArea.setFont(dialogFont.deriveFont(26f));
-        textArea.setForeground(Color.WHITE);
-        textArea.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
-        dialogueBox.add(textArea, BorderLayout.CENTER);
-
-        card.add(dialogueBox, BorderLayout.CENTER);
-        return card;
+            DialogueRow row = new DialogueRow(who, text, isFirst);
+            row.setAlignmentX(LEFT_ALIGNMENT);
+            rows.add(row);
+            listPanel.add(row);
+            listPanel.add(Box.createVerticalStrut(10));
+        }
     }
 
+    private BufferedImage loadAvatar(String characterName) {
+        if (characterName == null || characterName.isEmpty()) return null;
+        if (avatarCache.containsKey(characterName)) return avatarCache.get(characterName);
+        BufferedImage avatar = null;
+        try {
+            InputStream is = getClass().getResourceAsStream(
+                    "/images/avatars/" + characterName + ".png");
+            if (is != null) {
+                avatar = ImageIO.read(is);
+                is.close();
+            }
+        } catch (Exception ignored) {}
+        avatarCache.put(characterName, avatar);
+        return avatar;
+    }
 
-    /** 创建统一的图片返回按钮（鼠标悬停发光效果） */
+    // ============ 内部类：单条台词行 ============
+    private class DialogueRow extends JPanel {
+        String characterName;
+        String text;
+        boolean isFirst;
+        float hoverAlpha;
+        float drawerProgress;
+        javax.swing.Timer animTimer;
+        boolean hovered;
+        BufferedImage avatar;
+
+        DialogueRow(String characterName, String text, boolean isFirst) {
+            this.characterName = characterName;
+            this.text = text;
+            this.isFirst = isFirst;
+            this.avatar = loadAvatar(characterName);
+
+            setLayout(null);
+            setOpaque(false);
+            setPreferredSize(new Dimension(800, isFirst ? 110 : 80));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) {
+                    hovered = true;
+                    if (currentHoveredRow != null && currentHoveredRow != DialogueRow.this) {
+                        currentHoveredRow.startFadeOut();
+                    }
+                    currentHoveredRow = DialogueRow.this;
+                    startFadeIn();
+                }
+                public void mouseExited(MouseEvent e) {
+                    hovered = false;
+                    startFadeOut();
+                }
+            });
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            animTimer = new javax.swing.Timer(16, e -> tick());
+        }
+
+        void startFadeIn() {
+            if (!animTimer.isRunning()) animTimer.start();
+        }
+        void startFadeOut() {
+            if (!animTimer.isRunning()) animTimer.start();
+        }
+
+        void tick() {
+            boolean changed = false;
+            if (hovered) {
+                if (hoverAlpha < 1f) { hoverAlpha = Math.min(1f, hoverAlpha + 0.12f); changed = true; }
+                if (drawerProgress < 1f) { drawerProgress = Math.min(1f, drawerProgress + 0.12f); changed = true; }
+            } else {
+                if (hoverAlpha > 0f) { hoverAlpha = Math.max(0f, hoverAlpha - 0.12f); changed = true; }
+                if (drawerProgress > 0f) { drawerProgress = Math.max(0f, drawerProgress - 0.12f); changed = true; }
+            }
+            if (changed) repaint();
+            if (!hovered && hoverAlpha <= 0f && drawerProgress <= 0f) animTimer.stop();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+            Insets ins = getInsets();
+            int drawerW = (int) (DRAWER_WIDTH * drawerProgress);
+
+            int cardX = ins.left + drawerW;
+            int cardY = ins.top + 5;
+            int cardW = Math.max(100, getWidth() - ins.left - ins.right - drawerW);
+            int cardH = getHeight() - ins.top - ins.bottom - 10;
+
+            // 毛玻璃卡片背景
+            g2.setColor(new Color(255, 255, 255, 40 + (int) (hoverAlpha * 50)));
+            g2.fillRoundRect(cardX, cardY, cardW, cardH, 18, 18);
+
+            // 毛玻璃边框
+            g2.setColor(new Color(255, 255, 255, 100 + (int) (hoverAlpha * 80)));
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.drawRoundRect(cardX, cardY, cardW - 1, cardH - 1, 18, 18);
+
+            // ---- 抽屉式头像 ----
+            if (drawerProgress > 0.01f && avatar != null) {
+                Shape originalClip = g2.getClip();
+                g2.setClip(ins.left, ins.top, drawerW, getHeight() - ins.top - ins.bottom);
+
+                int avatarX = ins.left + 8;
+                int avatarY = isFirst ? cardY + 16 : cardY + (cardH - AVATAR_SIZE) / 2;
+
+                if (drawerProgress > 0.05f) {
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, drawerProgress));
+                    Shape circle = new Ellipse2D.Float(avatarX, avatarY, AVATAR_SIZE, AVATAR_SIZE);
+                    if (originalClip != null) {
+                        Area a = new Area(originalClip);
+                        a.intersect(new Area(circle));
+                        g2.setClip(a);
+                    } else {
+                        g2.setClip(circle);
+                    }
+                    g2.drawImage(avatar, avatarX, avatarY, AVATAR_SIZE, AVATAR_SIZE, null);
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+                }
+                g2.setClip(originalClip);
+
+                // 角色名（仅首句显示在头像下方）
+                if (isFirst) {
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, drawerProgress));
+                    g2.setFont(nameFont);
+                    FontMetrics fm = g2.getFontMetrics();
+                    int nameX = avatarX + (AVATAR_SIZE - fm.stringWidth(characterName)) / 2;
+                    int nameY = avatarY + AVATAR_SIZE + fm.getAscent() + 4;
+                    drawStrokedText(g2, characterName, nameX, nameY);
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+                }
+            }
+
+            // ---- 台词文字 ----
+            int textX = cardX + 16;
+            int textY = cardY + (isFirst ? 28 : 18);
+            int textMaxW = cardW - 32;
+
+            g2.setFont(textFont);
+            FontMetrics fm = g2.getFontMetrics();
+            java.util.List<String> wrappedLines = wrapText(text, fm, textMaxW);
+            float lineY = textY + fm.getAscent();
+            for (String line : wrappedLines) {
+                drawStrokedText(g2, line, textX, (int) lineY);
+                lineY += fm.getHeight();
+            }
+
+            g2.dispose();
+        }
+
+        private java.util.List<String> wrapText(String s, FontMetrics fm, int maxW) {
+            java.util.List<String> res = new ArrayList<>();
+            StringBuilder cur = new StringBuilder();
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+                String test = cur.toString() + c;
+                if (fm.stringWidth(test) > maxW && cur.length() > 0) {
+                    res.add(cur.toString());
+                    cur = new StringBuilder();
+                }
+                cur.append(c);
+            }
+            if (cur.length() > 0) res.add(cur.toString());
+            return res;
+        }
+
+        private void drawStrokedText(Graphics2D g2, String s, int x, int y) {
+            if (s.isEmpty()) return;
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            java.awt.font.TextLayout tl = new java.awt.font.TextLayout(
+                    s, g2.getFont(), g2.getFontRenderContext());
+            Shape outline = tl.getOutline(AffineTransform.getTranslateInstance(x, y));
+            g2.draw(outline);
+            g2.setColor(new Color(255, 255, 255, 230));
+            g2.fill(outline);
+        }
+    }
+
+    // ============ 返回按钮（光圈常驻 + 按下效果） ============
     private JButton createReturnButton() {
         try {
             BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));
             if (img != null) {
-                Image scaled = img.getScaledInstance(36, 36, Image.SCALE_SMOOTH);
+                Image scaled = img.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 JButton btn = new JButton(new ImageIcon(scaled)) {
                     private boolean pressed = false;
                     {
@@ -153,26 +289,19 @@ JButton returnBtn = createReturnButton();
                     }
                     @Override
                     protected void paintComponent(Graphics g) {
-                        // 光圈常驻
-                        {
-                            Graphics2D g2 = (Graphics2D) g.create();
-                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            int cx = getWidth() / 2;
-                            int cy = getHeight() / 2;
-                            int r = Math.min(getWidth(), getHeight()) / 2 - 2;
-                            // 光圈内背景
-                            g2.setColor(new Color(0, 0, 0, 80));
-                            g2.fillOval(cx - r, cy - r, r * 2, r * 2);
-                            // 外圈柔光
-                            g2.setColor(new Color(255, 255, 255, 30));
-                            g2.setStroke(new BasicStroke(8f));
-                            g2.drawOval(cx - r, cy - r, r * 2, r * 2);
-                            // 内圈亮光
-                            g2.setColor(new Color(255, 255, 255, 90));
-                            g2.setStroke(new BasicStroke(3f));
-                            g2.drawOval(cx - r, cy - r, r * 2, r * 2);
-                            g2.dispose();
-                        }
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        int cx = getWidth() / 2, cy = getHeight() / 2;
+                        int r = Math.min(getWidth(), getHeight()) / 2 - 2;
+                        g2.setColor(new Color(0, 0, 0, 80));
+                        g2.fillOval(cx - r, cy - r, r * 2, r * 2);
+                        g2.setColor(new Color(255, 255, 255, 30));
+                        g2.setStroke(new BasicStroke(8f));
+                        g2.drawOval(cx - r, cy - r, r * 2, r * 2);
+                        g2.setColor(new Color(255, 255, 255, 90));
+                        g2.setStroke(new BasicStroke(3f));
+                        g2.drawOval(cx - r, cy - r, r * 2, r * 2);
+                        g2.dispose();
                         if (pressed) {
                             Graphics2D g3 = (Graphics2D) g.create();
                             g3.translate(1, 1);
@@ -191,22 +320,18 @@ JButton returnBtn = createReturnButton();
                 btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 return btn;
             }
-        } catch (Exception e) {
-        }
-        JButton btn = new JButton("✕");
-        btn.setFont(nameFont.deriveFont(22f));
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setContentAreaFilled(false);
-        btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return btn;
+        } catch (Exception ignored) {}
+        JButton fb = new JButton("\u2715");
+        fb.setFont(nameFont.deriveFont(22f));
+        fb.setForeground(Color.WHITE);
+        fb.setFocusPainted(false);
+        fb.setContentAreaFilled(false);
+        fb.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        fb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return fb;
     }
 
-
-    /** 返回游戏画面 */
     private void returnToGame() {
-        if (bgAnimTimer != null) bgAnimTimer.stop();
         parentFrame.setContentPane(gamePanel);
         parentFrame.revalidate();
         parentFrame.repaint();
@@ -216,7 +341,6 @@ JButton returnBtn = createReturnButton();
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
-        // 深色半透明背景
         g2.setColor(new Color(20, 20, 40, 220));
         g2.fillRect(0, 0, getWidth(), getHeight());
         g2.dispose();
