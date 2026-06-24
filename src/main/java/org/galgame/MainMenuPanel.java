@@ -98,10 +98,10 @@ public class MainMenuPanel extends JPanel {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 20, 20));
         buttonPanel.setOpaque(false);
         buttonPanel.add(startBtn);
-        buttonPanel.add(exitBtn);
+        buttonPanel.add(settingsBtn);
         buttonPanel.add(loadBtn);
         buttonPanel.add(musicBtn);
-        buttonPanel.add(settingsBtn);
+        buttonPanel.add(exitBtn);
 
         // 用一个占位行把内容推到底部
         GridBagConstraints gbc = new GridBagConstraints();
