@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.swing.*;
 import javax.imageio.ImageIO;
@@ -21,6 +21,7 @@ public class LogPanel extends JPanel {
     private Font dialogFont;
     private Font textFont;
     private Font titleFont;
+    private JScrollPane scrollPane;
 
     private static final int AVATAR_SIZE = 72;
     private static final int ROW_HEIGHT = 80;
@@ -57,7 +58,7 @@ public class LogPanel extends JPanel {
         listPanel.setOpaque(false);
         buildRows(listPanel, history);
 
-        JScrollPane scrollPane = new JScrollPane(listPanel);
+        scrollPane = new JScrollPane(listPanel);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
@@ -69,6 +70,11 @@ public class LogPanel extends JPanel {
         centerWrapper.setOpaque(false);
         centerWrapper.add(scrollPane, BorderLayout.CENTER);
         add(centerWrapper, BorderLayout.CENTER);
+
+        // 打开时自动滚动到顶部
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getVerticalScrollBar().setValue(0);
+        });
     }
 
     private void buildRows(JPanel listPanel, java.util.List<String> history) {
