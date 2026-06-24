@@ -61,7 +61,8 @@ public class LogPanel extends JPanel {
 
         scrollPane = new JScrollPane(listPanel);
         scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getViewport().setBackground(new Color(20, 20, 40));
+        scrollPane.getViewport().setOpaque(true);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
