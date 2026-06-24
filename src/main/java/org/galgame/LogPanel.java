@@ -10,10 +10,10 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * 台词回顾页面 —— 静态列表布局。
- * 左侧固定正方形人物缩略图（连续发言归并），右侧玻璃卡片显示台词文本。
+ * 台词回顾页面 —— 静态列表布局（与音乐鉴赏播放列表风格一致）。
+ * 左侧正方形头像（连续发言归并），右侧角色名+台词文本，无毛玻璃卡片。
  * 默认台词半透明，鼠标悬停台词变为完全不透明，头像不变。
- * 台词不可被鼠标选中。
+ * 台词不可被鼠标选中，悬停时整行有浅色高亮。
  */
 public class LogPanel extends JPanel {
     private JFrame parentFrame;
@@ -24,9 +24,8 @@ public class LogPanel extends JPanel {
     private Font titleFont;
 
     private static final int AVATAR_SIZE = 72;
-    private static final int ROW_HEIGHT = 110;
+    private static final int ROW_HEIGHT = 80;
     private Map<String, BufferedImage> avatarCache = new HashMap<>();
-    private java.util.List<DialogueRow> rowPanels = new ArrayList<>();
 
     public LogPanel(JFrame frame, JPanel gamePanel, java.util.List<String> history, Font dialogFont) {
         this.parentFrame = frame;
@@ -93,12 +92,98 @@ public class LogPanel extends JPanel {
             boolean isFirst = !who.equals(lastWho);
             lastWho = who;
 
-            DialogueRow row = new DialogueRow(who, text, isFirst);
+            JPanel row = createRow(who, text, isFirst);
             row.setAlignmentX(LEFT_ALIGNMENT);
-            rowPanels.add(row);
             listPanel.add(row);
-            listPanel.add(Box.createVerticalStrut(8));
+            listPanel.add(Box.createVerticalStrut(4));
         }
+    }
+
+    private JPanel createRow(String characterName, String text, boolean isFirst) {
+        BufferedImage avatar = isFirst ? loadAvatar(characterName) : null;
+
+        JPanel row = new JPanel(null) {
+            boolean hovered = false;
+            {
+                addMouseListener(new MouseAdapter() {
+                    @Override public void mouseEntered(MouseEvent e) { hovered = true; repaint(); }
+                    @Override public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
+                });
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                int w = getWidth(), h = getHeight();
+                Insets ins = getInsets();
+
+                // 悬停高亮（与播放列表风格一致）
+                if (hovered) {
+                    g2.setColor(new Color(255, 255, 255, 25));
+                    g2.fillRect(0, 0, w, h);
+                }
+
+                int avatarLeft = ins.left + 5;
+                int textLeft = avatarLeft + AVATAR_SIZE + 15;
+                int lineH = h - ins.top - ins.bottom;
+
+                // ---- 绘制头像（仅首句且存在头像） ----
+                if (isFirst && avatar != null) {
+                    int avY = ins.top + (lineH - AVATAR_SIZE) / 2;
+                    Shape clip = new Rectangle(avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE);
+                    g2.setClip(clip);
+                    g2.drawImage(avatar, avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE, null);
+                    g2.setClip(null);
+                    g2.setColor(new Color(255, 255, 255, 100));
+                    g2.setStroke(new BasicStroke(1.5f));
+                    g2.drawRect(avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE);
+                }
+
+                // ---- 绘制台词文本 ----
+                int textAlpha = hovered ? 230 : 100;
+                int textX = textLeft;
+                int textY = ins.top + (lineH - g2.getFontMetrics(textFont).getHeight()) / 2 + g2.getFontMetrics(textFont).getAscent();
+
+                // 先绘制角色名（仅首句）
+                if (isFirst && !characterName.isEmpty()) {
+                    g2.setFont(nameFont);
+                    FontMetrics nm = g2.getFontMetrics();
+                    g2.setColor(Color.BLACK);
+                    g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    java.awt.font.TextLayout tl = new java.awt.font.TextLayout(characterName, g2.getFont(), g2.getFontRenderContext());
+                    Shape outline = tl.getOutline(AffineTransform.getTranslateInstance(textX, textY));
+                    g2.draw(outline);
+                    g2.setColor(new Color(255, 255, 255, textAlpha));
+                    g2.fill(outline);
+
+                    // 角色名后的分隔
+                    int nameW = nm.stringWidth(characterName);
+                    textX += nameW + 12;
+                }
+
+                // 绘制台词
+                g2.setFont(textFont);
+                g2.setColor(Color.BLACK);
+                g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                java.awt.font.TextLayout tl = new java.awt.font.TextLayout(text, g2.getFont(), g2.getFontRenderContext());
+                Shape outline = tl.getOutline(AffineTransform.getTranslateInstance(textX, textY));
+                g2.draw(outline);
+                g2.setColor(new Color(255, 255, 255, textAlpha));
+                g2.fill(outline);
+
+                g2.dispose();
+            }
+        };
+
+        row.setOpaque(false);
+        row.setPreferredSize(new Dimension(800, ROW_HEIGHT));
+        row.setMinimumSize(new Dimension(100, ROW_HEIGHT));
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, ROW_HEIGHT));
+
+        return row;
     }
 
     private BufferedImage loadAvatar(String characterName) {
@@ -106,8 +191,7 @@ public class LogPanel extends JPanel {
         if (avatarCache.containsKey(characterName)) return avatarCache.get(characterName);
         BufferedImage avatar = null;
         try {
-            InputStream is = getClass().getResourceAsStream(
-                    "/images/avatars/" + characterName + ".png");
+            InputStream is = getClass().getResourceAsStream("/images/avatars/" + characterName + ".png");
             if (is != null) {
                 avatar = ImageIO.read(is);
                 is.close();
@@ -115,135 +199,6 @@ public class LogPanel extends JPanel {
         } catch (Exception ignored) {}
         avatarCache.put(characterName, avatar);
         return avatar;
-    }
-
-    // ============ 单条台词行 ============
-    private class DialogueRow extends JPanel {
-        String characterName;
-        String text;
-        boolean isFirst;
-        boolean hovered = false;
-        BufferedImage avatar;
-
-        DialogueRow(String characterName, String text, boolean isFirst) {
-            this.characterName = characterName;
-            this.text = text;
-            this.isFirst = isFirst;
-            this.avatar = loadAvatar(characterName);
-
-            setLayout(null);
-            setOpaque(false);
-            setPreferredSize(new Dimension(800, ROW_HEIGHT));
-            setMinimumSize(new Dimension(100, ROW_HEIGHT));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, ROW_HEIGHT));
-
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    hovered = true;
-                    repaint();
-                }
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    hovered = false;
-                    repaint();
-                }
-            });
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-            int w = getWidth();
-            int h = getHeight();
-            Insets ins = getInsets();
-
-            // 左侧头像区域宽度（有头像的起始位置）
-            int avatarLeft = ins.left + 5;
-            // 卡片起始X：统一为头像右侧位置，保证所有卡片对齐
-            int cardLeft = avatarLeft + AVATAR_SIZE + 15;
-            int cardRightPad = 10;
-            int cardW = Math.max(100, w - cardLeft - cardRightPad);
-            int cardY = ins.top + 5;
-            int cardH = h - ins.top - ins.bottom - 10;
-
-            // ---- 绘制头像（仅首句且存在头像） ----
-            if (isFirst && avatar != null) {
-                int avatarY = cardY + (cardH - AVATAR_SIZE) / 2;
-                // 正方形头像
-                Shape clip = new Rectangle(avatarLeft, avatarY, AVATAR_SIZE, AVATAR_SIZE);
-                g2.setClip(clip);
-                g2.drawImage(avatar, avatarLeft, avatarY, AVATAR_SIZE, AVATAR_SIZE, null);
-                g2.setClip(null);
-                // 头像边框
-                g2.setColor(new Color(255, 255, 255, 100));
-                g2.setStroke(new BasicStroke(1.5f));
-                g2.drawRect(avatarLeft, avatarY, AVATAR_SIZE, AVATAR_SIZE);
-
-                // 角色名（头像下方）
-                g2.setFont(nameFont);
-                FontMetrics nm = g2.getFontMetrics();
-                int nameX = avatarLeft + (AVATAR_SIZE - nm.stringWidth(characterName)) / 2;
-                int nameY = avatarY + AVATAR_SIZE + nm.getAscent() + 5;
-                drawStrokedText(g2, characterName, nameX, nameY, 200);
-            }
-
-            // ---- 台词毛玻璃卡片 ----
-            g2.setColor(new Color(255, 255, 255, 40));
-            g2.fillRoundRect(cardLeft, cardY, cardW, cardH, 18, 18);
-            g2.setColor(new Color(255, 255, 255, 100));
-            g2.setStroke(new BasicStroke(1.5f));
-            g2.drawRoundRect(cardLeft, cardY, cardW - 1, cardH - 1, 18, 18);
-
-            // ---- 台词文本（默认半透明，悬停不透明） ----
-            int textAlpha = hovered ? 230 : 100;
-            int textX = cardLeft + 14;
-            int textY = cardY + 10;
-            int textMaxW = cardW - 28;
-
-            g2.setFont(textFont);
-            FontMetrics fm = g2.getFontMetrics();
-            java.util.List<String> wrappedLines = wrapText(text, fm, textMaxW);
-            float lineY = textY + fm.getAscent();
-            for (String line : wrappedLines) {
-                drawStrokedText(g2, line, textX, (int) lineY, textAlpha);
-                lineY += fm.getHeight();
-            }
-
-            g2.dispose();
-        }
-
-        private java.util.List<String> wrapText(String s, FontMetrics fm, int maxW) {
-            java.util.List<String> res = new ArrayList<>();
-            StringBuilder cur = new StringBuilder();
-            for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i);
-                String test = cur.toString() + c;
-                if (fm.stringWidth(test) > maxW && cur.length() > 0) {
-                    res.add(cur.toString());
-                    cur = new StringBuilder();
-                }
-                cur.append(c);
-            }
-            if (cur.length() > 0) res.add(cur.toString());
-            return res;
-        }
-
-        private void drawStrokedText(Graphics2D g2, String s, int x, int y, int alpha) {
-            if (s.isEmpty()) return;
-            g2.setColor(Color.BLACK);
-            g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            java.awt.font.TextLayout tl = new java.awt.font.TextLayout(
-                    s, g2.getFont(), g2.getFontRenderContext());
-            Shape outline = tl.getOutline(AffineTransform.getTranslateInstance(x, y));
-            g2.draw(outline);
-            g2.setColor(new Color(255, 255, 255, alpha));
-            g2.fill(outline);
-        }
     }
 
     // ============ 返回按钮（光圈常驻 + 按下效果） ============
