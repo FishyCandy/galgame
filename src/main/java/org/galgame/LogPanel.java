@@ -52,8 +52,8 @@ public class LogPanel extends JPanel {
         add(topBar, BorderLayout.NORTH);
 
         // ---- 中间：可滚动的台词列表 ----
-        JPanel listPanel = new JPanel();
-        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+        // 使用 GridBagLayout 确保每行填满整行宽度
+        JPanel listPanel = new JPanel(new GridBagLayout());
         listPanel.setOpaque(false);
         buildRows(listPanel, history);
 
@@ -79,6 +79,12 @@ public class LogPanel extends JPanel {
 
     private void buildRows(JPanel listPanel, java.util.List<String> history) {
         String lastWho = null;
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(0, 0, 4, 0);
+
         for (String entry : history) {
             String who = "";
             String text = entry;
@@ -91,9 +97,7 @@ public class LogPanel extends JPanel {
             lastWho = who;
 
             JPanel row = createRow(who, text, isFirst);
-            row.setAlignmentX(LEFT_ALIGNMENT);
-            listPanel.add(row);
-            listPanel.add(Box.createVerticalStrut(4));
+            listPanel.add(row, gbc);
         }
     }
 
