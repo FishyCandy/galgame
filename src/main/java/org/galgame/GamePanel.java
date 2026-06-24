@@ -1071,12 +1071,20 @@ switch (cmd.type) {
                 }
             }
 
-            // 回退一步：存档时的索引指向下一条指令，回退到已显示的指令
+            // 重放结束后，cmdIndex 已经等于 savedCmdIndex（指向下一条未处理的指令）
+            // 直接从历史记录中恢复最后一句台词的显示，避免重复添加
             storyManager.setCurrentCommandIndex(savedCmdIndex);
-            if (savedCmdIndex > 0) {
-                storyManager.setCurrentCommandIndex(savedCmdIndex - 1);
+            if (!history.isEmpty()) {
+                String lastEntry = history.get(history.size() - 1);
+                int colonIdx = lastEntry.indexOf('：');
+                if (colonIdx > 0) {
+                    characterLabel.setText(lastEntry.substring(0, colonIdx));
+                    lineArea.setText(lastEntry.substring(colonIdx + 1));
+                }
             }
-            updateDisplay();
+            waitingForChoice = false;
+            revalidate();
+            repaint();
             return true;
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();
