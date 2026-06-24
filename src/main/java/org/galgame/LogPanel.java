@@ -66,10 +66,21 @@ public class LogPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        add(scrollPane, BorderLayout.CENTER);
+
+        // 包裹层：左右各留 1/6 窗口宽度的空白，内容占中间 2/3
+        JPanel centerWrapper = new JPanel(new BorderLayout());
+        centerWrapper.setOpaque(false);
+        centerWrapper.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                int gap = centerWrapper.getWidth() / 6;
+                scrollPane.setBorder(BorderFactory.createEmptyBorder(10, gap, 10, gap));
+            }
+        });
+        centerWrapper.add(scrollPane, BorderLayout.CENTER);
+        add(centerWrapper, BorderLayout.CENTER);
     }
 
     private void buildRows(JPanel listPanel) {
