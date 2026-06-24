@@ -11,15 +11,14 @@ import java.util.*;
 
 /**
  * 台词回顾页面 —— 静态列表布局（与音乐鉴赏播放列表风格一致）。
- * 左侧正方形头像（连续发言归并），右侧角色名+台词文本，无毛玻璃卡片。
- * 默认台词半透明，鼠标悬停台词变为完全不透明，头像不变。
- * 台词不可被鼠标选中，悬停时整行有浅色高亮。
+ * 左侧正方形头像（连续发言归并），右侧台词文本，无角色名。
+ * 默认整行半透明，悬停时整行变为完全不透明。
+ * 台词不可被鼠标选中。
  */
 public class LogPanel extends JPanel {
     private JFrame parentFrame;
     private JPanel gamePanel;
     private Font dialogFont;
-    private Font nameFont;
     private Font textFont;
     private Font titleFont;
 
@@ -31,7 +30,6 @@ public class LogPanel extends JPanel {
         this.parentFrame = frame;
         this.gamePanel = gamePanel;
         this.dialogFont = dialogFont;
-        this.nameFont = dialogFont.deriveFont(30f);
         this.textFont = dialogFont.deriveFont(26f);
         this.titleFont = dialogFont.deriveFont(28f);
 
@@ -120,9 +118,10 @@ public class LogPanel extends JPanel {
                 int w = getWidth(), h = getHeight();
                 Insets ins = getInsets();
 
-                // 悬停高亮（与播放列表风格一致）
-                if (hovered) {
-                    g2.setColor(new Color(255, 255, 255, 25));
+                // ---- 整行背景：默认半透明，悬停时整行变为不透明 ----
+                int bgAlpha = hovered ? 80 : 0;
+                if (bgAlpha > 0) {
+                    g2.setColor(new Color(255, 255, 255, bgAlpha));
                     g2.fillRect(0, 0, w, h);
                 }
 
@@ -142,29 +141,11 @@ public class LogPanel extends JPanel {
                     g2.drawRect(avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE);
                 }
 
-                // ---- 绘制台词文本 ----
+                // ---- 台词文本（默认半透明，悬停不透明） ----
                 int textAlpha = hovered ? 230 : 100;
                 int textX = textLeft;
                 int textY = ins.top + (lineH - g2.getFontMetrics(textFont).getHeight()) / 2 + g2.getFontMetrics(textFont).getAscent();
 
-                // 先绘制角色名（仅首句）
-                if (isFirst && !characterName.isEmpty()) {
-                    g2.setFont(nameFont);
-                    FontMetrics nm = g2.getFontMetrics();
-                    g2.setColor(Color.BLACK);
-                    g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                    java.awt.font.TextLayout tl = new java.awt.font.TextLayout(characterName, g2.getFont(), g2.getFontRenderContext());
-                    Shape outline = tl.getOutline(AffineTransform.getTranslateInstance(textX, textY));
-                    g2.draw(outline);
-                    g2.setColor(new Color(255, 255, 255, textAlpha));
-                    g2.fill(outline);
-
-                    // 角色名后的分隔
-                    int nameW = nm.stringWidth(characterName);
-                    textX += nameW + 12;
-                }
-
-                // 绘制台词
                 g2.setFont(textFont);
                 g2.setColor(Color.BLACK);
                 g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -250,7 +231,7 @@ public class LogPanel extends JPanel {
             }
         } catch (Exception ignored) {}
         JButton fb = new JButton("\u2715");
-        fb.setFont(nameFont.deriveFont(22f));
+        fb.setFont(dialogFont.deriveFont(22f));
         fb.setForeground(Color.WHITE);
         fb.setFocusPainted(false);
         fb.setContentAreaFilled(false);
