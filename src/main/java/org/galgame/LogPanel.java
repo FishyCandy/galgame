@@ -10,32 +10,29 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * 台词回顾页面 —— 悬停抽屉式头像信息块 + 连续发言归并。
- * 鼠标悬停任一台词行：该行毛玻璃卡片高亮，左侧滑入圆形头像和角色名。
- * 同一角色连续发言时仅首句显示头像，直至其他角色打断连续性。
+ * 台词回顾页面 —— 静态列表布局。
+ * 左侧固定正方形人物缩略图（连续发言归并），右侧玻璃卡片显示台词文本。
+ * 默认台词半透明，鼠标悬停台词变为完全不透明，头像不变。
+ * 台词不可被鼠标选中。
  */
 public class LogPanel extends JPanel {
     private JFrame parentFrame;
     private JPanel gamePanel;
-    private java.util.List<String> history;
     private Font dialogFont;
     private Font nameFont;
     private Font textFont;
     private Font titleFont;
 
     private static final int AVATAR_SIZE = 72;
-    private static final int DRAWER_WIDTH = AVATAR_SIZE + 28;
-
+    private static final int ROW_HEIGHT = 110;
     private Map<String, BufferedImage> avatarCache = new HashMap<>();
-    private DialogueRow currentHoveredRow;
-    private java.util.List<DialogueRow> rows = new ArrayList<>();
+    private java.util.List<DialogueRow> rowPanels = new ArrayList<>();
 
     public LogPanel(JFrame frame, JPanel gamePanel, java.util.List<String> history, Font dialogFont) {
         this.parentFrame = frame;
         this.gamePanel = gamePanel;
-        this.history = new ArrayList<>(history);
         this.dialogFont = dialogFont;
-        this.nameFont = dialogFont.deriveFont(18f);
+        this.nameFont = dialogFont.deriveFont(30f);
         this.textFont = dialogFont.deriveFont(26f);
         this.titleFont = dialogFont.deriveFont(28f);
 
@@ -61,7 +58,7 @@ public class LogPanel extends JPanel {
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
-        buildRows(listPanel);
+        buildRows(listPanel, history);
 
         JScrollPane scrollPane = new JScrollPane(listPanel);
         scrollPane.setOpaque(false);
@@ -70,7 +67,7 @@ public class LogPanel extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // 包裹层：左右各留 1/6 窗口宽度的空白，内容占中间 2/3
+        // 包裹层：左右各留 1/6 窗口宽度的空白
         JPanel centerWrapper = new JPanel(new BorderLayout());
         centerWrapper.setOpaque(false);
         centerWrapper.addComponentListener(new ComponentAdapter() {
@@ -83,12 +80,12 @@ public class LogPanel extends JPanel {
         add(centerWrapper, BorderLayout.CENTER);
     }
 
-    private void buildRows(JPanel listPanel) {
+    private void buildRows(JPanel listPanel, java.util.List<String> history) {
         String lastWho = null;
         for (String entry : history) {
             String who = "";
             String text = entry;
-            int colonIdx = entry.indexOf('\uFF1A');
+            int colonIdx = entry.indexOf("\uff1a");
             if (colonIdx > 0) {
                 who = entry.substring(0, colonIdx).trim();
                 text = entry.substring(colonIdx + 1).trim();
@@ -98,9 +95,9 @@ public class LogPanel extends JPanel {
 
             DialogueRow row = new DialogueRow(who, text, isFirst);
             row.setAlignmentX(LEFT_ALIGNMENT);
-            rows.add(row);
+            rowPanels.add(row);
             listPanel.add(row);
-            listPanel.add(Box.createVerticalStrut(10));
+            listPanel.add(Box.createVerticalStrut(8));
         }
     }
 
@@ -120,15 +117,12 @@ public class LogPanel extends JPanel {
         return avatar;
     }
 
-    // ============ 内部类：单条台词行 ============
+    // ============ 单条台词行 ============
     private class DialogueRow extends JPanel {
         String characterName;
         String text;
         boolean isFirst;
-        float hoverAlpha;
-        float drawerProgress;
-        javax.swing.Timer animTimer;
-        boolean hovered;
+        boolean hovered = false;
         BufferedImage avatar;
 
         DialogueRow(String characterName, String text, boolean isFirst) {
@@ -139,46 +133,23 @@ public class LogPanel extends JPanel {
 
             setLayout(null);
             setOpaque(false);
-            setPreferredSize(new Dimension(800, 120));
-            setMinimumSize(new Dimension(100, 120));
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+            setPreferredSize(new Dimension(800, ROW_HEIGHT));
+            setMinimumSize(new Dimension(100, ROW_HEIGHT));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, ROW_HEIGHT));
 
             addMouseListener(new MouseAdapter() {
+                @Override
                 public void mouseEntered(MouseEvent e) {
                     hovered = true;
-                    if (currentHoveredRow != null && currentHoveredRow != DialogueRow.this) {
-                        currentHoveredRow.startFadeOut();
-                    }
-                    currentHoveredRow = DialogueRow.this;
-                    startFadeIn();
+                    repaint();
                 }
+                @Override
                 public void mouseExited(MouseEvent e) {
                     hovered = false;
-                    startFadeOut();
+                    repaint();
                 }
             });
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            animTimer = new javax.swing.Timer(16, e -> tick());
-        }
-
-        void startFadeIn() {
-            if (!animTimer.isRunning()) animTimer.start();
-        }
-        void startFadeOut() {
-            if (!animTimer.isRunning()) animTimer.start();
-        }
-
-        void tick() {
-            boolean changed = false;
-            if (hovered) {
-                if (hoverAlpha < 1f) { hoverAlpha = Math.min(1f, hoverAlpha + 0.12f); changed = true; }
-                if (drawerProgress < 1f) { drawerProgress = Math.min(1f, drawerProgress + 0.12f); changed = true; }
-            } else {
-                if (hoverAlpha > 0f) { hoverAlpha = Math.max(0f, hoverAlpha - 0.12f); changed = true; }
-                if (drawerProgress > 0f) { drawerProgress = Math.max(0f, drawerProgress - 0.12f); changed = true; }
-            }
-            if (changed) repaint();
-            if (!hovered && hoverAlpha <= 0f && drawerProgress <= 0f) animTimer.stop();
         }
 
         @Override
@@ -187,60 +158,59 @@ public class LogPanel extends JPanel {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+            int w = getWidth();
+            int h = getHeight();
             Insets ins = getInsets();
-            int drawerW = (int) (DRAWER_WIDTH * drawerProgress);
 
-            int cardX = ins.left + drawerW;
+            // 左侧头像区域宽度（有头像的起始位置）
+            int avatarLeft = ins.left + 5;
+            // 卡片起始X：统一为头像右侧位置，保证所有卡片对齐
+            int cardLeft = avatarLeft + AVATAR_SIZE + 15;
+            int cardRightPad = 10;
+            int cardW = Math.max(100, w - cardLeft - cardRightPad);
             int cardY = ins.top + 5;
-            int cardW = Math.max(100, getWidth() - ins.left - ins.right - drawerW);
-            int cardH = getHeight() - ins.top - ins.bottom - 10;
+            int cardH = h - ins.top - ins.bottom - 10;
 
-            // 毛玻璃卡片背景
-            g2.setColor(new Color(255, 255, 255, 40 + (int) (hoverAlpha * 50)));
-            g2.fillRoundRect(cardX, cardY, cardW, cardH, 18, 18);
+            // ---- 绘制头像（仅首句且存在头像） ----
+            if (isFirst && avatar != null) {
+                int avatarY = cardY + (cardH - AVATAR_SIZE) / 2;
+                // 正方形头像
+                Shape clip = new Rectangle(avatarLeft, avatarY, AVATAR_SIZE, AVATAR_SIZE);
+                g2.setClip(clip);
+                g2.drawImage(avatar, avatarLeft, avatarY, AVATAR_SIZE, AVATAR_SIZE, null);
+                g2.setClip(null);
+                // 头像边框
+                g2.setColor(new Color(255, 255, 255, 100));
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawRect(avatarLeft, avatarY, AVATAR_SIZE, AVATAR_SIZE);
 
-            // 毛玻璃边框
-            g2.setColor(new Color(255, 255, 255, 100 + (int) (hoverAlpha * 80)));
-            g2.setStroke(new BasicStroke(1.5f));
-            g2.drawRoundRect(cardX, cardY, cardW - 1, cardH - 1, 18, 18);
-
-            // ---- 抽屉式头像 ----
-            if (drawerProgress > 0.01f && avatar != null) {
-                int avatarX = ins.left + 8;
-                int avatarY = isFirst ? cardY + 8 : cardY + (cardH - AVATAR_SIZE) / 2;
-
-                if (drawerProgress > 0.05f) {
-                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, drawerProgress));
-                    Shape circle = new Ellipse2D.Float(avatarX, avatarY, AVATAR_SIZE, AVATAR_SIZE);
-                    g2.setClip(circle);
-                    g2.drawImage(avatar, avatarX, avatarY, AVATAR_SIZE, AVATAR_SIZE, null);
-                    g2.setClip(null);
-                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-                }
-
-                // 角色名（仅首句显示在头像下方）
-                if (isFirst) {
-                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, drawerProgress));
-                    g2.setFont(nameFont);
-                    FontMetrics fm = g2.getFontMetrics();
-                    int nameX = avatarX + (AVATAR_SIZE - fm.stringWidth(characterName)) / 2;
-                    int nameY = avatarY + AVATAR_SIZE + fm.getAscent() + 2;
-                    drawStrokedText(g2, characterName, nameX, nameY);
-                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-                }
+                // 角色名（头像下方）
+                g2.setFont(nameFont);
+                FontMetrics nm = g2.getFontMetrics();
+                int nameX = avatarLeft + (AVATAR_SIZE - nm.stringWidth(characterName)) / 2;
+                int nameY = avatarY + AVATAR_SIZE + nm.getAscent() + 5;
+                drawStrokedText(g2, characterName, nameX, nameY, 200);
             }
 
-            // ---- 台词文字 ----
-            int textX = cardX + 16;
-            int textY = cardY + 12;
-            int textMaxW = cardW - 32;
+            // ---- 台词毛玻璃卡片 ----
+            g2.setColor(new Color(255, 255, 255, 40));
+            g2.fillRoundRect(cardLeft, cardY, cardW, cardH, 18, 18);
+            g2.setColor(new Color(255, 255, 255, 100));
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.drawRoundRect(cardLeft, cardY, cardW - 1, cardH - 1, 18, 18);
+
+            // ---- 台词文本（默认半透明，悬停不透明） ----
+            int textAlpha = hovered ? 230 : 100;
+            int textX = cardLeft + 14;
+            int textY = cardY + 10;
+            int textMaxW = cardW - 28;
 
             g2.setFont(textFont);
             FontMetrics fm = g2.getFontMetrics();
             java.util.List<String> wrappedLines = wrapText(text, fm, textMaxW);
             float lineY = textY + fm.getAscent();
             for (String line : wrappedLines) {
-                drawStrokedText(g2, line, textX, (int) lineY);
+                drawStrokedText(g2, line, textX, (int) lineY, textAlpha);
                 lineY += fm.getHeight();
             }
 
@@ -263,7 +233,7 @@ public class LogPanel extends JPanel {
             return res;
         }
 
-        private void drawStrokedText(Graphics2D g2, String s, int x, int y) {
+        private void drawStrokedText(Graphics2D g2, String s, int x, int y, int alpha) {
             if (s.isEmpty()) return;
             g2.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -271,7 +241,7 @@ public class LogPanel extends JPanel {
                     s, g2.getFont(), g2.getFontRenderContext());
             Shape outline = tl.getOutline(AffineTransform.getTranslateInstance(x, y));
             g2.draw(outline);
-            g2.setColor(new Color(255, 255, 255, 230));
+            g2.setColor(new Color(255, 255, 255, alpha));
             g2.fill(outline);
         }
     }
