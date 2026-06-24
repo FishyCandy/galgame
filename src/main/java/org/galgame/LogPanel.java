@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * 台词回顾页面 —— 静态列表布局（与音乐鉴赏播放列表风格一致）。
  * 左侧正方形头像（连续发言归并），右侧台词文本，无角色名。
- * 默认整行半透明，悬停时整行变为完全不透明。
+ * 默认整行半透明，悬停时整行变为完全不透明（覆盖整个游戏窗口宽度）。
  * 台词不可被鼠标选中。
  */
 public class LogPanel extends JPanel {
@@ -52,7 +52,7 @@ public class LogPanel extends JPanel {
         add(topBar, BorderLayout.NORTH);
 
         // ---- 中间：可滚动的台词列表 ----
-        // 使用 GridBagLayout 确保每行填满整行宽度
+        // 使用 GridBagLayout 确保每行填满整个宽度
         JPanel listPanel = new JPanel(new GridBagLayout());
         listPanel.setOpaque(false);
         buildRows(listPanel, history);
@@ -64,15 +64,9 @@ public class LogPanel extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // 包裹层：左右各留 1/6 窗口宽度的空白
+        // 不加左右 gap 到 scrollPane——每行自己负责内容偏移，背景高亮覆盖整个窗口宽度
         JPanel centerWrapper = new JPanel(new BorderLayout());
         centerWrapper.setOpaque(false);
-        centerWrapper.addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                int gap = centerWrapper.getWidth() / 6;
-                scrollPane.setBorder(BorderFactory.createEmptyBorder(10, gap, 10, gap));
-            }
-        });
         centerWrapper.add(scrollPane, BorderLayout.CENTER);
         add(centerWrapper, BorderLayout.CENTER);
     }
@@ -120,22 +114,22 @@ public class LogPanel extends JPanel {
                 g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
                 int w = getWidth(), h = getHeight();
-                Insets ins = getInsets();
 
-                // ---- 整行背景：默认半透明，悬停时整行变为不透明 ----
+                // ---- 整行背景：默认半透明，悬停时整行变为不透明（覆盖 w 全宽） ----
                 int bgAlpha = hovered ? 80 : 0;
                 if (bgAlpha > 0) {
                     g2.setColor(new Color(255, 255, 255, bgAlpha));
                     g2.fillRect(0, 0, w, h);
                 }
 
-                int avatarLeft = ins.left + 5;
+                // 内容偏移：从头像/文字起始处 = 窗口宽度的 1/6
+                int contentLeft = w / 6;
+                int avatarLeft = contentLeft;
                 int textLeft = avatarLeft + AVATAR_SIZE + 15;
-                int lineH = h - ins.top - ins.bottom;
 
                 // ---- 绘制头像（仅首句且存在头像） ----
                 if (isFirst && avatar != null) {
-                    int avY = ins.top + (lineH - AVATAR_SIZE) / 2;
+                    int avY = (h - AVATAR_SIZE) / 2;
                     Shape clip = new Rectangle(avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE);
                     g2.setClip(clip);
                     g2.drawImage(avatar, avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE, null);
@@ -148,7 +142,7 @@ public class LogPanel extends JPanel {
                 // ---- 台词文本（默认半透明，悬停不透明） ----
                 int textAlpha = hovered ? 230 : 100;
                 int textX = textLeft;
-                int textY = ins.top + (lineH - g2.getFontMetrics(textFont).getHeight()) / 2 + g2.getFontMetrics(textFont).getAscent();
+                int textY = (h - g2.getFontMetrics(textFont).getHeight()) / 2 + g2.getFontMetrics(textFont).getAscent();
 
                 g2.setFont(textFont);
                 g2.setColor(Color.BLACK);
