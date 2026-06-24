@@ -141,18 +141,13 @@ public class MusicPlayerPanel extends JPanel {
         titleLabel.setForeground(Color.WHITE);
         add(titleLabel);
         
-        JButton returnBtn = new JButton("X");
-        returnBtn.setFont(buttonFont.deriveFont(Font.BOLD, 22f));
-        returnBtn.setForeground(Color.WHITE);
-        returnBtn.setContentAreaFilled(false);
-        returnBtn.setBorderPainted(false);
-        returnBtn.setFocusPainted(false);
-        returnBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        JButton returnBtn = createReturnButton();
         returnBtn.addActionListener(e -> {
             musicPlayer.stopImmediately();
             mainMenuPanel.showPreviousPanel();
         });
         add(returnBtn);
+        returnBtn.setName("returnBtn");
         
         // 涓撹緫灏侀潰
         albumArtLabel = new JLabel() {
@@ -421,7 +416,7 @@ public class MusicPlayerPanel extends JPanel {
         for (Component c : getComponents()) {
             if (c instanceof JLabel && ((JLabel)c).getText().contains("\u97F3\u4E50\u9274\u8D4F"))
                 c.setBounds((w - 300) / 2, 8, 300, 45);
-            else if (c instanceof JButton && ((JButton)c).getText().equals("X"))
+            else if (c instanceof JButton && "returnBtn".equals(c.getName()))
                 c.setBounds(w - 50, 8, 40, 40);
         }
         
@@ -648,6 +643,66 @@ public class MusicPlayerPanel extends JPanel {
         return String.format("%02d:%02d", min, sec);
     }
     
+    private JButton createReturnButton() {
+        try {
+            BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));
+            if (img != null) {
+                Image scaled = img.getScaledInstance(36, 36, Image.SCALE_SMOOTH);
+                JButton btn = new JButton(new ImageIcon(scaled)) {
+                    private boolean pressed = false;
+                    {
+                        addMouseListener(new MouseAdapter() {
+                            public void mousePressed(MouseEvent e) { pressed = true; repaint(); }
+                            public void mouseReleased(MouseEvent e) { pressed = false; repaint(); }
+                        });
+                    }
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        {
+                            Graphics2D g2 = (Graphics2D) g.create();
+                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            int cx = getWidth() / 2;
+                            int cy = getHeight() / 2;
+                            int r = Math.min(getWidth(), getHeight()) / 2 - 2;
+                            g2.setColor(new Color(0, 0, 0, 80));
+                            g2.fillOval(cx - r, cy - r, r * 2, r * 2);
+                            g2.setColor(new Color(255, 255, 255, 30));
+                            g2.setStroke(new BasicStroke(8f));
+                            g2.drawOval(cx - r, cy - r, r * 2, r * 2);
+                            g2.setColor(new Color(255, 255, 255, 90));
+                            g2.setStroke(new BasicStroke(3f));
+                            g2.drawOval(cx - r, cy - r, r * 2, r * 2);
+                            g2.dispose();
+                        }
+                        if (pressed) {
+                            Graphics2D g3 = (Graphics2D) g.create();
+                            g3.translate(1, 1);
+                            super.paintComponent(g3);
+                            g3.dispose();
+                        } else {
+                            super.paintComponent(g);
+                        }
+                    }
+                };
+                btn.setOpaque(false);
+                btn.setContentAreaFilled(false);
+                btn.setBorderPainted(false);
+                btn.setFocusPainted(false);
+                btn.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                return btn;
+            }
+        } catch (Exception ignored) {}
+        JButton fb = new JButton("\u2715");
+        fb.setFont(titleFont.deriveFont(22f));
+        fb.setForeground(Color.WHITE);
+        fb.setFocusPainted(false);
+        fb.setContentAreaFilled(false);
+        fb.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        fb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return fb;
+    }
+
     private long getWavDurationSafe(File wavFile) {
         java.util.concurrent.Future<Long> future = java.util.concurrent.Executors
             .newSingleThreadExecutor().submit(() -> {
