@@ -72,9 +72,12 @@ public class LogPanel extends JPanel {
         centerWrapper.add(scrollPane, BorderLayout.CENTER);
         add(centerWrapper, BorderLayout.CENTER);
 
-        // 打开时自动滚动到顶部
+        // 打开时自动滚动到最新台词（底部）
         SwingUtilities.invokeLater(() -> {
-            scrollPane.getVerticalScrollBar().setValue(0);
+            SwingUtilities.invokeLater(() -> {
+                JScrollBar vbar = scrollPane.getVerticalScrollBar();
+                vbar.setValue(vbar.getMaximum());
+            });
         });
     }
 
