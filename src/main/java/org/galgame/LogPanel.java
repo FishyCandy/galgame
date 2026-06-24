@@ -22,15 +22,17 @@ public class LogPanel extends JPanel {
     private Font textFont;
     private Font titleFont;
     private JScrollPane scrollPane;
+    private BufferedImage bgImage;
 
     private static final int AVATAR_SIZE = 72;
     private static final int ROW_HEIGHT = 120;
     private Map<String, BufferedImage> avatarCache = new HashMap<>();
 
-    public LogPanel(JFrame frame, JPanel gamePanel, java.util.List<String> history, Font dialogFont) {
+    public LogPanel(JFrame frame, JPanel gamePanel, java.util.List<String> history, Font dialogFont, BufferedImage bgImage) {
         this.parentFrame = frame;
         this.gamePanel = gamePanel;
         this.dialogFont = dialogFont;
+        this.bgImage = bgImage;
         this.textFont = dialogFont.deriveFont(26f);
         this.titleFont = dialogFont.deriveFont(28f);
 
@@ -254,7 +256,28 @@ public class LogPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
-        g2.setColor(new Color(20, 20, 40, 220));
+        // 绘制当前游戏背景图
+        if (bgImage != null) {
+            int panelW = getWidth();
+            int panelH = getHeight();
+            double panelRatio = (double) panelW / panelH;
+            double imgRatio = (double) bgImage.getWidth() / bgImage.getHeight();
+            int drawW, drawH, drawX, drawY;
+            if (panelRatio > imgRatio) {
+                drawW = panelW;
+                drawH = (int) (panelW / imgRatio);
+                drawX = 0;
+                drawY = (panelH - drawH) / 2;
+            } else {
+                drawH = panelH;
+                drawW = (int) (panelH * imgRatio);
+                drawX = (panelW - drawW) / 2;
+                drawY = 0;
+            }
+            g2.drawImage(bgImage, drawX, drawY, drawW, drawH, null);
+        }
+        // 深黑色半透明覆盖层
+        g2.setColor(new Color(0, 0, 0, 200));
         g2.fillRect(0, 0, getWidth(), getHeight());
         g2.dispose();
     }

@@ -969,7 +969,7 @@ switch (cmd.type) {
     }
 
     private void showLog() {
-        LogPanel logPanel = new LogPanel(parentFrame, this, new java.util.ArrayList<>(history), dialogFont);
+        LogPanel logPanel = new LogPanel(parentFrame, this, new java.util.ArrayList<>(history), dialogFont, bgImage);
         parentFrame.setContentPane(logPanel);
         parentFrame.revalidate();
         parentFrame.repaint();
