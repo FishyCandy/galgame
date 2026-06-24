@@ -987,7 +987,7 @@ switch (cmd.type) {
             byte[] thumbBytes = baos.toByteArray();
             String sceneId = storyManager.getCurrentSceneId();
             int cmdIndex = storyManager.getCurrentCommandIndex();
-            SaveData data = new SaveData(0, null, thumbBytes, sceneId, cmdIndex,
+            SaveData data = new SaveData(thumbBytes, sceneId, cmdIndex,
                     currentBgPath, currentSpritePath, storyManager.getScores());
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(saveFile))) {
                 oos.writeObject(data);
@@ -1174,7 +1174,7 @@ switch (cmd.type) {
         layeredPane.revalidate();
         layeredPane.repaint();
     }
-public List<?> getDialogues() { return null; }
+
 }
 
 

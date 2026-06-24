@@ -23,7 +23,7 @@
             <version>3.2.5</version>
         </dependency>
 
-        <!-- 新增 Jackson 依赖，用于解析 JSON 剧本 -->
+        <!-- Jackson 依赖，用于解析 JSON 剧本 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>

@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import javax.imageio.ImageIO;
 import com.adonax.audiocue.AudioCue;

@@ -1,4 +1,4 @@
-﻿package org.galgame;
+package org.galgame;
 
 import com.adonax.audiocue.AudioCue;
 import java.net.URL;
