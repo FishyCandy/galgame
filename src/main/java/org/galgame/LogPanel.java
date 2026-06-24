@@ -24,7 +24,7 @@ public class LogPanel extends JPanel {
     private Font titleFont;
 
     private static final int AVATAR_SIZE = 72;
-    private static final int DRAWER_WIDTH = AVATAR_SIZE + 20;
+    private static final int DRAWER_WIDTH = AVATAR_SIZE + 28;
 
     private Map<String, BufferedImage> avatarCache = new HashMap<>();
     private DialogueRow currentHoveredRow;
@@ -35,7 +35,7 @@ public class LogPanel extends JPanel {
         this.gamePanel = gamePanel;
         this.history = new ArrayList<>(history);
         this.dialogFont = dialogFont;
-        this.nameFont = dialogFont.deriveFont(30f);
+        this.nameFont = dialogFont.deriveFont(20f);
         this.textFont = dialogFont.deriveFont(26f);
         this.titleFont = dialogFont.deriveFont(28f);
 
@@ -128,7 +128,7 @@ public class LogPanel extends JPanel {
 
             setLayout(null);
             setOpaque(false);
-            setPreferredSize(new Dimension(800, isFirst ? 110 : 80));
+            setPreferredSize(new Dimension(800, 100));
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
 
             addMouseListener(new MouseAdapter() {
@@ -229,7 +229,7 @@ public class LogPanel extends JPanel {
 
             // ---- 台词文字 ----
             int textX = cardX + 16;
-            int textY = cardY + (isFirst ? 28 : 18);
+            int textY = cardY + 12;
             int textMaxW = cardW - 32;
 
             g2.setFont(textFont);
