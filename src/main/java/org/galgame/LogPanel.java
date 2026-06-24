@@ -123,11 +123,11 @@ public class LogPanel extends JPanel {
 
                 int w = getWidth(), h = getHeight();
 
-                // ---- 整行背景：始终绘制深色背景（防止滚动叠影），悬停时更亮 ----
-                g2.setColor(new Color(0, 0, 0, 200));
+                // ---- 整行背景：极低透明度底色防止滚动叠影，悬停时轻微高亮 ----
+                g2.setColor(new Color(0, 0, 0, 2));
                 g2.fillRect(0, 0, w, h);
                 if (hovered) {
-                    g2.setColor(new Color(255, 255, 255, 60));
+                    g2.setColor(new Color(255, 255, 255, 30));
                     g2.fillRect(0, 0, w, h);
                 }
 
@@ -148,8 +148,8 @@ public class LogPanel extends JPanel {
                     g2.drawRect(avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE);
                 }
 
-                // ---- 台词文本（默认半透明，悬停不透明） ----
-                int textAlpha = hovered ? 230 : 100;
+                // ---- 台词文本（始终不透明，确保可读性） ----
+                int textAlpha = 255;
                 int textX = textLeft;
                 int textY = (h - g2.getFontMetrics(textFont).getHeight()) / 2 + g2.getFontMetrics(textFont).getAscent();
 
