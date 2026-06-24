@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +20,12 @@ public class StrokableLabel extends JLabel {
 
     public StrokableLabel() {
         this("");
+    }
+
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+        setVisible(text != null && !text.isEmpty());
     }
 
     @Override
