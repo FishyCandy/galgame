@@ -1094,14 +1094,14 @@ switch (cmd.type) {
     }
 
     private BufferedImage captureThumbnail() {
-        int thumbW = 240;
-        int thumbH = 135;
+        int thumbW = 640;
+        int thumbH = 360;
         BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
         paint(g);
         g.dispose();
-        Image mid = img.getScaledInstance(480, 270, Image.SCALE_SMOOTH);
-        BufferedImage midBuf = new BufferedImage(480, 270, BufferedImage.TYPE_INT_RGB);
+        Image mid = img.getScaledInstance(thumbW * 2, thumbH * 2, Image.SCALE_SMOOTH);
+        BufferedImage midBuf = new BufferedImage(thumbW * 2, thumbH * 2, BufferedImage.TYPE_INT_RGB);
         Graphics2D g1 = midBuf.createGraphics();
         g1.drawImage(mid, 0, 0, null);
         g1.dispose();
