@@ -18,31 +18,72 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+    <!-- ============================================================ -->
+    <!-- 依赖库列表                                                   -->
+    <!-- ============================================================ -->
+
     <dependencies>
+
+        <!-- ① FlatLaf — Swing 现代化UI主题库（毛玻璃/深色外观） -->
+        <!-- 使用位置：GalGameApp.java                              -->
+        <!-- 核心方法：FlatDarkLaf.setup()  → 全局设置深色主题      -->
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>3.2.5</version>
         </dependency>
 
+        <!-- ② Jackson — JSON 数据解析库（读取/写入剧本文件）       -->
+        <!-- 使用位置：StoryManager.java                            -->
+        <!-- 核心方法：                                             -->
+        <!--   ObjectMapper mapper = new ObjectMapper()             -->
+        <!--     → 创建JSON解析器实例                                -->
+        <!--   mapper.readValue(InputStream, Class)                 -->
+        <!--     → 把JSON输入流直接转换成Java对象（如StoryData）     -->
+        <!-- 说明：Jackson自动将JSON字段名匹配到Java类的属性名       -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.15.2</version>
         </dependency>
 
+        <!-- ③ mp3spi — Java Sound API 的 MP3 格式扩展              -->
+        <!-- 使用位置：无直接调用，作为 javax.sound 的底层解码器     -->
+        <!-- 说明：让 Java 原生音频系统能读取 .mp3 文件              -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>mp3spi</artifactId>
             <version>1.9.5.4</version>
         </dependency>
 
+        <!-- ④ AudioCue — 高性能音频播放库（实时淡入淡出、循环）   -->
+        <!-- 使用位置：MusicPlayer.java、SoundEffects.java          -->
+        <!-- 核心方法：                                             -->
+        <!--   AudioCue.makeStereoCue(URL, 并发数)                  -->
+        <!--     → 从音频文件创建播放器实例（支持立体声）            -->
+        <!--   audioCue.open()  → 打开音频文件，准备播放             -->
+        <!--   audioCue.play(音量) → 开始播放，返回播放实例ID        -->
+        <!--   audioCue.setVolume(实例ID, 音量) → 实时调音量（淡入淡出） -->
+        <!--   audioCue.setLooping(实例ID, 次数) → 设置循环(-1=无限) -->
+        <!--   audioCue.stop(实例ID) → 暂停播放                      -->
+        <!--   audioCue.start(实例ID) → 恢复播放                     -->
+        <!--   audioCue.getIsPlaying(实例ID) → 检查是否正在播放     -->
+        <!--   audioCue.getFramePosition(实例ID) → 获取当前播放帧    -->
+        <!--   audioCue.getMicrosecondLength() → 获取音频总时长(微秒) -->
+        <!--   audioCue.close() → 关闭并释放资源                    -->
         <dependency>
             <groupId>com.adonax</groupId>
             <artifactId>audiocue</artifactId>
             <version>2.1.0</version>
         </dependency>
 
+        <!-- ⑤ JavaFX 三件套 — 图形/媒体框架                       -->
+        <!-- 使用位置：GalGameApp.java (JFXPanel初始化)             -->
+        <!-- 核心方法：                                             -->
+        <!--   new javafx.embed.swing.JFXPanel()                    -->
+        <!--     → 在Swing程序中初始化JavaFX运行环境（启动一次即可） -->
+        <!-- 说明：javafx-base 提供基础类, javafx-graphics 提供渲染, -->
+        <!--       javafx-swing 提供Swing与JavaFX的桥接             -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
@@ -64,8 +105,17 @@
 
     </dependencies>
 
+    <!-- ============================================================ -->
+    <!-- 构建插件配置                                                 -->
+    <!-- ============================================================ -->
+
     <build>
         <plugins>
+
+            <!-- maven-shade-plugin: 将代码 + 所有依赖打包成一个 fat JAR -->
+            <!-- 关键配置：                                            -->
+            <!--   mainClass → 指定程序入口类                          -->
+            <!--   filters/excludes → 排除签名文件(避免冲突)和 module-info -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -98,6 +148,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- maven-compiler-plugin: 指定 Java 编译器版本为 21 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -107,6 +159,7 @@
                     <target>21</target>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>
