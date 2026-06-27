@@ -1100,11 +1100,15 @@ switch (cmd.type) {
         Graphics2D g = img.createGraphics();
         paint(g);
         g.dispose();
+        Image mid = img.getScaledInstance(480, 270, Image.SCALE_SMOOTH);
+        BufferedImage midBuf = new BufferedImage(480, 270, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g1 = midBuf.createGraphics();
+        g1.drawImage(mid, 0, 0, null);
+        g1.dispose();
+        Image finalScaled = midBuf.getScaledInstance(thumbW, thumbH, Image.SCALE_SMOOTH);
         BufferedImage thumb = new BufferedImage(thumbW, thumbH, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = thumb.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g2.drawImage(img, 0, 0, thumbW, thumbH, null);
+        g2.drawImage(finalScaled, 0, 0, null);
         g2.dispose();
         return thumb;
     }
