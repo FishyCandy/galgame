@@ -12,7 +12,6 @@
     { "type": "say", "who": "幽灵学姐", "text": "两年前，同上。", "color": "#FF88FF" },
     { "type": "say", "who": "幽灵狗", "text": "汪。（去年一只流浪狗进来陪读，然后也……）", "color": "#8888FF" },
     { "type": "say", "who": "你", "text": "……这学校到底埋葬了多少人。", "color": "#FFFFFF" },
-    { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "say", "who": "幽灵学长", "text": "别废话了，你还有不到24小时。我们知道所有教授的套路，想听吗？", "color": "#88FF88" },
     { "type": "choice", "choices": [
       { "text": "虔诚地请教幽灵前辈", "target": "scene_checkpoint", "score": { "progress": 5, "knowledge": 3 } },

@@ -14,7 +14,6 @@
     { "type": "say", "who": "外卖小哥", "text": "ChatGPT是我写的，你那个作业题目我熟。", "color": "#FFB6C1" },
     { "type": "say", "who": "你", "text": "………………………………………………" },
     { "type": "say", "who": "你", "text": "（信息量过大，大脑过载中）", "color": "#CCCCCC" },
-    { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "choice", "choices": [
       { "text": "跪求大神指导", "target": "scene_checkpoint", "score": { "progress": 6, "knowledge": 5 } },
       { "text": "怀疑人生，先吃为敬", "target": "scene_checkpoint", "score": { "progress": 1 } }

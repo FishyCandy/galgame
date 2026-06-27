@@ -13,7 +13,6 @@
     { "type": "say", "who": "旁白", "text": "你的尖叫声划破了夜空，隔壁邻居以为杀猪了。", "color": "#AAAAAA" },
     { "type": "say", "who": "你", "text": "完了完了完了，一个字都没写！明天就是ddl！！", "color": "#FF0000" },
     { "type": "say", "who": "你", "text": "冷静，冷静……深呼吸……我必须做出抉择……", "color": "#FFFFFF" },
-    { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "choice", "choices": [
       { "text": "冲向图书馆通宵肝", "target": "scene_park", "score": { "progress": 3 } },
       { "text": "给学霸打电话求救", "target": "scene_library", "score": { "progress": 2 } },
