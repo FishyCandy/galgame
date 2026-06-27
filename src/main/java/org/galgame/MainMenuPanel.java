@@ -3,10 +3,7 @@ package org.galgame;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
@@ -20,7 +17,6 @@ public class MainMenuPanel extends JPanel {
     private Timer animTimer;
     private float hue = 0.0f;
     private BufferedImage bgImage;
-
     private Font titleFont;
     private Font buttonFont;
 

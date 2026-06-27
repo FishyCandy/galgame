@@ -61,7 +61,7 @@ public class MusicPlayerPanel extends JPanel {
         progressTimer = new Timer(200, e -> updateProgress());
         progressTimer.start();
 
-        // 鐐瑰嚮绌虹櫧鍖哄煙鍏抽棴鎾斁鍒楄〃
+        // 鐐瑰嚮绌虹櫧鍖哄煙鍏抽棴鎾斁鍒楄�?
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (playlistVisible && !playlistPanel.getBounds().contains(e.getPoint())) {
@@ -119,7 +119,7 @@ public class MusicPlayerPanel extends JPanel {
     }
     
     private void createUI() {
-        // 姣涚幓鐠冨鍣紙妗嗕綇灏侀潰+鍥涜鎺т欢锛?
+        // 姣涚幓鐠冨鍣紙妗嗕綇灏侀�?鍥涜鎺т欢锛?
         glassPanel = new JPanel() {
             protected void paintComponent(Graphics g) { super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -149,7 +149,7 @@ public class MusicPlayerPanel extends JPanel {
         add(returnBtn);
         returnBtn.setName("returnBtn");
         
-        // 涓撹緫灏侀潰
+        // 涓撹緫灏侀�?
         albumArtLabel = new JLabel() {
             protected void paintComponent(Graphics g) { Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -181,7 +181,7 @@ public class MusicPlayerPanel extends JPanel {
         songTitleLabel.setForeground(new Color(255, 255, 255, 220));
         add(songTitleLabel);
         
-        // 绗?琛? 鈴?鈻?鈴?鈴?
+        // �?�? �?�?�?�?
         prevBtn = createControlButton("\u23EE");
         prevBtn.addActionListener(e -> playPrevious());
         add(prevBtn);
@@ -194,7 +194,7 @@ public class MusicPlayerPanel extends JPanel {
         nextBtn.addActionListener(e -> playNext());
         add(nextBtn);
         
-        // 绗?琛? 馃攣 馃攤 馃攢
+        // �?�? 馃攣 馃攤 馃攢
         seqBtn = createModeButton("\uD83D\uDD01");
         seqBtn.setToolTipText("\u987A\u5E8F\u64AD\u653E");
         seqBtn.addActionListener(e -> setPlayMode(PlayMode.SEQUENTIAL));
@@ -211,7 +211,7 @@ public class MusicPlayerPanel extends JPanel {
         add(randomBtn);
         updateModeButtons();
         
-        // 绗?琛? 杩涘害鏉?
+        // �?�? 杩涘害鏉?
         timeCurrentLabel = new JLabel("00:00");
         timeCurrentLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
         timeCurrentLabel.setForeground(new Color(255, 255, 255, 180));
@@ -238,8 +238,10 @@ public class MusicPlayerPanel extends JPanel {
             }
         });
         add(progressSlider);
+
+        configureWhiteSlider(progressSlider);
         
-        // 绗?琛? 闊抽噺
+        // �?�? 闊抽�?
         JLabel volLabel = new JLabel("\uD83D\uDD0A");
         volLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
         volLabel.setForeground(new Color(255, 255, 255, 180));
@@ -253,8 +255,10 @@ public class MusicPlayerPanel extends JPanel {
             MusicPlayer.setGlobalVolume(vol);
         });
         add(volumeSlider);
+
+        configureWhiteSlider(volumeSlider);
         
-        // 鎾斁鍒楄〃
+        // 鎾斁鍒楄�?
         createPlaylistPanel();
     }
     
@@ -433,7 +437,7 @@ public class MusicPlayerPanel extends JPanel {
         
         int coverY = 80;
         
-        // 姣涚幓鐠冮潰鏉垮寘鍥村皝闈?鍥涜
+        // 姣涚幓鐠冮潰鏉垮寘鍥村皝�?鍥涜�?
         int glassH = coverSize + 20 + 30*4 + 4*3 + 36;
         glassPanel.setBounds(coverX - 12, coverY - 12, coverSize + 24, glassH);
         
@@ -445,7 +449,7 @@ public class MusicPlayerPanel extends JPanel {
         int rowH = 30;
         int gap = 4;
         
-        // 绗?琛岋細3涓帶鍒舵寜閽?
+        // �?琛岋�?涓帶鍒舵寜�?
         int btnCount = 3;
         int btnW = (ctrlW - gap * (btnCount - 1)) / btnCount;
         int row1Y = ctrlY;
@@ -453,7 +457,7 @@ public class MusicPlayerPanel extends JPanel {
         playPauseBtn.setBounds(coverX + btnW + gap, row1Y, btnW, rowH);
         nextBtn.setBounds(coverX + (btnW + gap) * 2, row1Y, btnW, rowH);
         
-        // 绗?琛岋細3涓ā寮忔寜閽?
+        // �?琛岋�?涓ā寮忔寜閽?
         int modeCount = 3;
         int modeW = (ctrlW - gap * (modeCount - 1)) / modeCount;
         int row2Y = row1Y + rowH + gap;
@@ -461,13 +465,13 @@ public class MusicPlayerPanel extends JPanel {
         singleLoopBtn.setBounds(coverX + modeW + gap, row2Y, modeW, rowH);
         randomBtn.setBounds(coverX + (modeW + gap) * 2, row2Y, modeW, rowH);
         
-        // 绗?琛岋細杩涘害鏉★紙鎺掑ご瀵归綈锛?
+        // �?琛岋細杩涘害鏉★紙鎺掑ご瀵归綈锛?
         int row3Y = row2Y + rowH + gap;
         timeCurrentLabel.setBounds(coverX, row3Y + 5, 42, rowH - 10);
         progressSlider.setBounds(coverX + 44, row3Y + 5, ctrlW - 88, rowH - 10);
         timeTotalLabel.setBounds(coverX + ctrlW - 42, row3Y + 5, 42, rowH - 10);
         
-        // 绗?琛岋細闊抽噺
+        // �?琛岋細闊抽噺
         int row4Y = row3Y + rowH + gap;
         for (Component c : getComponents()) {
             if (c instanceof JLabel && ((JLabel)c).getText().contains("\uD83D\uDD0A"))
@@ -483,7 +487,7 @@ public class MusicPlayerPanel extends JPanel {
         int plDisplayX = (int)(plStartX + playlistSlideX * (plFullX - plStartX));
         playlistPanel.setBounds(plDisplayX, coverY - 12, plW, glassH);
         
-        // 濡傛灉鎾斁鍒楄〃鍙浣嗗搴﹀お绐勶紝涔熼殣钘忔帀鍙充晶鍖哄煙鐨勫唴瀹?
+        // 濡傛灉鎾斁鍒楄〃鍙浣嗗搴﹀お绐勶紝涔熼殣钘忔帀鍙充晶鍖哄煙鐨勫唴�?
         if (playlistVisible) {
             songTitleLabel.setVisible(false);
         } else {
@@ -524,7 +528,7 @@ public class MusicPlayerPanel extends JPanel {
         playlistAnimTimer.start();
     }
     
-    // ---- 鎾斁鎺у埗 ----
+    // ---- 鎾斁鎺у�?----
     private void playAtIndex(int index) {
         if (index < 0 || index >= musicList.size()) return;
         currentIndex = index;
@@ -753,6 +757,30 @@ public class MusicPlayerPanel extends JPanel {
         g2.dispose();
     }
     
+    private void configureWhiteSlider(JSlider slider) {
+        slider.setForeground(Color.WHITE);
+        slider.setUI(new javax.swing.plaf.basic.BasicSliderUI(slider) {
+            @Override
+            public void paintTrack(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                Rectangle r = trackRect;
+                g2d.setColor(new Color(255, 255, 255, 200));
+                g2d.fillRect(r.x, r.y + r.height / 2 - 2, r.width, 4);
+                g2d.dispose();
+            }
+            @Override
+            public void paintThumb(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(Color.WHITE);
+                g2d.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
+                g2d.dispose();
+            }
+        });
+    }
+
+
     private static class MusicFileInfo {
         File wavFile;
         File coverFile;
