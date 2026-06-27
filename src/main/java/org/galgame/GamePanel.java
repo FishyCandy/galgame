@@ -547,7 +547,6 @@ public class GamePanel extends JPanel {
     public void stopMusic() {
         if (musicPlayer != null) {
             musicPlayer.stopImmediately();
-            try { Thread.sleep(100); } catch (InterruptedException ignored) {}
         }
     }
 
