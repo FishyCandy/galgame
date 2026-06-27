@@ -271,7 +271,7 @@ public class SaveLoadPanel extends JPanel {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 if (phase == 0) {
-                    alphaArr[0] += 0.05f;
+                    alphaArr[0] += 0.1f;
                     if (alphaArr[0] >= 1f) {
                         alphaArr[0] = 1f;
                         phase = 1;
@@ -280,7 +280,7 @@ public class SaveLoadPanel extends JPanel {
                 } else if (phase == 1) {
                     phase = 2;
                 } else {
-                    alphaArr[0] -= 0.05f;
+                    alphaArr[0] -= 0.1f;
                     if (alphaArr[0] <= 0f) {
                         alphaArr[0] = 0f;
                         timer.stop();
