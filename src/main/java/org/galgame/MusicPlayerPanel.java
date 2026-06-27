@@ -225,7 +225,6 @@ public class MusicPlayerPanel extends JPanel {
         progressSlider = new JSlider(0, 1000, 0);
         progressSlider.setOpaque(false);
         progressSlider.setFocusable(false);
-        progressSlider.setVisible(false);
         progressSlider.addChangeListener(e -> {
             if (programmaticSliderUpdate) return;
             if (progressSlider.getValueIsAdjusting()) {
@@ -249,7 +248,6 @@ public class MusicPlayerPanel extends JPanel {
         volumeSlider = new JSlider(0, 100, 80);
         volumeSlider.setOpaque(false);
         volumeSlider.setFocusable(false);
-        volumeSlider.setVisible(false);
         volumeSlider.addChangeListener(e -> {
             double vol = volumeSlider.getValue() / 100.0;
             MusicPlayer.setGlobalVolume(vol);
