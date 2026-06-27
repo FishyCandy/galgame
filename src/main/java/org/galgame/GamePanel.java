@@ -610,7 +610,7 @@ public class GamePanel extends JPanel {
             fadePhase = 0;
         }
 
-        final int STEPS_PER_PHASE = 50; // ~800ms @ 16ms/tick
+        final int STEPS_PER_PHASE = 20; // ~320ms @ 16ms/tick
 
         bgTransitionTimer = new Timer(16, null);
         bgTransitionTimer.addActionListener(e -> {
