@@ -181,8 +181,8 @@ public class GamePanel extends JPanel {
     }
 
     private void startSpriteFadeTimer() {
-        final int STEPS = 12; // ~192ms @ 16ms/tick
-        spriteTransitionTimer = new Timer(16, null);
+        final int STEPS = 20; // ~200ms @ 10ms/tick
+        spriteTransitionTimer = new Timer(10, null);
         spriteTransitionTimer.addActionListener(e -> {
             spriteFadeStep++;
             float progress = Math.min(1f, (float) spriteFadeStep / STEPS);
@@ -223,8 +223,8 @@ public class GamePanel extends JPanel {
         spriteFadePhase = 0; // 淡出
         spriteAlpha = 1f;
 
-        final int STEPS = 12;
-        spriteTransitionTimer = new Timer(16, null);
+        final int STEPS = 20; // ~200ms @ 10ms/tick
+        spriteTransitionTimer = new Timer(10, null);
         spriteTransitionTimer.addActionListener(e -> {
             spriteFadeStep++;
             float progress = Math.min(1f, (float) spriteFadeStep / STEPS);
@@ -609,9 +609,9 @@ public class GamePanel extends JPanel {
             fadePhase = 0;
         }
 
-        final int STEPS_PER_PHASE = 20; // ~320ms @ 16ms/tick
+        final int STEPS_PER_PHASE = 50; // ~500ms @ 10ms/tick
 
-        bgTransitionTimer = new Timer(16, null);
+        bgTransitionTimer = new Timer(10, null);
         bgTransitionTimer.addActionListener(e -> {
             if (fadePhase == 0) {
                 // 第一阶段：淡出到黑幕（背景 + 对话框 + 台词一同消失）
