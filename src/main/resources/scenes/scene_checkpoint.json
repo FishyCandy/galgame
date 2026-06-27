@@ -1,7 +1,7 @@
-{
+﻿{
   "commands": [
     { "type": "sprite_hide" },
-    { "type": "say", "who": "旁白", "text": "——时光飞逝——", "color": "#AAAAAA" },
-    { "type": "check", "var": "affection", "min": 10, "target": "scene_perfect", "fallback": "scene_checkpoint_b" }
+    { "type": "say", "who": "旁白", "text": "——几小时后——", "color": "#AAAAAA" },
+    { "type": "check", "var": "progress", "min": 10, "target": "scene_perfect", "fallback": "scene_checkpoint_b" }
   ]
 }

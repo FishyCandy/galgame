@@ -1,7 +1,6 @@
-{
+﻿{
   "commands": [
     { "type": "sprite_hide" },
-   
     { "type": "end", "image": "ending.jpg" }
   ]
 }

@@ -1,6 +1,6 @@
-{
+﻿{
   "commands": [
     { "type": "sprite_hide" },
-    { "type": "check", "var": "affection", "min": 0, "target": "scene_normal", "fallback": "scene_bad" }
+    { "type": "check", "var": "progress", "min": 0, "target": "scene_normal", "fallback": "scene_bad" }
   ]
 }

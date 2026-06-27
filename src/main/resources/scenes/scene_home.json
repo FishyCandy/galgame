@@ -1,17 +1,20 @@
-{
+﻿{
   "commands": [
-    { "type": "bgm", "bgm": "bgm_01.wav" },
-    { "type": "bg", "bg": "game_bg.jpg" },
-    { "type": "sprite", "sprite": "images/hero_smile.png" },
-    { "type": "say", "who": "主角", "text": "我送你回家吧。", "color": "#FFFFFF" },
-    { "type": "say", "who": "少女", "text": "谢谢你，你总是这么体贴。", "color": "#FFB6C1" },
-    { "type": "say", "who": "少女", "text": "……到了，这就是我家。", "color": "#FFB6C1" },
-    { "type": "say", "who": "主角", "text": "今天玩得很开心。", "color": "#FFFFFF" },
-    { "type": "say", "who": "少女", "text": "嗯……我也是。", "color": "#FFB6C1" },
-    { "type": "say", "who": "主角", "text": "（她似乎有话想说……）", "color": "#CCCCCC" },
+    { "type": "bgm", "bgm": "bgm_park.wav" },
+    { "type": "bg", "bg": "images/scene_park_bg.jpg" },
+    { "type": "say", "who": "你", "text": "人是铁饭是钢，没吃饱怎么肝？先来份外卖！", "color": "#FFFFFF" },
+    { "type": "say", "who": "你", "text": "下单：一份超大份麻辣烫 + 三倍辣 + 冰可乐。", "color": "#FFFFFF" },
+    { "type": "say", "who": "旁白", "text": "30分钟后，外卖到了。", "color": "#AAAAAA" },
+    { "type": "say", "who": "外卖小哥", "text": "您好，您的外卖。咦，同学，你这么晚还在学习？", "color": "#FFB6C1" },
+    { "type": "say", "who": "你", "text": "嗐，明天ddl，准备通宵。", "color": "#FFFFFF" },
+    { "type": "say", "who": "外卖小哥", "text": "巧了，我白天也写代码，晚上兼职送外卖。", "color": "#FFB6C1" },
+    { "type": "say", "who": "你", "text": "？？？", "color": "#FFFFFF" },
+    { "type": "say", "who": "外卖小哥", "text": "ChatGPT是我写的，你那个作业题目我熟。", "color": "#FFB6C1" },
+    { "type": "say", "who": "你", "text": "………………………………………………", "color": "#FFFFFF" },
+    { "type": "say", "who": "你", "text": "（信息量过大，大脑过载中）", "color": "#CCCCCC" },
     { "type": "choice", "choices": [
-      { "text": "鼓起勇气表白", "target": "scene_checkpoint", "score": { "affection": 8, "courage": 5 } },
-      { "text": "温柔地道别", "target": "scene_checkpoint", "score": { "affection": 2 } }
+      { "text": "跪求大神指导", "target": "scene_checkpoint", "score": { "progress": 6, "knowledge": 5 } },
+      { "text": "怀疑人生，先吃为敬", "target": "scene_checkpoint", "score": { "progress": 1 } }
     ]}
   ]
 }

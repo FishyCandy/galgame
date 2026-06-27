@@ -1,11 +1,14 @@
-{
+﻿{
   "commands": [
     { "type": "bg", "bg": "images/scene_library_bg.jpg" },
-    { "type": "sprite_hide" },
-    { "type": "say", "who": "主角", "text": "自那以后，我们再也没有见面……", "color": "#888888" },
-    { "type": "say", "who": "旁白", "text": "——有些缘分，错过了就是错过了——", "color": "#888888" },
-    { "type": "say", "who": "旁白", "text": "也许在另一个平行世界，他们会做出不同的选择。", "color": "#888888" },
-    { "type": "say", "who": "旁白", "text": "【坏结局：擦肩而过】", "color": "#888888" },
+    { "type": "say", "who": "你", "text": "完了，一个字都没写出来……", "color": "#888888" },
+    { "type": "say", "who": "系统", "text": "[邮件] 来自：教务系统", "color": "#FF4444" },
+    { "type": "say", "who": "系统", "text": "[邮件] 主题：关于您未按时提交结课作业的通知", "color": "#FF4444" },
+    { "type": "say", "who": "你", "text": "……", "color": "#888888" },
+    { "type": "say", "who": "老师", "text": "（教务系统自动回复）该课程学分归零，请下学期重修。祝您学习愉快！", "color": "#FF4444" },
+    { "type": "say", "who": "你", "text": "愉快你个大头鬼啊！！！", "color": "#FF0000" },
+    { "type": "say", "who": "旁白", "text": "——于是，你成功获得了一张「再来一年」体验卡。", "color": "#888888" },
+    { "type": "say", "who": "旁白", "text": "【坏结局：没有完成结课作业】", "color": "#888888" },
     { "type": "jump", "target": "scene_end" }
   ]
 }

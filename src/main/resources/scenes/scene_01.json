@@ -1,19 +1,20 @@
-{
+﻿{
   "commands": [
     { "type": "bgm", "bgm": "bgm_01.wav" },
     { "type": "bg", "bg": "game_bg.jpg" },
-    { "type": "sprite", "sprite": "images/hero_normal.png" },
-    { "type": "say", "who": "主角", "text": "你好，世界！" },
-    { "type": "say", "who": "少女", "text": "欢迎来到 GalGame 世界。", "color": "#FFB6C1" },
-    { "type": "say", "who": "主角", "text": "好久不见了", "color": "#FFFFFF" },
-    { "type": "sprite", "sprite": "images/hero_smile.png" },
-    { "type": "say", "who": "主角", "text": "我们走吧" },
-    { "type": "say", "who": "少女", "text": "好啊", "color": "#FFB6C1" },
-    { "type": "say", "who": "少女", "text": "但是，我们去哪里" },
+    { "type": "say", "who": "旁白", "text": "深夜23:47，你正躺在床上刷手机...", "color": "#AAAAAA" },
+    { "type": "say", "who": "你", "text": "啊，又是无所事事的一天，好爽~", "color": "#FFFFFF" },
+    { "type": "say", "who": "手机", "text": "[日历提醒] 结课作业截止：明天 23:59", "color": "#FF4444" },
+    { "type": "say", "who": "你", "text": "…", "color": "#FFFFFF" },
+    { "type": "say", "who": "你", "text": "……", "color": "#FFFFFF" },
+    { "type": "say", "who": "你", "text": "…………啊啊啊啊啊啊啊！！！", "color": "#FF0000" },
+    { "type": "say", "who": "旁白", "text": "你的尖叫声划破了夜空，隔壁邻居以为杀猪了。", "color": "#AAAAAA" },
+    { "type": "say", "who": "你", "text": "完了完了完了，一个字都没写！明天就是ddl！！", "color": "#FF0000" },
+    { "type": "say", "who": "你", "text": "冷静，冷静……深呼吸……我必须做出抉择……", "color": "#FFFFFF" },
     { "type": "choice", "choices": [
-      { "text": "去公园", "target": "scene_park", "score": { "affection": 5 } },
-      { "text": "去图书馆", "target": "scene_library", "score": { "affection": -2, "knowledge": 3 } },
-      { "text": "送你回家", "target": "scene_home", "score": { "affection": 3, "courage": 2 } }
+      { "text": "冲向图书馆通宵肝", "target": "scene_park", "score": { "progress": 3 } },
+      { "text": "给学霸打电话求救", "target": "scene_library", "score": { "progress": 2 } },
+      { "text": "先点个外卖补充能量", "target": "scene_home", "score": { "progress": 1 } }
     ]}
   ]
 }

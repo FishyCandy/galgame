@@ -1,14 +1,15 @@
-{
+﻿{
   "commands": [
     { "type": "bgm", "bgm": "bgm_01.wav" },
     { "type": "bg", "bg": "game_bg.jpg" },
-    { "type": "sprite", "sprite": "images/hero_smile.png" },
-    { "type": "say", "who": "少女", "text": "从第一次遇见你，我就知道……", "color": "#FFB6C1" },
-    { "type": "say", "who": "少女", "text": "你就是我一直在等的那个人。" },
-    { "type": "say", "who": "主角", "text": "我也是。能遇见你，是我最大的幸运。", "color": "#FFFFFF" },
-    { "type": "say", "who": "旁白", "text": "——两人紧紧相拥，夕阳将影子拉得很长很长——", "color": "#FFD700" },
-    { "type": "say", "who": "旁白", "text": "从今以后，他们会一直在一起。" },
-    { "type": "say", "who": "旁白", "text": "【完美结局：命中注定】" },
+    { "type": "say", "who": "老师", "text": "……这是我十年来见过的最优秀的结课作业。", "color": "#FFD700" },
+    { "type": "say", "who": "老师", "text": "你不仅完成了所有要求，还额外加了AI模块、区块链存证、", "color": "#FFD700" },
+    { "type": "say", "who": "老师", "text": "以及一个能自动煮咖啡的物联网接口。", "color": "#FFD700" },
+    { "type": "say", "who": "老师", "text": "（抹眼泪）同学，你有兴趣读我的研究生吗？", "color": "#FFD700" },
+    { "type": "say", "who": "你", "text": "嘿嘿，其实我是靠幽灵学长、外卖小哥和学霸三方联合作战完成的。", "color": "#FFFFFF" },
+    { "type": "say", "who": "旁白", "text": "——就这样，你创造了学院传说，", "color": "#FFD700" },
+    { "type": "say", "who": "旁白", "text": "后人称之为「一夜封神の奇迹」。", "color": "#FFD700" },
+    { "type": "say", "who": "旁白", "text": "【完美结局：超额完成】", "color": "#FFD700" },
     { "type": "jump", "target": "scene_end" }
   ]
 }

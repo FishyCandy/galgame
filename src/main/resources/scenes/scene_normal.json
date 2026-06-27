@@ -1,10 +1,11 @@
-{
+﻿{
   "commands": [
     { "type": "bg", "bg": "images/scene_library_bg.jpg" },
-    { "type": "sprite_hide" },
-    { "type": "say", "who": "主角", "text": "就这样，日子一天天过去……", "color": "#AAAAAA" },
-    { "type": "say", "who": "旁白", "text": "—— 虽然平凡，但也不坏 ——", "color": "#AAAAAA" },
-    { "type": "say", "who": "旁白", "text": "【普通结局：平凡日常】", "color": "#AAAAAA" },
+    { "type": "say", "who": "老师", "text": "这个嘛……勉强算你过了。", "color": "#AAAAAA" },
+    { "type": "say", "who": "老师", "text": "但说实话，格式全错、内容跑题、参考文献只有百度百科。", "color": "#AAAAAA" },
+    { "type": "say", "who": "你", "text": "（尴尬地抠出三室一厅）……下次一定。", "color": "#888888" },
+    { "type": "say", "who": "旁白", "text": "——能过就行，还要啥自行车。", "color": "#AAAAAA" },
+    { "type": "say", "who": "旁白", "text": "【普通结局：勉强交差】", "color": "#AAAAAA" },
     { "type": "jump", "target": "scene_end" }
   ]
 }
