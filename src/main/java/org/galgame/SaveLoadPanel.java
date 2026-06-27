@@ -87,12 +87,7 @@ public class SaveLoadPanel extends JPanel {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            // 绘制白色边框（方框）
-            g2.setColor(Color.WHITE);
-            g2.drawRect(0, 0, getWidth()-1, getHeight()-1);
-            // 填充内容
             if (thumbImage != null) {
-                // 绘制缩略图，填满整个面板
                 int iw = thumbImage.getWidth();
                 int ih = thumbImage.getHeight();
                 double scale = Math.min((double) getWidth() / iw, (double) getHeight() / ih);
@@ -101,6 +96,8 @@ public class SaveLoadPanel extends JPanel {
                 int dx = (getWidth() - dw) / 2;
                 int dy = (getHeight() - dh) / 2;
                 g2.drawImage(thumbImage, dx, dy, dw, dh, null);
+                g2.setColor(Color.WHITE);
+                g2.drawRect(dx, dy, dw - 1, dh - 1);
             } else {
                 // 显示空文本
                 g2.setColor(Color.LIGHT_GRAY);
