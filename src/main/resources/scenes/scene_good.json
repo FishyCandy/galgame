@@ -7,7 +7,7 @@
     { "type": "say", "who": "室友", "text": "牛啊兄弟，一天搞定，不愧是你！", "color": "#87CEEB" },
     { "type": "say", "who": "你", "text": "全靠一口仙气吊着……我要睡三天三夜。", "color": "#FFFFFF" },
     { "type": "say", "who": "旁白", "text": "——虽然过程很狼狈，但至少结果是好的。", "color": "#FFD700" },
-    { "type": "say", "who": "旁白", "text": "【好结局：顺利完成】", "color": "#FFD700" },
+    { "type": "say", "who": "旁白", "text": "【好结局：顺利完成】" },
     { "type": "jump", "target": "scene_end" }
   ]
 }

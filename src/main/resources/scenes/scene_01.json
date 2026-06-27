@@ -6,7 +6,7 @@
     { "type": "say", "who": "你", "text": "啊，又是无所事事的一天，好爽~", "color": "#FFFFFF" },
     { "type": "say", "who": "手机", "text": "[日历提醒] 结课作业截止：明天 23:59", "color": "#FF4444" },
     { "type": "say", "who": "你", "text": "…", "color": "#FFFFFF" },
-    { "type": "say", "who": "你", "text": "……", "color": "#FFFFFF" },
+    { "type": "say", "who": "你", "text": "……" },
     { "type": "say", "who": "你", "text": "…………啊啊啊啊啊啊啊！！！", "color": "#FF0000" },
     { "type": "say", "who": "旁白", "text": "你的尖叫声划破了夜空，隔壁邻居以为杀猪了。", "color": "#AAAAAA" },
     { "type": "say", "who": "你", "text": "完了完了完了，一个字都没写！明天就是ddl！！", "color": "#FF0000" },
