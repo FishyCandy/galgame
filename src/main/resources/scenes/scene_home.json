@@ -2,6 +2,7 @@
   "commands": [
     { "type": "bgm", "bgm": "bgm_park.wav" },
     { "type": "bg", "bg": "images/scene_park_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "say", "who": "你", "text": "人是铁饭是钢，没吃饱怎么肝？先来份外卖！", "color": "#FFFFFF" },
     { "type": "say", "who": "你", "text": "下单：一份超大份麻辣烫 + 三倍辣 + 冰可乐。" },
     { "type": "say", "who": "旁白", "text": "30分钟后，外卖到了。", "color": "#AAAAAA" },

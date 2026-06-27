@@ -2,6 +2,7 @@
   "commands": [
     { "type": "bgm", "bgm": "bgm_library.wav" },
     { "type": "bg", "bg": "game_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "say", "who": "你", "text": "嘟嘟嘟……喂？学霸！救救我！！", "color": "#FFFFFF" },
     { "type": "say", "who": "学霸", "text": "哦，你也没写作业是吧。", "color": "#87CEEB" },
     { "type": "say", "who": "你", "text": "「也」？！你不是早就写完了吗？！", "color": "#FFFFFF" },

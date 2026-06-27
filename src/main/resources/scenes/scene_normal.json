@@ -1,6 +1,7 @@
 ﻿{
   "commands": [
     { "type": "bg", "bg": "images/scene_library_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "say", "who": "老师", "text": "这个嘛……勉强算你过了。", "color": "#AAAAAA" },
     { "type": "say", "who": "老师", "text": "但说实话，格式全错、内容跑题、参考文献只有百度百科。" },
     { "type": "say", "who": "你", "text": "（尴尬地抠出三室一厅）……下次一定。", "color": "#888888" },

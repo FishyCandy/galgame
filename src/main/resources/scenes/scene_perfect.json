@@ -2,6 +2,7 @@
   "commands": [
     { "type": "bgm", "bgm": "bgm_01.wav" },
     { "type": "bg", "bg": "game_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_smile.png" },
     { "type": "say", "who": "老师", "text": "……这是我十年来见过的最优秀的结课作业。", "color": "#FFD700" },
     { "type": "say", "who": "老师", "text": "你不仅完成了所有要求，还额外加了AI模块、区块链存证、" },
     { "type": "say", "who": "老师", "text": "以及一个能自动煮咖啡的物联网接口。" },

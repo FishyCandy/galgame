@@ -1,6 +1,7 @@
 ﻿{
   "commands": [
     { "type": "bg", "bg": "images/scene_library_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "say", "who": "你", "text": "完了，一个字都没写出来……", "color": "#888888" },
     { "type": "say", "who": "系统", "text": "[邮件] 来自：教务系统", "color": "#FF4444" },
     { "type": "say", "who": "系统", "text": "[邮件] 主题：关于您未按时提交结课作业的通知" },

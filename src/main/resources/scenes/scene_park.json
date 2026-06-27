@@ -2,6 +2,7 @@
   "commands": [
     { "type": "bgm", "bgm": "bgm_01.wav" },
     { "type": "bg", "bg": "images/scene_library_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "say", "who": "你", "text": "凌晨零点，你冲进了24小时自习室。", "color": "#FFFFFF" },
     { "type": "say", "who": "你", "text": "很好！没有人！今天我要大干一场！", "color": "#FFD700" },
     { "type": "say", "who": "？？？", "text": "同学……你能不能小声一点……", "color": "#88FF88" },

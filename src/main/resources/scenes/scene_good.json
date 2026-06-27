@@ -2,6 +2,7 @@
   "commands": [
     { "type": "bgm", "bgm": "bgm_01.wav" },
     { "type": "bg", "bg": "game_bg.jpg" },
+    { "type": "sprite", "sprite": "images/hero_smile.png" },
     { "type": "say", "who": "老师", "text": "嗯，作业我看了，做得不错，合格了。", "color": "#FFD700" },
     { "type": "say", "who": "你", "text": "（松了一大口气）谢谢老师！！", "color": "#FFFFFF" },
     { "type": "say", "who": "室友", "text": "牛啊兄弟，一天搞定，不愧是你！", "color": "#87CEEB" },
