@@ -19,7 +19,7 @@ public class GalGameApp {
         System.setProperty("swing.aatext", "true");
 
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("恋语之境");
+            JFrame frame = new JFrame("我想完成结课作业");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             // 根据屏幕比例计算等比例窗口大小（宽度固定1024）

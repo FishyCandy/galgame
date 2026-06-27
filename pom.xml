@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>恋爱物语</name>
+    <name>我想完成结课作业</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

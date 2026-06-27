@@ -1094,18 +1094,20 @@ switch (cmd.type) {
     }
 
     private BufferedImage captureThumbnail() {
+        int thumbW = 240;
+        int thumbH = 135;
         BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics g = img.getGraphics();
+        Graphics2D g = img.createGraphics();
         paint(g);
         g.dispose();
-        Image scaled = img.getScaledInstance(160, 90, Image.SCALE_SMOOTH);
-        BufferedImage thumb = new BufferedImage(160, 90, BufferedImage.TYPE_INT_RGB);
+        BufferedImage thumb = new BufferedImage(thumbW, thumbH, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = thumb.createGraphics();
-        g2.drawImage(scaled, 0, 0, null);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2.drawImage(img, 0, 0, thumbW, thumbH, null);
         g2.dispose();
         return thumb;
     }
-
     // ---------- 返回标题 ----------
     private void confirmReturn() {
         // 使用覆盖层替代JOptionPane，避免全屏下弹窗导致窗口最小化
