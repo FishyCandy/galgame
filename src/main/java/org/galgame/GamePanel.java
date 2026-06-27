@@ -1095,7 +1095,7 @@ switch (cmd.type) {
 
     private BufferedImage captureThumbnail() {
         int thumbW = 260;
-        int thumbH = 146;
+        int thumbH = (int) (260.0 * getHeight() / getWidth());
         BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
         paint(g);

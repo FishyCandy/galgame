@@ -93,7 +93,14 @@ public class SaveLoadPanel extends JPanel {
             // 填充内容
             if (thumbImage != null) {
                 // 绘制缩略图，填满整个面板
-                g2.drawImage(thumbImage, 0, 0, getWidth(), getHeight(), null);
+                int iw = thumbImage.getWidth();
+                int ih = thumbImage.getHeight();
+                double scale = Math.min((double) getWidth() / iw, (double) getHeight() / ih);
+                int dw = (int) (iw * scale);
+                int dh = (int) (ih * scale);
+                int dx = (getWidth() - dw) / 2;
+                int dy = (getHeight() - dh) / 2;
+                g2.drawImage(thumbImage, dx, dy, dw, dh, null);
             } else {
                 // 显示空文本
                 g2.setColor(Color.LIGHT_GRAY);
@@ -148,11 +155,16 @@ public class SaveLoadPanel extends JPanel {
                 if (data.getThumbnailBytes() != null && data.getThumbnailBytes().length > 0) {
                     BufferedImage thumb = ImageIO.read(new ByteArrayInputStream(data.getThumbnailBytes()));
                     // 高质量缩放至 200x112，完全填满
-                    BufferedImage scaledImg = new BufferedImage(260, 146, BufferedImage.TYPE_INT_RGB);
+                    int iw = thumb.getWidth();
+                    int ih = thumb.getHeight();
+                    double scale = Math.min(260.0 / iw, 146.0 / ih);
+                    int sw = (int) (iw * scale);
+                    int sh = (int) (ih * scale);
+                    BufferedImage scaledImg = new BufferedImage(sw, sh, BufferedImage.TYPE_INT_RGB);
                     Graphics2D g2d = scaledImg.createGraphics();
                     g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                     g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                    g2d.drawImage(thumb, 0, 0, 260, 146, null);
+                    g2d.drawImage(thumb, 0, 0, sw, sh, null);
                     g2d.dispose();
                     thumbPanel.setThumbImage(scaledImg);
                 } else {
