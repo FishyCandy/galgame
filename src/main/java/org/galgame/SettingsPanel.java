@@ -106,7 +106,12 @@ public class SettingsPanel extends JPanel {
         ButtonGroup displayGroup = new ButtonGroup();
         displayGroup.add(windowedRadio);
         displayGroup.add(fullscreenRadio);
-        windowedRadio.setSelected(true);
+        GraphicsDevice gd = parentFrame.getGraphicsConfiguration().getDevice();
+        if (gd.getFullScreenWindow() == parentFrame) {
+            fullscreenRadio.setSelected(true);
+        } else {
+            windowedRadio.setSelected(true);
+        }
 
         windowedRadio.addActionListener(e -> setFullScreen(false));
         fullscreenRadio.addActionListener(e -> setFullScreen(true));
@@ -269,11 +274,21 @@ public class SettingsPanel extends JPanel {
         if (fullscreen) {
             parentFrame.dispose();
             parentFrame.setUndecorated(true);
-            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        GraphicsDevice gd = parentFrame.getGraphicsConfiguration().getDevice();
+        if (gd.getFullScreenWindow() == parentFrame) {
+            fullscreenRadio.setSelected(true);
+        } else {
+            windowedRadio.setSelected(true);
+        }
             parentFrame.setVisible(true);
             gd.setFullScreenWindow(parentFrame);
         } else {
-            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        GraphicsDevice gd = parentFrame.getGraphicsConfiguration().getDevice();
+        if (gd.getFullScreenWindow() == parentFrame) {
+            fullscreenRadio.setSelected(true);
+        } else {
+            windowedRadio.setSelected(true);
+        }
             gd.setFullScreenWindow(null);
             parentFrame.dispose();
             parentFrame.setUndecorated(false);
