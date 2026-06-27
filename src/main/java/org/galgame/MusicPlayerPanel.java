@@ -176,7 +176,7 @@ public class MusicPlayerPanel extends JPanel {
         });
         add(albumArtLabel);
         
-        songTitleLabel = new JLabel(musicList.isEmpty() ? "\u6682\u65E0\u97F3\u4E50" : "\u70B9\u51FB\u64AD\u653E", SwingConstants.CENTER);
+        songTitleLabel = new JLabel("\u70B9\u51FB\u64AD\u653E", SwingConstants.CENTER);
         songTitleLabel.setFont(buttonFont.deriveFont(20f));
         songTitleLabel.setForeground(new Color(255, 255, 255, 220));
         add(songTitleLabel);
