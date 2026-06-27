@@ -181,7 +181,7 @@ public class GamePanel extends JPanel {
     }
 
     private void startSpriteFadeTimer() {
-        final int STEPS = 15; // ~240ms @ 16ms/tick
+        final int STEPS = 10; // ~160ms @ 16ms/tick
         spriteTransitionTimer = new Timer(16, null);
         spriteTransitionTimer.addActionListener(e -> {
             spriteFadeStep++;
@@ -223,7 +223,7 @@ public class GamePanel extends JPanel {
         spriteFadePhase = 0; // 淡出
         spriteAlpha = 1f;
 
-        final int STEPS = 15; // ~240ms @ 16ms/tick
+        final int STEPS = 10; // ~160ms @ 16ms/tick
         spriteTransitionTimer = new Timer(16, null);
         spriteTransitionTimer.addActionListener(e -> {
             spriteFadeStep++;
@@ -609,7 +609,7 @@ public class GamePanel extends JPanel {
             fadePhase = 0;
         }
 
-        final int STEPS_PER_PHASE = 30; // ~480ms @ 16ms/tick
+        final int STEPS_PER_PHASE = 20; // ~320ms @ 16ms/tick
 
         bgTransitionTimer = new Timer(16, null);
         bgTransitionTimer.addActionListener(e -> {
