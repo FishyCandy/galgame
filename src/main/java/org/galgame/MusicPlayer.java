@@ -118,7 +118,7 @@ public class MusicPlayer {
         if (fadeThread != null && fadeThread.isAlive()) {
             fadeThread.interrupt();
             try {
-                fadeThread.join(100); // 等待线程结束
+                fadeThread.join(30); // 等待线程结束
             } catch (InterruptedException ignored) {}
         }
         if (audioCue != null) {
