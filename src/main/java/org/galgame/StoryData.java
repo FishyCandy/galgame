@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class StoryData {
+    
     public String start;
     public Map<String, Object> scenes;  // value 可以是 String(文件路径) 或 SceneData(内联)
 

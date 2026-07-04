@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import javax.swing.*;
 import javax.imageio.ImageIO;
@@ -39,7 +39,7 @@ public class LogPanel extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        // ---- 顶部栏：标题 + 返回按钮 ----
+        //顶部栏：标题 + 返回按钮
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
         topBar.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
@@ -54,7 +54,7 @@ public class LogPanel extends JPanel {
         topBar.add(titleLabel, BorderLayout.CENTER);
         add(topBar, BorderLayout.NORTH);
 
-        // ---- 中间：可滚动的台词列表 ----
+        // 中间：可滚动的台词列表 
         // 使用 BoxLayout Y_AXIS 确保每行从上往下排列，宽度填满
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
@@ -89,15 +89,17 @@ public class LogPanel extends JPanel {
         for (String entry : history) {
             String who = "";
             String text = entry;
-            int colonIdx = entry.indexOf("\uff1a");
+            int colonIdx = entry.indexOf("：");
             if (colonIdx > 0) {
                 who = entry.substring(0, colonIdx).trim();
                 text = entry.substring(colonIdx + 1).trim();
             }
+
             boolean isFirst = !who.equals(lastWho);
             lastWho = who;
 
             JPanel row = createRow(who, text, isFirst);
+            
             row.setAlignmentX(LEFT_ALIGNMENT);
             listPanel.add(row);
         }
@@ -123,11 +125,11 @@ public class LogPanel extends JPanel {
 
                 int w = getWidth(), h = getHeight();
 
-                // ---- 限制绘制区域，防止文字溢出到其他组件（如顶部栏） ----
+                //限制绘制区域，防止文字溢出到其他组件（如顶部栏）
                 Shape oldClip = g2.getClip();
                 g2.clipRect(0, 0, w, h);
 
-                // ---- 整行背景：极低透明度底色防止滚动叠影，悬停时轻微高亮 ----
+                //整行背景：极低透明度底色防止滚动叠影，悬停时轻微高亮
                 g2.setColor(new Color(0, 0, 0, 25));
                 g2.fillRect(0, 0, w, h);
                 if (hovered) {
@@ -135,12 +137,12 @@ public class LogPanel extends JPanel {
                     g2.fillRect(0, 0, w, h);
                 }
 
-                // 内容偏移：从头像/文字起始处 = 窗口宽度的 1/6
+                // 台词居中设置：从头像/文字起始处 = 窗口宽度的 1/6
                 int contentLeft = w / 6;
                 int avatarLeft = contentLeft;
                 int textLeft = avatarLeft + AVATAR_SIZE + 15;
 
-                // ---- 绘制头像（仅首句且存在头像） ----
+                // 绘制头像和头像框（仅首句且存在头像）
                 if (isFirst && avatar != null) {
                     int avY = (h - AVATAR_SIZE) / 2;
                     Shape clip = new Rectangle(avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE);
@@ -152,7 +154,7 @@ public class LogPanel extends JPanel {
                     g2.drawRect(avatarLeft, avY, AVATAR_SIZE, AVATAR_SIZE);
                 }
 
-                // ---- 台词文本（始终不透明，确保可读性） ----
+                // 台词文本描边效果（始终不透明，确保可读性）
                 int textAlpha = 255;
                 int textX = textLeft;
                 int textY = (h - g2.getFontMetrics(textFont).getHeight()) / 2 + g2.getFontMetrics(textFont).getAscent();
@@ -194,7 +196,7 @@ public class LogPanel extends JPanel {
         return avatar;
     }
 
-    // ============ 返回按钮（光圈常驻 + 按下效果） ============
+    // 返回按钮（光圈常驻 + 按下效果）
     private JButton createReturnButton() {
         try {
             BufferedImage img = ImageIO.read(getClass().getResourceAsStream("/images/return_icon.png"));

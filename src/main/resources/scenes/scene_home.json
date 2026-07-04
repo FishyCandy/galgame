@@ -16,7 +16,7 @@
     { "type": "say", "who": "你", "text": "（信息量过大，大脑过载中）", "color": "#CCCCCC" },
     { "type": "choice", "choices": [
       { "text": "跪求大神指导", "target": "scene_checkpoint", "score": { "progress": 6, "knowledge": 5 } },
-      { "text": "怀疑人生，先吃为敬", "target": "scene_checkpoint", "score": { "progress": 1 } }
+      { "text": "怀疑人生，先吃为敬", "target": "scene_checkpoint", "score": { "progress": -2 } }
     ]}
   ]
 }

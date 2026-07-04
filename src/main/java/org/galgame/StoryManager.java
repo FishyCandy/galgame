@@ -1,4 +1,4 @@
-package org.galgame;
+﻿package org.galgame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -44,6 +44,7 @@ public class StoryManager {
             // 加载起始场景
             loadScene(currentSceneId);
             currentCommandIndex = 0;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,10 +54,13 @@ public class StoryManager {
      * 按需加载场景文件（带缓存）
      */
     private void loadScene(String sceneId) {
+
+        //如果这个场景之前加载过了，直接从缓存拿，不用重新读文件。
         if (loadedScenes.containsKey(sceneId)) {
             currentCommands = loadedScenes.get(sceneId).commands;
             return;
         }
+
         String filePath = sceneIndex.get(sceneId);
         if (filePath == null) {
             System.err.println("场景未在索引中找到: " + sceneId);
@@ -79,7 +83,7 @@ public class StoryManager {
         }
     }
 
-    // ---------- 隐藏分操作 ----------
+    //隐藏分操作
     public int getScore(String var) {
         return scores.getOrDefault(var, 0);
     }
@@ -92,10 +96,12 @@ public class StoryManager {
         scores.put(var, scores.getOrDefault(var, 0) + delta);
     }
 
+    //存档/读档时调用
     public Map<String, Integer> getScores() {
         return new HashMap<>(scores);
     }
 
+    //存档/读档时调用
     public void setScores(Map<String, Integer> newScores) {
         scores.clear();
         if (newScores != null) {
@@ -127,7 +133,7 @@ public class StoryManager {
 
         StoryData.CommandData cmd = currentCommands.get(currentCommandIndex++);
 
-        // 处理 jump 指令
+        // 处理 jump 指令，jump：跳到另一场景，重新加载新场景json
         if ("jump".equals(cmd.type)) {
             String target = cmd.target;
             if (target != null && sceneIndex.containsKey(target)) {
@@ -148,9 +154,7 @@ public class StoryManager {
         return cmd;
     }
 
-    /**
-     * 外部跳转（用于选项选择后）
-     */
+    //外部跳转（用于选项选择后）
     public void jumpToScene(String sceneId) {
         if (sceneIndex.containsKey(sceneId)) {
             currentSceneId = sceneId;
@@ -163,7 +167,7 @@ public class StoryManager {
         return isEnd;
     }
 
-    // ---------- getter/setter，用于存档/读档 ----------
+    //getter/setter，用于存档/读档
     public String getCurrentSceneId() {
         return currentSceneId;
     }
@@ -172,6 +176,7 @@ public class StoryManager {
         return currentCommandIndex;
     }
 
+    //读档时调用
     public void setCurrentSceneId(String sceneId) {
         if (sceneIndex.containsKey(sceneId)) {
             this.currentSceneId = sceneId;
@@ -182,6 +187,7 @@ public class StoryManager {
         }
     }
 
+    //读档时调用
     public void setCurrentCommandIndex(int index) {
         if (currentCommands != null && index >= 0 && index < currentCommands.size()) {
             this.currentCommandIndex = index;

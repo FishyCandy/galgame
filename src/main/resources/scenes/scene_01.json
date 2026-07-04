@@ -5,7 +5,7 @@
     { "type": "sprite", "sprite": "images/hero_normal.png" },
     { "type": "say", "who": "旁白", "text": "深夜23:47，你正躺在床上刷手机...", "color": "#AAAAAA" },
     { "type": "say", "who": "你", "text": "啊，又是无所事事的一天，好爽~", "color": "#FFFFFF" },
-    { "type": "say", "who": "手机", "text": "[日历提醒] 结课作业截止：明天 23:59", "color": "#FF4444" },
+    { "type": "say", "who": "手机", "text": "[日历提醒] 结课作业截止：明天 23:00", "color": "#FF4444" },
     { "type": "sprite", "sprite": "images/hero_nervous.png" },
     { "type": "say", "who": "你", "text": "…", "color": "#FFFFFF" },
     { "type": "say", "who": "你", "text": "……" },

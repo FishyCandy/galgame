@@ -14,7 +14,7 @@
     { "type": "say", "who": "你", "text": "……这学校到底埋葬了多少人。", "color": "#FFFFFF" },
     { "type": "say", "who": "幽灵学长", "text": "别废话了，你还有不到24小时。我们知道所有教授的套路，想听吗？", "color": "#88FF88" },
     { "type": "choice", "choices": [
-      { "text": "虔诚地请教幽灵前辈", "target": "scene_checkpoint", "score": { "progress": 5, "knowledge": 3 } },
+      { "text": "虔诚地请教幽灵前辈", "target": "scene_checkpoint", "score": { "progress": 7, "knowledge": 3 } },
       { "text": "我命由我不由天，自己干！", "target": "scene_checkpoint", "score": { "progress": -2, "courage": 5 } }
     ]}
   ]

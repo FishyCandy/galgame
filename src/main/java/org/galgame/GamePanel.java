@@ -23,7 +23,6 @@ public class GamePanel extends JPanel {
     private BufferedImage spriteImage; // 人物差分图
     private String currentBgPath = null;     // 当前背景路径
     private String currentSpritePath = null; // 当前差分图路径
-
     private StoryManager storyManager;
     private boolean waitingForChoice = false;
 
@@ -660,7 +659,7 @@ public class GamePanel extends JPanel {
             confirmReturn();
             return;
         }
-if (waitingForChoice) return;
+        if (waitingForChoice) return;
 
         StoryData.CommandData cmd = storyManager.nextCommand();
         if (cmd == null) {
@@ -673,15 +672,11 @@ if (waitingForChoice) return;
             isEnding = true;
             return;
         }
-switch (cmd.type) {
-
-            case "show":
-                // 旧版show指令已废弃，自动跳过
-                updateDisplay();
-                return;
+        switch (cmd.type) {
 
             case "say":
                 history.add(cmd.who + "：" + cmd.text);
+                
                 characterLabel.setText(cmd.who);
                 lineArea.setText(cmd.text);
 
@@ -729,8 +724,9 @@ switch (cmd.type) {
                 hideSprite();
                 updateDisplay();
                 return;
-
+                   
             case "set":
+                //这里的set，是直接设置，覆盖原有分数
                 // 设置隐藏分变量
                 if (cmd.var != null && cmd.value != null) {
                     storyManager.setScore(cmd.var, cmd.value);
@@ -830,8 +826,8 @@ switch (cmd.type) {
         card.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // 固定大小的选项按钮
-        for (ChoiceOption opt : getChoiceOptions(choiceDataList)) {
-            JButton btn = createChoiceButton(opt.getText());
+        for (StoryData.ChoiceData opt : choiceDataList) {
+            JButton btn = createChoiceButton(opt.text);
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             // 固定按钮大小：宽 420，高 60
             Dimension btnSize = new Dimension(420, 60);
@@ -842,10 +838,10 @@ switch (cmd.type) {
                 layeredPane.remove(overlay);
                 layeredPane.revalidate();
                 layeredPane.repaint();
-                storyManager.jumpToScene(opt.getTarget());
+                storyManager.jumpToScene(opt.target);
                 // 应用隐藏分
-                if (opt.getScore() != null) {
-                    for (Map.Entry<String, Integer> scoreEntry : opt.getScore().entrySet()) {
+                if (opt.score != null) {
+                    for (Map.Entry<String, Integer> scoreEntry : opt.score.entrySet()) {
                         storyManager.addScore(scoreEntry.getKey(), scoreEntry.getValue());
                     }
                 }
@@ -861,16 +857,6 @@ switch (cmd.type) {
         layeredPane.revalidate();
         layeredPane.repaint();
     }
-
-    // 辅助方法：将 ChoiceData 转换为 ChoiceOption 列表
-    private List<ChoiceOption> getChoiceOptions(List<StoryData.ChoiceData> choiceDataList) {
-        List<ChoiceOption> options = new ArrayList<>();
-        for (StoryData.ChoiceData cd : choiceDataList) {
-            options.add(new ChoiceOption(cd.text, cd.target, cd.score));
-        }
-        return options;
-    }
-
     // 创建毛玻璃风格选项按钮（与主菜单 createGlassButton 风格一致）
     private JButton createChoiceButton(String text) {
         JButton btn = new JButton(text) {
@@ -901,7 +887,7 @@ switch (cmd.type) {
                     g2.setStroke(new BasicStroke(2.5f));
                     g2.drawRoundRect(2, 2, getWidth()-5, getHeight()-5, 30, 30);
                 }
-// 丁香紫描边效果
+                // 丁香紫描边效果
                 FontRenderContext frc = g2.getFontRenderContext();
                 TextLayout tl = new TextLayout(getText(), getFont(), frc);
                 java.awt.geom.Rectangle2D tlBounds = tl.getBounds();
@@ -944,7 +930,7 @@ switch (cmd.type) {
     private void nextCommand() {
         if (waitingForChoice) return;
         if (isBgTransitioning) {
-            if (isEnding) clickPending = true;
+            //if (isEnding) clickPending = true;
             return;
         }
         updateDisplay();
@@ -1027,6 +1013,7 @@ switch (cmd.type) {
             spriteImage = null;
             currentSpritePath = null;
             storyManager.setCurrentCommandIndex(0);
+            
             for (int i = 0; i < savedCmdIndex; i++) {
                 StoryData.CommandData cmd = storyManager.nextCommand();
                 if (cmd == null) break;
